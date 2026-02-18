@@ -1,0 +1,374 @@
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { 
+  Search, ChevronDown, Menu, X, Sun, Moon, Phone, 
+  Bell, Heart, User, LogIn, Building2, Home, 
+  MapPin, TrendingUp, BookOpen, Star
+} from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
+import { cities } from "@/data/properties";
+
+const Navbar = () => {
+  const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("All India");
+  const [cityDropdown, setCityDropdown] = useState(false);
+  const [buyersDropdown, setBuyersDropdown] = useState(false);
+  const [tenantsDropdown, setTenantsDropdown] = useState(false);
+  const [ownersDropdown, setOwnersDropdown] = useState(false);
+  const [insightsDropdown, setInsightsDropdown] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const cityRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (cityRef.current && !cityRef.current.contains(e.target as Node)) {
+        setCityDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const megaMenuBuyers = [
+    { label: "Buy a Home", links: ["/buy?type=apartment", "/buy?type=villa", "/buy?type=plot", "/buy?type=penthouse"], names: ["Apartments", "Villas", "Plots/Land", "Penthouses"] },
+    { label: "Commercial", links: ["/commercial?type=office", "/commercial?type=shop", "/commercial?type=warehouse"], names: ["Office Space", "Shops/Retail", "Warehouses"] },
+    { label: "Insights", links: ["/price-trends", "/locality", "/news"], names: ["Price Trends", "Locality Guide", "Real Estate News"] },
+  ];
+
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      scrolled 
+        ? "bg-card/95 backdrop-blur-md shadow-md border-b border-border" 
+        : location.pathname === "/" 
+          ? "bg-transparent" 
+          : "bg-card border-b border-border"
+    }`}>
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center h-16 gap-4">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-9 h-9 bg-gradient-gold rounded-lg flex items-center justify-center shadow-gold">
+              <Building2 className="w-5 h-5 text-foreground" strokeWidth={2.5} />
+            </div>
+            <span className={`font-display font-800 text-xl tracking-tight ${
+              !scrolled && location.pathname === "/" ? "text-white" : "text-foreground"
+            }`}>
+              PropEstate
+            </span>
+          </Link>
+
+          {/* City Selector */}
+          <div className="relative" ref={cityRef}>
+            <button
+              onClick={() => setCityDropdown(!cityDropdown)}
+              className={`flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full border transition-all ${
+                !scrolled && location.pathname === "/" 
+                  ? "border-white/30 text-white hover:bg-white/10" 
+                  : "border-border text-foreground hover:bg-muted"
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span className="max-w-24 truncate">{selectedCity}</span>
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+            {cityDropdown && (
+              <div className="absolute top-full mt-2 left-0 bg-card border border-border rounded-xl shadow-lg p-3 w-64 z-50">
+                <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">SELECT CITY</p>
+                <div className="grid grid-cols-2 gap-1 max-h-60 overflow-y-auto scrollbar-hide">
+                  <button
+                    onClick={() => { setSelectedCity("All India"); setCityDropdown(false); }}
+                    className="text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted transition-colors font-medium text-accent"
+                  >
+                    All India
+                  </button>
+                  {cities.map(city => (
+                    <button
+                      key={city}
+                      onClick={() => { setSelectedCity(city); setCityDropdown(false); }}
+                      className="text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted transition-colors"
+                    >
+                      {city}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex items-center gap-1 flex-1">
+            {/* For Buyers */}
+            <div className="relative group">
+              <button
+                onMouseEnter={() => setBuyersDropdown(true)}
+                onMouseLeave={() => setBuyersDropdown(false)}
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  !scrolled && location.pathname === "/" 
+                    ? "text-white hover:bg-white/10" 
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                For Buyers <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+              {buyersDropdown && (
+                <div
+                  onMouseEnter={() => setBuyersDropdown(true)}
+                  onMouseLeave={() => setBuyersDropdown(false)}
+                  className="absolute top-full left-0 bg-card border border-border rounded-2xl shadow-lg p-5 w-96 z-50 animate-slide-up"
+                >
+                  <div className="grid grid-cols-3 gap-4">
+                    {megaMenuBuyers.map((section) => (
+                      <div key={section.label}>
+                        <p className="text-xs font-bold text-gold mb-2">{section.label}</p>
+                        {section.names.map((name, i) => (
+                          <Link
+                            key={name}
+                            to={section.links[i]}
+                            className="block text-sm py-1 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {name}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* For Tenants */}
+            <div className="relative">
+              <button
+                onMouseEnter={() => setTenantsDropdown(true)}
+                onMouseLeave={() => setTenantsDropdown(false)}
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  !scrolled && location.pathname === "/" 
+                    ? "text-white hover:bg-white/10" 
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                For Tenants <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+              {tenantsDropdown && (
+                <div
+                  onMouseEnter={() => setTenantsDropdown(true)}
+                  onMouseLeave={() => setTenantsDropdown(false)}
+                  className="absolute top-full left-0 bg-card border border-border rounded-2xl shadow-lg p-5 w-72 z-50 animate-slide-up"
+                >
+                  <p className="text-xs font-bold text-gold mb-3">RENT A HOME</p>
+                  {["Rent Apartments", "Rent Villas", "PG / Co-Living", "Rent Commercial"].map(item => (
+                    <Link
+                      key={item}
+                      to={item.includes("PG") ? "/pg" : "/rent"}
+                      className="block text-sm py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {item}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* For Owners */}
+            <div className="relative">
+              <button
+                onMouseEnter={() => setOwnersDropdown(true)}
+                onMouseLeave={() => setOwnersDropdown(false)}
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  !scrolled && location.pathname === "/" 
+                    ? "text-white hover:bg-white/10" 
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                For Owners <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+              {ownersDropdown && (
+                <div
+                  onMouseEnter={() => setOwnersDropdown(true)}
+                  onMouseLeave={() => setOwnersDropdown(false)}
+                  className="absolute top-full left-0 bg-card border border-border rounded-2xl shadow-lg p-5 w-72 z-50 animate-slide-up"
+                >
+                  <p className="text-xs font-bold text-gold mb-3">MANAGE PROPERTY</p>
+                  {["Post Property FREE", "Manage Listings", "Sell Faster with Ads", "Owner Dashboard"].map(item => (
+                    <Link
+                      key={item}
+                      to="/post-property"
+                      className="block text-sm py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {item}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Insights */}
+            <div className="relative">
+              <button
+                onMouseEnter={() => setInsightsDropdown(true)}
+                onMouseLeave={() => setInsightsDropdown(false)}
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  !scrolled && location.pathname === "/" 
+                    ? "text-white hover:bg-white/10" 
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                Insights <ChevronDown className="w-3.5 h-3.5" />
+                <span className="text-xs bg-gold text-foreground px-1 rounded font-bold ml-0.5">NEW</span>
+              </button>
+              {insightsDropdown && (
+                <div
+                  onMouseEnter={() => setInsightsDropdown(true)}
+                  onMouseLeave={() => setInsightsDropdown(false)}
+                  className="absolute top-full left-0 bg-card border border-border rounded-2xl shadow-lg p-5 w-80 z-50 animate-slide-up"
+                >
+                  <p className="text-xs font-bold text-gold mb-3">MARKET INTELLIGENCE</p>
+                  {[
+                    { label: "Price Trends", to: "/price-trends", icon: TrendingUp },
+                    { label: "Locality Guide", to: "/locality", icon: MapPin },
+                    { label: "Articles & News", to: "/news", icon: BookOpen },
+                    { label: "EMI Calculator", to: "/home-loans", icon: Star },
+                  ].map(({ label, to, icon: Icon }) => (
+                    <Link
+                      key={label}
+                      to={to}
+                      className="flex items-center gap-2 text-sm py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Icon className="w-4 h-4" />
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <Link
+              to="/new-projects"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                !scrolled && location.pathname === "/" 
+                  ? "text-white hover:bg-white/10" 
+                  : "text-foreground hover:bg-muted"
+              }`}
+            >
+              New Projects
+            </Link>
+
+            <Link
+              to="/agents"
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                !scrolled && location.pathname === "/" 
+                  ? "text-white hover:bg-white/10" 
+                  : "text-foreground hover:bg-muted"
+              }`}
+            >
+              Agents
+            </Link>
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 ml-auto">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-full transition-all ${
+                !scrolled && location.pathname === "/" 
+                  ? "text-white hover:bg-white/10" 
+                  : "text-foreground hover:bg-muted"
+              }`}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+
+            {/* Wishlist */}
+            <Link
+              to="/wishlist"
+              className={`p-2 rounded-full transition-all hidden sm:flex ${
+                !scrolled && location.pathname === "/" 
+                  ? "text-white hover:bg-white/10" 
+                  : "text-foreground hover:bg-muted"
+              }`}
+            >
+              <Heart className="w-5 h-5" />
+            </Link>
+
+            {/* Post Property */}
+            <Link
+              to="/post-property"
+              className="hidden md:flex items-center gap-1.5 px-4 py-2 btn-navy rounded-xl text-sm"
+            >
+              Post Property
+              <span className="badge-new">FREE</span>
+            </Link>
+
+            {/* Login */}
+            <Link
+              to="/login"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all"
+            >
+              <LogIn className="w-4 h-4" />
+              <span className="hidden sm:inline">Login</span>
+            </Link>
+
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className={`p-2 rounded-full lg:hidden transition-all ${
+                !scrolled && location.pathname === "/" 
+                  ? "text-white hover:bg-white/10" 
+                  : "text-foreground hover:bg-muted"
+              }`}
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div className="lg:hidden bg-card border-t border-border shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
+            {[
+              { to: "/", label: "Home", icon: Home },
+              { to: "/buy", label: "Buy Property", icon: Building2 },
+              { to: "/rent", label: "Rent Property", icon: MapPin },
+              { to: "/commercial", label: "Commercial", icon: Building2 },
+              { to: "/new-projects", label: "New Projects", icon: Star },
+              { to: "/pg", label: "PG / Co-Living", icon: User },
+              { to: "/post-property", label: "Post Property (FREE)", icon: Building2 },
+              { to: "/agents", label: "Find Agents", icon: User },
+              { to: "/price-trends", label: "Price Trends", icon: TrendingUp },
+              { to: "/home-loans", label: "Home Loans & EMI", icon: Star },
+              { to: "/news", label: "News & Articles", icon: BookOpen },
+              { to: "/login", label: "Login / Register", icon: LogIn },
+            ].map(({ to, label, icon: Icon }) => (
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors"
+              >
+                <Icon className="w-4 h-4 text-muted-foreground" />
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+};
+
+export default Navbar;
