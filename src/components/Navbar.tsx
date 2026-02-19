@@ -1,15 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { 
-  Search, ChevronDown, Menu, X, Sun, Moon, Phone, 
-  Bell, Heart, User, LogIn, Building2, Home, 
-  MapPin, TrendingUp, BookOpen, Star
+  ChevronDown, Menu, X, Sun, Moon, 
+  Heart, User, LogIn, Building2, Home, 
+  MapPin, TrendingUp, BookOpen, Star, Shield, LayoutDashboard
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/hooks/useAuth";
 import { cities } from "@/data/properties";
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
+  const { user, isAdmin, role, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -312,14 +314,29 @@ const Navbar = () => {
               <span className="badge-new">FREE</span>
             </Link>
 
-            {/* Login */}
-            <Link
-              to="/login"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all"
-            >
-              <LogIn className="w-4 h-4" />
-              <span className="hidden sm:inline">Login</span>
-            </Link>
+            {/* Auth Actions */}
+            {user ? (
+              <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <Link to="/admin" className={`p-2 rounded-full transition-all hidden sm:flex items-center gap-1 text-xs font-medium px-3 ${!scrolled && location.pathname === "/" ? "text-white hover:bg-white/10" : "text-foreground hover:bg-muted"}`}>
+                    <Shield className="w-4 h-4" />
+                    <span className="hidden lg:inline">Admin</span>
+                  </Link>
+                )}
+                <Link to="/dashboard" className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all`}>
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </Link>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all"
+              >
+                <LogIn className="w-4 h-4" />
+                <span className="hidden sm:inline">Login</span>
+              </Link>
+            )}
 
             {/* Mobile Menu Toggle */}
             <button
@@ -352,7 +369,6 @@ const Navbar = () => {
               { to: "/price-trends", label: "Price Trends", icon: TrendingUp },
               { to: "/home-loans", label: "Home Loans & EMI", icon: Star },
               { to: "/news", label: "News & Articles", icon: BookOpen },
-              { to: "/login", label: "Login / Register", icon: LogIn },
             ].map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
@@ -364,6 +380,25 @@ const Navbar = () => {
                 {label}
               </Link>
             ))}
+            {user ? (
+              <>
+                <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors">
+                  <LayoutDashboard className="w-4 h-4 text-muted-foreground" /> Dashboard
+                </Link>
+                {isAdmin && (
+                  <Link to="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors">
+                    <Shield className="w-4 h-4 text-muted-foreground" /> Admin Panel
+                  </Link>
+                )}
+                <button onClick={() => { signOut(); setMobileOpen(false); }} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors w-full text-left text-red-500">
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link to="/auth" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors">
+                <LogIn className="w-4 h-4 text-muted-foreground" /> Login / Register
+              </Link>
+            )}
           </div>
         </div>
       )}
