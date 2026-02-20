@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -162,6 +189,7 @@ export type Database = {
           total_floors: number | null
           updated_at: string
           user_id: string
+          whatsapp_number: string | null
         }
         Insert: {
           address?: string | null
@@ -205,6 +233,7 @@ export type Database = {
           total_floors?: number | null
           updated_at?: string
           user_id: string
+          whatsapp_number?: string | null
         }
         Update: {
           address?: string | null
@@ -248,6 +277,7 @@ export type Database = {
           total_floors?: number | null
           updated_at?: string
           user_id?: string
+          whatsapp_number?: string | null
         }
         Relationships: []
       }
@@ -263,6 +293,8 @@ export type Database = {
           name: string
           price: number
           sort_order: number | null
+          stripe_price_id: string | null
+          stripe_product_id: string | null
         }
         Insert: {
           created_at?: string
@@ -275,6 +307,8 @@ export type Database = {
           name: string
           price: number
           sort_order?: number | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
         }
         Update: {
           created_at?: string
@@ -287,12 +321,15 @@ export type Database = {
           name?: string
           price?: number
           sort_order?: number | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
         }
         Relationships: []
       }
       sponsorships: {
         Row: {
           amount: number
+          checkout_session_id: string | null
           created_at: string
           duration_days: number
           expires_at: string | null
@@ -309,6 +346,7 @@ export type Database = {
         }
         Insert: {
           amount: number
+          checkout_session_id?: string | null
           created_at?: string
           duration_days?: number
           expires_at?: string | null
@@ -325,6 +363,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          checkout_session_id?: string | null
           created_at?: string
           duration_days?: number
           expires_at?: string | null
