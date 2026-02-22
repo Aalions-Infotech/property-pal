@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,7 +9,19 @@ import AdminSetup from "@/components/AdminSetup";
 const AuthPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, role, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
+
+  // Redirect authenticated users based on role
+  useEffect(() => {
+    if (!authLoading && user && role) {
+      if (role === "admin" || role === "moderator") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    }
+  }, [user, role, authLoading, navigate]);
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
@@ -21,26 +33,39 @@ const AuthPage = () => {
     setLoading(true);
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error, data } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
         });
         if (error) throw error;
         toast({ title: "Welcome back!", description: "You have been logged in." });
-        navigate("/dashboard");
+        // Check role to redirect appropriately
+        if (data.user) {
+          const { data: roleData } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", data.user.id)
+            .limit(1)
+            .single();
+          if (roleData?.role === "admin" || roleData?.role === "moderator") {
+            navigate("/admin");
+          } else {
+            navigate("/dashboard");
+          }
+        }
       } else if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { error: signupError } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
           options: { data: { full_name: form.fullName }, emailRedirectTo: window.location.origin },
         });
-        if (error) throw error;
+        if (signupError) throw signupError;
         toast({ title: "Account created!", description: "Please check your email to verify your account." });
       } else {
-        const { error } = await supabase.auth.resetPasswordForEmail(form.email, {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(form.email, {
           redirectTo: `${window.location.origin}/reset-password`,
         });
-        if (error) throw error;
+        if (resetError) throw resetError;
         toast({ title: "Email sent!", description: "Check your inbox for the password reset link." });
       }
     } catch (err: any) {
