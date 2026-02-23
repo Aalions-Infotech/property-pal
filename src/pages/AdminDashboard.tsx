@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/context/ThemeContext";
 import {
   LayoutDashboard, Home, Users, Crown, Bell, Settings,
   CheckCircle, XCircle, Clock, Trash2, LogOut, Star,
@@ -10,13 +11,17 @@ import {
   ChevronDown, ChevronUp, Eye, Ban, RotateCcw, Send,
   History, Download, Upload, MoreHorizontal, Globe,
   Megaphone, BarChart3, PieChart, Calendar, Mail,
-  UserCheck, UserX, Layers, Sliders, Database
+  UserCheck, UserX, Layers, Sliders, Database,
+  Sun, Moon, Menu, X, Plus, UserPlus
 } from "lucide-react";
+import AdminAddProperty from "@/components/admin/AdminAddProperty";
+import AdminAgentManagement from "@/components/admin/AdminAgentManagement";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
 const AdminDashboard = () => {
   const { user, isAdmin, role, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [tab, setTab] = useState("overview");
@@ -41,6 +46,7 @@ const AdminDashboard = () => {
   const [notifForm, setNotifForm] = useState({ userId: "", title: "", message: "" });
   const [showNotifModal, setShowNotifModal] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
@@ -108,6 +114,16 @@ const AdminDashboard = () => {
     await supabase.from("admin_activity_log").insert({
       admin_id: user!.id, action, entity_type: entityType, entity_id: entityId, details: details || {},
     });
+  };
+
+  const sendAdminEmailNotify = async (subject: string, type: string) => {
+    try {
+      await supabase.functions.invoke("admin-email-notify", {
+        body: { to: user?.email, subject, type },
+      });
+    } catch (e) {
+      console.log("Email notification skipped:", e);
+    }
   };
 
   const approveListing = async (id: string) => {
@@ -354,6 +370,8 @@ const AdminDashboard = () => {
   const navItems = [
     { id: "overview", label: "Dashboard", icon: LayoutDashboard },
     { id: "listings", label: "Listings", icon: Home, badge: pendingCount },
+    { id: "add-property", label: "Add Property", icon: Plus },
+    { id: "agents", label: "Manage Agents", icon: UserPlus },
     { id: "users", label: "Users & Roles", icon: Users },
     { id: "sponsorships", label: "Sponsorships", icon: Crown },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
@@ -378,8 +396,13 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
+      {/* Mobile Sidebar Overlay */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setMobileSidebarOpen(false)} />
+      )}
+
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? "w-16" : "w-64"} flex-shrink-0 bg-card border-r border-border flex flex-col fixed h-full z-20 transition-all duration-200`}>
+      <div className={`${sidebarCollapsed ? "w-16" : "w-64"} flex-shrink-0 bg-card border-r border-border flex flex-col fixed h-full z-40 transition-all duration-200 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
@@ -388,14 +411,19 @@ const AdminDashboard = () => {
               </div>
               {!sidebarCollapsed && <span className="font-display font-bold">PropEstate</span>}
             </Link>
-            <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="p-1 rounded hover:bg-muted text-muted-foreground">
-              {sidebarCollapsed ? <ChevronDown className="w-4 h-4 rotate-[-90deg]" /> : <ChevronUp className="w-4 h-4 rotate-[-90deg]" />}
-            </button>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="p-1 rounded hover:bg-muted text-muted-foreground hidden md:block">
+                {sidebarCollapsed ? <ChevronDown className="w-4 h-4 rotate-[-90deg]" /> : <ChevronUp className="w-4 h-4 rotate-[-90deg]" />}
+              </button>
+              <button onClick={() => setMobileSidebarOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground md:hidden">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
           {!sidebarCollapsed && (
             <>
-              <div className="mt-3 px-2 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20">
-                <p className="text-xs font-medium text-red-600 flex items-center gap-1">
+              <div className="mt-3 px-2 py-1.5 rounded-lg bg-destructive/10 border border-destructive/20">
+                <p className="text-xs font-medium text-destructive flex items-center gap-1">
                   <Shield className="w-3 h-3" /> Super Admin Panel
                 </p>
               </div>
@@ -408,13 +436,13 @@ const AdminDashboard = () => {
           {navItems.map(item => (
             <button
               key={item.id}
-              onClick={() => setTab(item.id)}
+              onClick={() => { setTab(item.id); setMobileSidebarOpen(false); }}
               title={sidebarCollapsed ? item.label : undefined}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === item.id ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
             >
               <item.icon className="w-4 h-4 flex-shrink-0" />
               {!sidebarCollapsed && <span className="flex-1 text-left">{item.label}</span>}
-              {!sidebarCollapsed && item.badge ? <span className="bg-red-500 text-white text-xs rounded-full min-w-5 h-5 flex items-center justify-center px-1">{item.badge}</span> : null}
+              {!sidebarCollapsed && item.badge ? <span className="bg-destructive text-destructive-foreground text-xs rounded-full min-w-5 h-5 flex items-center justify-center px-1">{item.badge}</span> : null}
             </button>
           ))}
         </nav>
@@ -426,35 +454,43 @@ const AdminDashboard = () => {
           <Link to="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
             <LayoutDashboard className="w-4 h-4" /> {!sidebarCollapsed && "User Dashboard"}
           </Link>
-          <button onClick={signOut} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-red-500/10 hover:text-red-500">
+          <button onClick={signOut} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
             <LogOut className="w-4 h-4" /> {!sidebarCollapsed && "Sign Out"}
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className={`flex-1 ${sidebarCollapsed ? "ml-16" : "ml-64"} min-h-screen flex flex-col transition-all duration-200`}>
+      <div className={`flex-1 ${sidebarCollapsed ? "md:ml-16" : "md:ml-64"} min-h-screen flex flex-col transition-all duration-200`}>
         {/* Top Bar */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="font-display font-bold text-xl">{navItems.find(n => n.id === tab)?.label}</h1>
-            <p className="text-xs text-muted-foreground">Super Admin · {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-          </div>
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <button onClick={() => setMobileSidebarOpen(true)} className="p-2 rounded-lg hover:bg-muted text-muted-foreground md:hidden">
+              <Menu className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="font-display font-bold text-lg md:text-xl">{navItems.find(n => n.id === tab)?.label}</h1>
+              <p className="text-xs text-muted-foreground hidden sm:block">Super Admin · {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 md:gap-3">
             {realtimeAlerts.length > 0 && (
-              <button onClick={() => setTab("realtime")} className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-600 text-xs font-medium border border-red-500/20 hover:bg-red-500/20">
-                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                {realtimeAlerts.length} Alert{realtimeAlerts.length > 1 ? "s" : ""}
+              <button onClick={() => setTab("realtime")} className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium border border-destructive/20 hover:bg-destructive/20">
+                <span className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
+                <span className="hidden sm:inline">{realtimeAlerts.length} Alert{realtimeAlerts.length > 1 ? "s" : ""}</span>
               </button>
             )}
+            <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted text-muted-foreground" title="Toggle dark mode">
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             <button onClick={fetchAll} className="p-2 rounded-lg hover:bg-muted text-muted-foreground" title="Refresh"><RefreshCw className="w-4 h-4" /></button>
-            <div className="w-8 h-8 rounded-full bg-gradient-navy flex items-center justify-center">
-              <span className="text-white text-xs font-bold">{user?.email?.[0]?.toUpperCase()}</span>
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground text-xs font-bold">{user?.email?.[0]?.toUpperCase()}</span>
             </div>
           </div>
         </div>
 
-        <div className="p-6 flex-1">
+        <div className="p-4 md:p-6 flex-1">
           {/* OVERVIEW */}
           {tab === "overview" && (
             <div className="space-y-6">
@@ -1089,7 +1125,19 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* SETTINGS */}
+          {/* ADD PROPERTY TAB */}
+          {tab === "add-property" && (
+            <div>
+              <AdminAddProperty userId={user!.id} onSuccess={fetchAll} />
+            </div>
+          )}
+
+          {/* AGENTS TAB */}
+          {tab === "agents" && (
+            <AdminAgentManagement users={users} userRoles={userRoles} onRefresh={fetchAll} adminId={user!.id} />
+          )}
+
+
           {tab === "settings" && (
             <div className="space-y-6">
               <div className="bg-card rounded-2xl border border-border p-6">
