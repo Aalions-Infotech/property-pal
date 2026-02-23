@@ -5,6 +5,7 @@ import {
   Building2, Home, DollarSign, Users, ChevronRight,
   PlayCircle, Award, CheckCircle, ChevronLeft
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-bg.jpg";
 import prop1 from "@/assets/property1.jpg";
 import prop2 from "@/assets/property2.jpg";
@@ -15,19 +16,72 @@ import SearchBar from "@/components/SearchBar";
 import PropertyCard from "@/components/PropertyCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { properties, newProjects, newsArticles, cities, formatPrice, priceData } from "@/data/properties";
+import { newProjects, newsArticles, cities, formatPrice, priceData, properties as dummyProperties } from "@/data/properties";
 
 const Index = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeCityTab, setActiveCityTab] = useState("Mumbai");
+  const [dbProperties, setDbProperties] = useState<any[]>([]);
+  const [loadingProps, setLoadingProps] = useState(true);
 
-  const heroBanners = [
-    {
-      headline: "Find Your Perfect Place",
-      sub: "Explore 5 lakh+ verified properties across India",
-      bg: heroImg,
-    },
-  ];
+  useEffect(() => {
+    const fetchApprovedProperties = async () => {
+      const { data } = await supabase
+        .from("property_listings")
+        .select("*")
+        .eq("status", "approved")
+        .order("is_featured", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(20);
+      setDbProperties(data || []);
+      setLoadingProps(false);
+    };
+    fetchApprovedProperties();
+  }, []);
+
+  // Convert DB properties to PropertyCard format
+  const mapDbProp = (p: any) => ({
+    id: p.id,
+    title: p.title,
+    type: p.listing_type as any,
+    category: p.property_type,
+    price: Number(p.price),
+    priceUnit: p.price_unit === "monthly" ? "monthly" as const : "total" as const,
+    area: Number(p.area) || 0,
+    areaUnit: p.area_unit || "sq.ft",
+    bedrooms: p.bedrooms,
+    bathrooms: p.bathrooms,
+    floor: p.floor,
+    totalFloors: p.total_floors,
+    city: p.city,
+    locality: p.locality,
+    address: p.address || "",
+    image: p.images?.[0] || prop1,
+    images: p.images || [prop1],
+    amenities: p.amenities || [],
+    furnishing: p.furnishing || "Unfurnished",
+    status: "Ready to Move" as const,
+    postedBy: "Owner" as const,
+    postedDate: new Date(p.created_at).toLocaleDateString("en-IN"),
+    verified: p.is_verified || false,
+    featured: p.is_featured || false,
+    isNew: p.is_new || false,
+    description: p.description || "",
+    facing: p.facing || "",
+    parking: p.parking || 0,
+    ageOfProperty: p.age_of_property || "",
+    societyName: p.society_name,
+    builderName: p.builder_name,
+    reraId: p.rera_id,
+    nearbyPlaces: [],
+    pricePerSqft: p.price_per_sqft || 0,
+  });
+
+  // Use DB properties if available, otherwise fall back to dummy
+  const allProperties = dbProperties.length > 0 ? dbProperties.map(mapDbProp) : dummyProperties;
+  const featuredProps = allProperties.filter(p => p.featured).slice(0, 4);
+  const buyProps = featuredProps.length > 0 ? featuredProps : allProperties.filter(p => p.type === "buy").slice(0, 4);
+  const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "pg").slice(0, 4);
 
   const stats = [
     { value: "5L+", label: "Properties Listed" },
@@ -46,9 +100,6 @@ const Index = () => {
     { label: "Home Loans", icon: "🏦", to: "/home-loans", color: "from-yellow-500/10 to-yellow-600/5" },
     { label: "Find Agents", icon: "👤", to: "/agents", color: "from-red-500/10 to-red-600/5" },
   ];
-
-  const featuredProps = properties.filter(p => p.featured).slice(0, 4);
-  const rentProps = properties.filter(p => p.type === "rent").slice(0, 4);
 
   const whyUs = [
     { icon: Shield, title: "100% Verified Listings", desc: "Every property goes through a 10-step verification process." },
@@ -242,7 +293,7 @@ const Index = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {properties.filter(p => p.type === "rent" || p.type === "pg").slice(0, 4).map(p => <PropertyCard key={p.id} property={p} />)}
+            {rentProps.map(p => <PropertyCard key={p.id} property={p} />)}
           </div>
         </div>
       </section>
