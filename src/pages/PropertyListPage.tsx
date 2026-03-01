@@ -119,33 +119,57 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
     fetchListings();
   }, [type, searchParams, filters, sortBy]);
 
+  const PLAN_PRIORITY: Record<string, number> = {
+    premium_showcase: 1, premium: 1,
+    standard_spotlight: 2, standard: 2,
+    basic_boost: 3, basic: 3,
+  };
+
   const fetchListings = async () => {
     setLoading(true);
-    let query = supabase
-      .from("property_listings")
-      .select("*")
-      .eq("status", "approved");
 
-    // Map type to listing_type
+    // Fetch listings and active sponsorships in parallel
+    let query = supabase.from("property_listings").select("*").eq("status", "approved");
     const typeMap: Record<string, string> = { buy: "sell", rent: "rent", commercial: "commercial", pg: "pg" };
     query = query.eq("listing_type", typeMap[type] || type);
 
     const city = searchParams.get("city");
     if (city) query = query.eq("city", city);
-
     if (filters.minPrice) query = query.gte("price", filters.minPrice);
     if (filters.maxPrice) query = query.lte("price", filters.maxPrice);
     if (filters.bedrooms?.length) query = query.in("bedrooms", filters.bedrooms.map(Number));
     if (filters.furnishing?.length) query = query.in("furnishing", filters.furnishing);
 
+    // Base sort for DB query
     if (sortBy === "price-asc") query = query.order("price", { ascending: true });
     else if (sortBy === "price-desc") query = query.order("price", { ascending: false });
     else if (sortBy === "area-desc") query = query.order("area", { ascending: false, nullsFirst: false });
     else query = query.order("is_featured", { ascending: false }).order("created_at", { ascending: false });
 
-    const { data, error } = await query.limit(50);
-    if (error) console.error("Fetch error:", error);
-    setLiveListings(data || []);
+    const [listRes, sponsorRes] = await Promise.all([
+      query.limit(100),
+      supabase.from("sponsorships").select("listing_id, plan_name").eq("status", "active").eq("payment_status", "completed"),
+    ]);
+
+    const listings = listRes.data || [];
+    const sponsors = sponsorRes.data || [];
+
+    // Build sponsor map
+    const sponsorMap = new Map<string, string>();
+    sponsors.forEach((s: any) => { if (s.listing_id && s.plan_name) sponsorMap.set(s.listing_id, s.plan_name); });
+
+    // Sort: sponsored first by tier, then apply user's sort
+    const sorted = [...listings].sort((a, b) => {
+      const aPlan = sponsorMap.get(a.id);
+      const bPlan = sponsorMap.get(b.id);
+      const aPri = aPlan ? (PLAN_PRIORITY[aPlan.toLowerCase().replace(/\s+/g, '_')] || 3) : 99;
+      const bPri = bPlan ? (PLAN_PRIORITY[bPlan.toLowerCase().replace(/\s+/g, '_')] || 3) : 99;
+      if (aPri !== bPri) return aPri - bPri;
+      // Within same tier, use original DB order
+      return 0;
+    });
+
+    setLiveListings(sorted.slice(0, 50));
     setLoading(false);
   };
 
