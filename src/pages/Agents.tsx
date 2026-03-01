@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { agents as dummyAgents } from "@/data/properties";
 import { Star, Phone, MapPin, CheckCircle, Search, Mail, MessageSquare } from "lucide-react";
 import agent1Img from "@/assets/agent1.jpg";
 import agent2Img from "@/assets/agent2.jpg";
@@ -16,7 +15,6 @@ const Agents = () => {
 
   useEffect(() => {
     const fetchAgents = async () => {
-      // Fetch profiles that have agent role
       const { data: roles } = await supabase.from("user_roles").select("user_id").eq("role", "agent");
       if (roles && roles.length > 0) {
         const agentUserIds = roles.map(r => r.user_id);
@@ -28,28 +26,21 @@ const Agents = () => {
     fetchAgents();
   }, []);
 
-  // Use DB agents if available, otherwise use dummy
-  const allAgents = dbAgents.length > 0
-    ? dbAgents.map((a, i) => ({
-        id: a.id,
-        name: a.full_name || "Agent",
-        company: a.bio || "PropEstate Agent",
-        city: a.city || "India",
-        localities: [a.city || "Various"].filter(Boolean),
-        experience: Math.floor(Math.random() * 10) + 2,
-        properties: Math.floor(Math.random() * 200) + 10,
-        rating: (4 + Math.random()).toFixed(1),
-        reviews: Math.floor(Math.random() * 100) + 10,
-        phone: a.phone || "",
-        email: a.email || "",
-        verified: a.is_verified || false,
-        avatarUrl: a.avatar_url,
-      }))
-    : [...dummyAgents, ...dummyAgents, ...dummyAgents].slice(0, 9).map((a, i) => ({
-        ...a,
-        email: "",
-        avatarUrl: null,
-      }));
+  const allAgents = dbAgents.map((a, i) => ({
+    id: a.id,
+    name: a.full_name || "Agent",
+    company: a.bio || "PropEstate Agent",
+    city: a.city || "India",
+    localities: [a.city || "Various"].filter(Boolean),
+    experience: Math.floor(Math.random() * 10) + 2,
+    properties: Math.floor(Math.random() * 200) + 10,
+    rating: (4 + Math.random()).toFixed(1),
+    reviews: Math.floor(Math.random() * 100) + 10,
+    phone: a.phone || "",
+    email: a.email || "",
+    verified: a.is_verified || false,
+    avatarUrl: a.avatar_url,
+  }));
 
   const filteredAgents = allAgents.filter(a => {
     const matchCity = city === "All" || a.city === city;
@@ -67,12 +58,7 @@ const Agents = () => {
             <h1 className="text-4xl font-display font-bold text-white mb-4">Find Real Estate Agents</h1>
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search by name, city..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm outline-none"
-              />
+              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, city..." className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm outline-none" />
             </div>
           </div>
         </div>
@@ -81,6 +67,11 @@ const Agents = () => {
             <div className="text-center py-12">
               <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-3" />
               <p className="text-muted-foreground text-sm">Loading agents...</p>
+            </div>
+          ) : allAgents.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-xl font-display font-bold mb-2">No Agents Yet</p>
+              <p className="text-muted-foreground">Agents will appear here once they're added by the admin.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -119,7 +110,6 @@ const Agents = () => {
                       <p className="text-xs text-muted-foreground">Reviews</p>
                     </div>
                   </div>
-                  {/* Enhanced action buttons: Call, Message, Email */}
                   <div className="flex gap-2">
                     <a href={`tel:${agent.phone || ""}`} className="flex-1 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-emerald-500" /> Call
@@ -135,7 +125,7 @@ const Agents = () => {
               ))}
             </div>
           )}
-          {!loading && filteredAgents.length === 0 && (
+          {!loading && allAgents.length > 0 && filteredAgents.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No agents found matching your search.</p>
             </div>

@@ -3,43 +3,76 @@ import { Link } from "react-router-dom";
 import { 
   ArrowRight, TrendingUp, MapPin, Star, Shield, Zap, 
   Building2, Home, DollarSign, Users, ChevronRight,
-  PlayCircle, Award, CheckCircle, ChevronLeft
+  PlayCircle, Award, CheckCircle, ChevronLeft, Clock
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-bg.jpg";
 import prop1 from "@/assets/property1.jpg";
-import prop2 from "@/assets/property2.jpg";
-import prop3 from "@/assets/property3.jpg";
-import prop4 from "@/assets/property4.jpg";
-import prop5 from "@/assets/property5.jpg";
 import SearchBar from "@/components/SearchBar";
 import PropertyCard from "@/components/PropertyCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { newProjects, newsArticles, cities, formatPrice, priceData, properties as dummyProperties } from "@/data/properties";
+import { formatPrice, cities } from "@/data/properties";
+
+const PLAN_PRIORITY: Record<string, number> = {
+  premium_showcase: 1,
+  premium: 1,
+  standard_spotlight: 2,
+  standard: 2,
+  basic_boost: 3,
+  basic: 3,
+};
 
 const Index = () => {
-  const [activeSlide, setActiveSlide] = useState(0);
   const [activeCityTab, setActiveCityTab] = useState("Mumbai");
   const [dbProperties, setDbProperties] = useState<any[]>([]);
+  const [sponsorships, setSponsorships] = useState<any[]>([]);
   const [loadingProps, setLoadingProps] = useState(true);
+  const [priceTrends, setPriceTrends] = useState<any[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchApprovedProperties = async () => {
-      const { data } = await supabase
-        .from("property_listings")
-        .select("*")
-        .eq("status", "approved")
-        .order("is_featured", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(20);
-      setDbProperties(data || []);
+    const fetchAll = async () => {
+      const [propRes, sponsorRes, articlesRes] = await Promise.all([
+        supabase.from("property_listings").select("*").eq("status", "approved").order("is_featured", { ascending: false }).order("created_at", { ascending: false }).limit(30),
+        supabase.from("sponsorships").select("*, property_listings(id)").eq("status", "active").eq("payment_status", "completed"),
+        (supabase.from("articles") as any).select("id, title, slug, excerpt, featured_image_url, category, read_time, published_at, author_name").eq("status", "published").order("published_at", { ascending: false }).limit(3),
+      ]);
+      
+      const props = propRes.data || [];
+      const sponsors = sponsorRes.data || [];
+      setSponsorships(sponsors);
+      setArticles(articlesRes.data || []);
+
+      // Sort properties: sponsored first (by tier), then non-sponsored
+      const sponsorMap = new Map<string, string>();
+      sponsors.forEach((s: any) => {
+        if (s.listing_id && s.plan_name) sponsorMap.set(s.listing_id, s.plan_name);
+      });
+
+      const sorted = [...props].sort((a, b) => {
+        const aPlan = sponsorMap.get(a.id);
+        const bPlan = sponsorMap.get(b.id);
+        const aPri = aPlan ? (PLAN_PRIORITY[aPlan.toLowerCase().replace(/\s+/g, '_')] || 3) : 99;
+        const bPri = bPlan ? (PLAN_PRIORITY[bPlan.toLowerCase().replace(/\s+/g, '_')] || 3) : 99;
+        if (aPri !== bPri) return aPri - bPri;
+        if (a.is_featured && !b.is_featured) return -1;
+        if (!a.is_featured && b.is_featured) return 1;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
+      setDbProperties(sorted);
       setLoadingProps(false);
+
+      // Fetch price trends
+      try {
+        const { data: trendsData } = await supabase.functions.invoke("market-trends");
+        if (trendsData?.trends) setPriceTrends(trendsData.trends);
+      } catch { /* silently fail, no hardcoded fallback */ }
     };
-    fetchApprovedProperties();
+    fetchAll();
   }, []);
 
-  // Convert DB properties to PropertyCard format
   const mapDbProp = (p: any) => ({
     id: p.id,
     title: p.title,
@@ -77,10 +110,9 @@ const Index = () => {
     pricePerSqft: p.price_per_sqft || 0,
   });
 
-  // Use DB properties if available, otherwise fall back to dummy
-  const allProperties = dbProperties.length > 0 ? dbProperties.map(mapDbProp) : dummyProperties;
-  const featuredProps = allProperties.filter(p => p.featured).slice(0, 4);
-  const buyProps = featuredProps.length > 0 ? featuredProps : allProperties.filter(p => p.type === "buy").slice(0, 4);
+  const allProperties = dbProperties.map(mapDbProp);
+  const sponsoredProps = allProperties.filter(p => p.featured).slice(0, 4);
+  const buyProps = sponsoredProps.length > 0 ? sponsoredProps : allProperties.filter(p => p.type === "buy" || p.type === "sell").slice(0, 4);
   const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "pg").slice(0, 4);
 
   const stats = [
@@ -110,6 +142,8 @@ const Index = () => {
     { icon: CheckCircle, title: "End-to-End Support", desc: "From search to registration, we guide every step." },
   ];
 
+  const trendCities = priceTrends.length > 0 ? priceTrends.map(t => t.city) : [];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -120,7 +154,6 @@ const Index = () => {
           <img src={heroImg} alt="Real Estate" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-hero" />
         </div>
-        
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-20 pb-10">
           <div className="max-w-3xl mx-auto text-center mb-10">
             <p className="section-label mb-3">India's Most Trusted Real Estate Platform</p>
@@ -132,27 +165,19 @@ const Index = () => {
               5 lakh+ verified properties across 50+ cities. Buy, Rent, or Invest.
             </p>
           </div>
-
-          {/* Search Bar */}
           <div className="max-w-4xl mx-auto">
             <SearchBar variant="hero" />
           </div>
-
-          {/* Popular Searches */}
           <div className="max-w-4xl mx-auto mt-4 flex flex-wrap gap-2">
             <span className="text-white/50 text-xs">Popular:</span>
             {["2BHK in Mumbai", "Apartments in Bangalore", "Villas in Goa", "Office Space Delhi", "Plots Hyderabad"].map(s => (
-              <button key={s} className="glass px-3 py-1 rounded-full text-xs text-white/80 hover:text-white transition-all">
-                {s}
-              </button>
+              <button key={s} className="glass px-3 py-1 rounded-full text-xs text-white/80 hover:text-white transition-all">{s}</button>
             ))}
           </div>
-
-          {/* Stats */}
           <div className="max-w-2xl mx-auto mt-12 glass rounded-2xl p-4">
             <div className="grid grid-cols-4">
-              {stats.map((stat, i) => (
-                <div key={stat.label} className={`text-center py-2 hero-stat`}>
+              {stats.map((stat) => (
+                <div key={stat.label} className="text-center py-2 hero-stat">
                   <p className="text-2xl font-display font-bold text-white">{stat.value}</p>
                   <p className="text-xs text-white/60 mt-0.5">{stat.label}</p>
                 </div>
@@ -160,8 +185,6 @@ const Index = () => {
             </div>
           </div>
         </div>
-
-        {/* Scroll indicator */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
           <ChevronRight className="w-6 h-6 text-white/50 rotate-90" />
         </div>
@@ -176,11 +199,7 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-4">
             {quickCategories.map((cat) => (
-              <Link
-                key={cat.label}
-                to={cat.to}
-                className={`flex flex-col items-center gap-2 p-4 rounded-2xl bg-gradient-to-br ${cat.color} border border-border hover:shadow-md transition-all text-center group hover:-translate-y-1`}
-              >
+              <Link key={cat.label} to={cat.to} className={`flex flex-col items-center gap-2 p-4 rounded-2xl bg-gradient-to-br ${cat.color} border border-border hover:shadow-md transition-all text-center group hover:-translate-y-1`}>
                 <span className="text-3xl">{cat.icon}</span>
                 <span className="text-xs font-medium text-foreground leading-tight">{cat.label}</span>
               </Link>
@@ -189,7 +208,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Properties to Buy */}
+      {/* Featured / Sponsored Properties */}
       <section className="py-14 bg-surface">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
@@ -202,9 +221,20 @@ const Index = () => {
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProps.map(p => <PropertyCard key={p.id} property={p} />)}
-          </div>
+          {loadingProps ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : buyProps.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {buyProps.map(p => <PropertyCard key={p.id} property={p} />)}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <Building2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No properties available yet. Check back soon!</p>
+            </div>
+          )}
           <div className="mt-6 text-center md:hidden">
             <Link to="/buy" className="inline-flex items-center gap-1 text-accent font-medium text-sm">
               View All Properties <ArrowRight className="w-4 h-4" />
@@ -213,74 +243,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* New Projects */}
-      <section className="py-14 bg-background">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <p className="section-label mb-1">NEW LAUNCH</p>
-              <h2 className="text-3xl font-display font-bold">Latest New Projects</h2>
-              <p className="text-muted-foreground mt-1 text-sm">Brand new projects from top builders across India</p>
-            </div>
-            <Link to="/new-projects" className="hidden md:flex items-center gap-1 text-accent font-medium text-sm hover:gap-2 transition-all">
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {newProjects.map((project) => (
-              <Link
-                key={project.id}
-                to={`/new-projects`}
-                className="bg-card rounded-2xl border border-border shadow-card property-card-hover overflow-hidden group"
-              >
-                <div className="relative h-52 overflow-hidden">
-                  <img src={project.image} alt={project.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute top-3 left-3 flex gap-1.5">
-                    {project.isNew && <span className="badge-new">New Launch</span>}
-                    {project.featured && <span className="badge-featured">Featured</span>}
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/70 to-transparent" />
-                  <div className="absolute bottom-3 left-3">
-                    <p className="text-white font-display font-semibold text-lg">{project.name}</p>
-                    <p className="text-white/70 text-sm flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />{project.locality}, {project.city}
-                    </p>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Starting from</p>
-                      <p className="price-tag text-lg">{formatPrice(project.minPrice)}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 text-gold text-sm">
-                        <Star className="w-4 h-4 fill-current" />
-                        <span className="font-medium">{project.rating}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{project.availableUnits} units left</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {project.configs.map(c => (
-                      <span key={c} className="amenity-chip">{c}</span>
-                    ))}
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
-                    <span>By {project.builder}</span>
-                    <span className={`font-medium ${project.status === "New Launch" ? "text-blue-500" : "text-orange-500"}`}>
-                      {project.status} • {project.possessionDate}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Rent Properties */}
-      <section className="py-14 bg-surface">
+      <section className="py-14 bg-background">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -292,14 +256,20 @@ const Index = () => {
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {rentProps.map(p => <PropertyCard key={p.id} property={p} />)}
-          </div>
+          {rentProps.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {rentProps.map(p => <PropertyCard key={p.id} property={p} />)}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No rental properties yet.</p>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Price Trends */}
-      <section className="py-14 bg-background">
+      {/* Price Trends - Dynamic */}
+      <section className="py-14 bg-surface">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -312,46 +282,35 @@ const Index = () => {
             </Link>
           </div>
 
-          {/* City Tabs */}
-          <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide pb-2">
-            {Object.keys(priceData).map(city => (
-              <button
-                key={city}
-                onClick={() => setActiveCityTab(city)}
-                className={`filter-chip flex-shrink-0 ${activeCityTab === city ? "active" : ""}`}
-              >
-                {city}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Object.entries(priceData).map(([city, data]) => (
-              <Link
-                key={city}
-                to="/price-trends"
-                className="bg-card rounded-2xl border border-border p-5 hover:shadow-md transition-all"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-display font-semibold text-sm">{city}</h3>
-                    <p className="text-xs text-muted-foreground">Avg. price/sqft</p>
+          {priceTrends.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {priceTrends.slice(0, 8).map((t) => (
+                <Link key={t.city} to="/price-trends" className="bg-card rounded-2xl border border-border p-5 hover:shadow-md transition-all">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="font-display font-semibold text-sm">{t.city}</h3>
+                      <p className="text-xs text-muted-foreground">Avg. price/sqft</p>
+                    </div>
+                    <span className={t.trend === "up" ? "price-trend-up text-sm" : t.trend === "down" ? "price-trend-down text-sm" : "text-muted-foreground text-sm"}>
+                      {t.yoy_change !== null ? `${t.trend === "up" ? "↑" : t.trend === "down" ? "↓" : ""} ${Math.abs(t.yoy_change)}%` : "N/A"}
+                    </span>
                   </div>
-                  <span className={data.trend === "up" ? "price-trend-up text-sm" : "price-trend-down text-sm"}>
-                    {data.trend === "up" ? "↑" : "↓"} {data.change}%
-                  </span>
-                </div>
-                <p className="text-2xl font-display font-bold text-accent mb-1">₹{data.avgPrice.toLocaleString()}</p>
-                <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-gold rounded-full" 
-                    style={{ width: `${Math.min((data.avgPrice / 30000) * 100, 100)}%` }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">YoY Change: {data.trend === "up" ? "+" : ""}{data.change}%</p>
-              </Link>
-            ))}
-          </div>
+                  <p className="text-2xl font-display font-bold text-accent mb-1">₹{Number(t.avg_price_sqft).toLocaleString("en-IN")}</p>
+                  <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-gold rounded-full" style={{ width: `${Math.min((t.avg_price_sqft / 30000) * 100, 100)}%` }} />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t.yoy_change !== null ? `YoY Change: ${t.yoy_change > 0 ? "+" : ""}${t.yoy_change}%` : "YoY: N/A"}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>Price trend data will appear once there are approved listings with valid pricing.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -379,7 +338,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* News & Articles */}
+      {/* News & Articles - Dynamic */}
       <section className="py-14 bg-background">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
@@ -392,26 +351,34 @@ const Index = () => {
               All Articles <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newsArticles.slice(0, 3).map(article => (
-              <Link key={article.id} to="/news" className="bg-card rounded-2xl border border-border shadow-card property-card-hover overflow-hidden group">
-                <div className="relative h-44 overflow-hidden">
-                  <img src={article.image} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute top-3 left-3">
-                    <span className="badge-verified">{article.category}</span>
+          {articles.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {articles.map(article => (
+                <Link key={article.id} to={`/articles/${article.slug}`} className="bg-card rounded-2xl border border-border shadow-card property-card-hover overflow-hidden group">
+                  {article.featured_image_url && (
+                    <div className="relative h-44 overflow-hidden">
+                      <img src={article.featured_image_url} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <div className="absolute top-3 left-3">
+                        <span className="badge-verified">{article.category}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="font-display font-semibold text-sm mb-2 line-clamp-2 hover:text-accent transition-colors">{article.title}</h3>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{article.excerpt}</p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{article.published_at ? new Date(article.published_at).toLocaleDateString("en-IN") : ""}</span>
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{article.read_time} min</span>
+                    </div>
                   </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-display font-semibold text-sm mb-2 line-clamp-2 hover:text-accent transition-colors">{article.title}</h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{article.excerpt}</p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{article.date}</span>
-                    <span>{article.readTime}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>Articles will appear here once published by the admin.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -449,13 +416,8 @@ const Index = () => {
           </div>
           <div className="flex flex-wrap gap-3 justify-center">
             {cities.map(city => (
-              <Link
-                key={city}
-                to={`/buy?city=${encodeURIComponent(city)}`}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-border bg-card hover:border-accent hover:text-accent transition-all text-sm"
-              >
-                <MapPin className="w-3.5 h-3.5" />
-                {city}
+              <Link key={city} to={`/buy?city=${encodeURIComponent(city)}`} className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-border bg-card hover:border-accent hover:text-accent transition-all text-sm">
+                <MapPin className="w-3.5 h-3.5" />{city}
               </Link>
             ))}
           </div>

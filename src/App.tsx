@@ -13,6 +13,7 @@ import NewProjects from "./pages/NewProjects";
 import PriceTrends from "./pages/PriceTrends";
 import HomeLoans from "./pages/HomeLoans";
 import News from "./pages/News";
+import ArticleDetail from "./pages/ArticleDetail";
 import Agents from "./pages/Agents";
 import PostProperty from "./pages/PostProperty";
 import Login from "./pages/Login";
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/price-trends" element={<PriceTrends />} />
               <Route path="/home-loans" element={<HomeLoans />} />
               <Route path="/news" element={<News />} />
+              <Route path="/articles/:slug" element={<ArticleDetail />} />
               <Route path="/agents" element={<Agents />} />
               <Route path="/post-property" element={<PostProperty />} />
               <Route path="/login" element={<Login />} />

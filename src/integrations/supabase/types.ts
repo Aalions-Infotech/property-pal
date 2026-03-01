@@ -44,6 +44,57 @@ export type Database = {
         }
         Relationships: []
       }
+      articles: {
+        Row: {
+          author_id: string
+          author_name: string | null
+          category: string
+          content: string | null
+          created_at: string
+          excerpt: string | null
+          featured_image_url: string | null
+          id: string
+          published_at: string | null
+          read_time: number | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          author_name?: string | null
+          category?: string
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          read_time?: number | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string | null
+          category?: string
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          read_time?: number | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -414,7 +465,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      market_trends: {
+        Row: {
+          avg_price_sqft: number | null
+          city: string | null
+          listing_count: number | null
+          year: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import AdminAddProperty from "@/components/admin/AdminAddProperty";
 import AdminAgentManagement from "@/components/admin/AdminAgentManagement";
+import AdminArticleManagement from "@/components/admin/AdminArticleManagement";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
@@ -372,6 +373,7 @@ const AdminDashboard = () => {
     { id: "listings", label: "Listings", icon: Home, badge: pendingCount },
     { id: "add-property", label: "Add Property", icon: Plus },
     { id: "agents", label: "Manage Agents", icon: UserPlus },
+    { id: "articles", label: "Articles", icon: FileText },
     { id: "users", label: "Users & Roles", icon: Users },
     { id: "sponsorships", label: "Sponsorships", icon: Crown },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
@@ -1135,6 +1137,11 @@ const AdminDashboard = () => {
           {/* AGENTS TAB */}
           {tab === "agents" && (
             <AdminAgentManagement users={users} userRoles={userRoles} onRefresh={fetchAll} adminId={user!.id} />
+          )}
+
+          {/* ARTICLES TAB */}
+          {tab === "articles" && (
+            <AdminArticleManagement adminId={user!.id} />
           )}
 
 
