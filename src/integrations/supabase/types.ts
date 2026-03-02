@@ -44,6 +44,171 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_applications: {
+        Row: {
+          admin_note: string | null
+          bio: string | null
+          city: string | null
+          created_at: string
+          email: string
+          experience_years: number | null
+          full_name: string
+          generated_password: string | null
+          id: string
+          languages: string | null
+          phone: string | null
+          reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          specialization: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          email: string
+          experience_years?: number | null
+          full_name: string
+          generated_password?: string | null
+          id?: string
+          languages?: string | null
+          phone?: string | null
+          reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          specialization?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string
+          experience_years?: number | null
+          full_name?: string
+          generated_password?: string | null
+          id?: string
+          languages?: string | null
+          phone?: string | null
+          reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          specialization?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      agent_clients: {
+        Row: {
+          agent_id: string
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          commission: number | null
+          created_at: string
+          deal_value: number | null
+          id: string
+          notes: string | null
+          property_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          commission?: number | null
+          created_at?: string
+          deal_value?: number | null
+          id?: string
+          notes?: string | null
+          property_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          commission?: number | null
+          created_at?: string
+          deal_value?: number | null
+          id?: string
+          notes?: string | null
+          property_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      agent_profiles: {
+        Row: {
+          agent_id: string
+          areas_served: string[] | null
+          certifications: string[] | null
+          commission_earned: number | null
+          created_at: string
+          experience_years: number | null
+          id: string
+          languages: string | null
+          properties_listed: number | null
+          rating: number | null
+          specialization: string | null
+          total_revenue: number | null
+          total_reviews: number | null
+          total_sales: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          areas_served?: string[] | null
+          certifications?: string[] | null
+          commission_earned?: number | null
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          languages?: string | null
+          properties_listed?: number | null
+          rating?: number | null
+          specialization?: string | null
+          total_revenue?: number | null
+          total_reviews?: number | null
+          total_sales?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          areas_served?: string[] | null
+          certifications?: string[] | null
+          commission_earned?: number | null
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          languages?: string | null
+          properties_listed?: number | null
+          rating?: number | null
+          specialization?: string | null
+          total_revenue?: number | null
+          total_reviews?: number | null
+          total_sales?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author_id: string

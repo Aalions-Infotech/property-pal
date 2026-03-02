@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.market-trends]
 verify_jwt = false
+
+[functions.agent-approval-email]
+verify_jwt = false

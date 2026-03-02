@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { Star, Phone, MapPin, CheckCircle, Search, Mail, MessageSquare } from "lucide-react";
+import { Star, Phone, MapPin, CheckCircle, Search, Mail, MessageSquare, UserPlus } from "lucide-react";
 import agent1Img from "@/assets/agent1.jpg";
 import agent2Img from "@/assets/agent2.jpg";
 
@@ -27,7 +28,7 @@ const Agents = () => {
   }, []);
 
   const allAgents = dbAgents.map((a, i) => ({
-    id: a.id,
+    id: a.user_id,
     name: a.full_name || "Agent",
     company: a.bio || "PropEstate Agent",
     city: a.city || "India",
@@ -56,9 +57,14 @@ const Agents = () => {
           <div className="max-w-7xl mx-auto px-4">
             <p className="text-gold text-xs font-bold tracking-widest mb-2">PROFESSIONALS</p>
             <h1 className="text-4xl font-display font-bold text-white mb-4">Find Real Estate Agents</h1>
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, city..." className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm outline-none" />
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, city..." className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm outline-none" />
+              </div>
+              <Link to="/become-agent" className="btn-gold px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 justify-center">
+                <UserPlus className="w-4 h-4" /> Become an Agent
+              </Link>
             </div>
           </div>
         </div>
@@ -76,7 +82,7 @@ const Agents = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAgents.map((agent, i) => (
-                <div key={`${agent.id}-${i}`} className="bg-card rounded-2xl border border-border shadow-card p-5 property-card-hover">
+                <Link key={`${agent.id}-${i}`} to={`/agent/${agent.id}`} className="bg-card rounded-2xl border border-border shadow-card p-5 property-card-hover block">
                   <div className="flex items-start gap-4 mb-4">
                     <img src={agent.avatarUrl || agentImages[i % 2]} alt={agent.name} className="w-16 h-16 rounded-2xl object-cover flex-shrink-0" />
                     <div className="flex-1 min-w-0">
@@ -121,7 +127,7 @@ const Agents = () => {
                       <Mail className="w-3.5 h-3.5" /> Email
                     </a>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

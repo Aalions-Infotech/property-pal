@@ -17,6 +17,8 @@ const AuthPage = () => {
     if (!authLoading && user && role) {
       if (role === "admin" || role === "moderator") {
         navigate("/admin", { replace: true });
+      } else if (role === "agent") {
+        navigate("/agent-dashboard", { replace: true });
       } else {
         navigate("/dashboard", { replace: true });
       }
@@ -49,6 +51,8 @@ const AuthPage = () => {
             .single();
           if (roleData?.role === "admin" || roleData?.role === "moderator") {
             navigate("/admin");
+          } else if (roleData?.role === "agent") {
+            navigate("/agent-dashboard");
           } else {
             navigate("/dashboard");
           }
