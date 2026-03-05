@@ -287,6 +287,84 @@ export type Database = {
         }
         Relationships: []
       }
+      new_projects: {
+        Row: {
+          amenities: string[] | null
+          available_units: number | null
+          builder: string
+          city: string
+          configs: string[] | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          image: string | null
+          is_featured: boolean | null
+          is_new: boolean | null
+          locality: string
+          max_price: number
+          min_price: number
+          name: string
+          possession_date: string | null
+          rating: number | null
+          rera_id: string | null
+          status: string
+          total_units: number | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          available_units?: number | null
+          builder: string
+          city: string
+          configs?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image?: string | null
+          is_featured?: boolean | null
+          is_new?: boolean | null
+          locality: string
+          max_price?: number
+          min_price?: number
+          name: string
+          possession_date?: string | null
+          rating?: number | null
+          rera_id?: string | null
+          status?: string
+          total_units?: number | null
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[] | null
+          available_units?: number | null
+          builder?: string
+          city?: string
+          configs?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image?: string | null
+          is_featured?: boolean | null
+          is_new?: boolean | null
+          locality?: string
+          max_price?: number
+          min_price?: number
+          name?: string
+          possession_date?: string | null
+          rating?: number | null
+          rera_id?: string | null
+          status?: string
+          total_units?: number | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string

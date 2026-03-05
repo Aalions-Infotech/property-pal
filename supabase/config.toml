@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.agent-approval-email]
 verify_jwt = false
+
+[functions.listing-status-email]
+verify_jwt = false

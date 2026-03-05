@@ -17,6 +17,7 @@ import {
 import AdminAddProperty from "@/components/admin/AdminAddProperty";
 import AdminAgentManagement from "@/components/admin/AdminAgentManagement";
 import AdminArticleManagement from "@/components/admin/AdminArticleManagement";
+import AdminProjectManagement from "@/components/admin/AdminProjectManagement";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
@@ -127,6 +128,22 @@ const AdminDashboard = () => {
     }
   };
 
+  const sendListingEmail = async (listing: any, status: string, note?: string) => {
+    try {
+      const profile = users.find(u => u.user_id === listing.user_id);
+      await supabase.functions.invoke("listing-status-email", {
+        body: {
+          to: profile?.email || listing.contact_email,
+          userName: profile?.full_name || listing.contact_name,
+          listingTitle: listing.title,
+          status,
+          adminNote: note || null,
+          listingId: listing.id,
+        },
+      });
+    } catch (e) { console.log("Email notification skipped:", e); }
+  };
+
   const approveListing = async (id: string) => {
     const { error } = await supabase.from("property_listings").update({
       status: "approved", is_verified: true, reviewed_by: user!.id,
@@ -135,12 +152,8 @@ const AdminDashboard = () => {
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     const listing = listings.find(l => l.id === id);
     if (listing) {
-      await supabase.from("notifications").insert({
-        user_id: listing.user_id, title: "🎉 Listing Approved & Live!",
-        message: `Your listing "${listing.title}" is now visible to millions of buyers.`,
-        type: "success", link: `/property/${id}`,
-      });
       await logAction("approve_listing", "property_listing", id, { title: listing.title });
+      await sendListingEmail(listing, "approved");
     }
     toast({ title: "✅ Listing approved!" });
     fetchAll(); setReviewingId(null);
@@ -153,11 +166,8 @@ const AdminDashboard = () => {
     }).eq("id", id);
     const listing = listings.find(l => l.id === id);
     if (listing) {
-      await supabase.from("notifications").insert({
-        user_id: listing.user_id, title: "📋 Listing Requires Changes",
-        message: `Your listing "${listing.title}" needs changes. Note: ${note}`, type: "error",
-      });
       await logAction("reject_listing", "property_listing", id, { title: listing.title, reason: note });
+      await sendListingEmail(listing, "rejected", note);
     }
     toast({ title: "Listing rejected" }); fetchAll(); setReviewingId(null); setReviewNote("");
   };
@@ -373,6 +383,7 @@ const AdminDashboard = () => {
     { id: "listings", label: "Listings", icon: Home, badge: pendingCount },
     { id: "add-property", label: "Add Property", icon: Plus },
     { id: "agents", label: "Manage Agents", icon: UserPlus },
+    { id: "projects", label: "New Projects", icon: Building2 },
     { id: "articles", label: "Articles", icon: FileText },
     { id: "users", label: "Users & Roles", icon: Users },
     { id: "sponsorships", label: "Sponsorships", icon: Crown },
@@ -1137,6 +1148,11 @@ const AdminDashboard = () => {
           {/* AGENTS TAB */}
           {tab === "agents" && (
             <AdminAgentManagement users={users} userRoles={userRoles} onRefresh={fetchAll} adminId={user!.id} />
+          )}
+
+          {/* PROJECTS TAB */}
+          {tab === "projects" && (
+            <AdminProjectManagement adminId={user!.id} />
           )}
 
           {/* ARTICLES TAB */}
