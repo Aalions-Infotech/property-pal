@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Save, X, Eye, EyeOff, Star, Building2 } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Eye, EyeOff, Star, Building2, Upload, Image } from "lucide-react";
 
 interface AdminProjectManagementProps {
   adminId: string;
@@ -13,9 +13,11 @@ const AdminProjectManagement = ({ adminId }: AdminProjectManagementProps) => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
     name: "", builder: "", city: "", locality: "", type: "Residential",
     configs: "", min_price: 0, max_price: 0, image: "",
+    images: [] as string[],
     possession_date: "", rera_id: "", amenities: "", rating: 0,
     total_units: 0, available_units: 0, is_featured: false, is_new: true,
     description: "", status: "draft",
@@ -31,7 +33,7 @@ const AdminProjectManagement = ({ adminId }: AdminProjectManagementProps) => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", builder: "", city: "", locality: "", type: "Residential", configs: "", min_price: 0, max_price: 0, image: "", possession_date: "", rera_id: "", amenities: "", rating: 0, total_units: 0, available_units: 0, is_featured: false, is_new: true, description: "", status: "draft" });
+    setForm({ name: "", builder: "", city: "", locality: "", type: "Residential", configs: "", min_price: 0, max_price: 0, image: "", images: [], possession_date: "", rera_id: "", amenities: "", rating: 0, total_units: 0, available_units: 0, is_featured: false, is_new: true, description: "", status: "draft" });
     setEditingId(null);
     setShowForm(false);
   };
@@ -40,13 +42,44 @@ const AdminProjectManagement = ({ adminId }: AdminProjectManagementProps) => {
     setForm({
       name: p.name, builder: p.builder, city: p.city, locality: p.locality, type: p.type,
       configs: (p.configs || []).join(", "), min_price: p.min_price, max_price: p.max_price,
-      image: p.image || "", possession_date: p.possession_date || "", rera_id: p.rera_id || "",
+      image: p.image || "", images: p.images || [],
+      possession_date: p.possession_date || "", rera_id: p.rera_id || "",
       amenities: (p.amenities || []).join(", "), rating: p.rating || 0, total_units: p.total_units || 0,
       available_units: p.available_units || 0, is_featured: p.is_featured, is_new: p.is_new,
       description: p.description || "", status: p.status,
     });
     setEditingId(p.id);
     setShowForm(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    const newImages: string[] = [];
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop();
+      const path = `projects/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("property-images").upload(path, file, { upsert: true });
+      if (!error) {
+        const { data: urlData } = supabase.storage.from("property-images").getPublicUrl(path);
+        newImages.push(urlData.publicUrl);
+      }
+    }
+    setForm(f => ({
+      ...f,
+      images: [...f.images, ...newImages],
+      image: f.image || newImages[0] || "",
+    }));
+    setUploading(false);
+    toast({ title: `${newImages.length} image(s) uploaded` });
+  };
+
+  const removeImage = (idx: number) => {
+    setForm(f => {
+      const updated = f.images.filter((_, i) => i !== idx);
+      return { ...f, images: updated, image: updated[0] || "" };
+    });
   };
 
   const saveProject = async () => {
@@ -56,7 +89,9 @@ const AdminProjectManagement = ({ adminId }: AdminProjectManagementProps) => {
     const payload = {
       name: form.name, builder: form.builder, city: form.city, locality: form.locality,
       type: form.type, configs: form.configs.split(",").map(s => s.trim()).filter(Boolean),
-      min_price: form.min_price, max_price: form.max_price, image: form.image || null,
+      min_price: form.min_price, max_price: form.max_price,
+      image: form.images[0] || form.image || null,
+      images: form.images.length > 0 ? form.images : (form.image ? [form.image] : []),
       possession_date: form.possession_date || null, rera_id: form.rera_id || null,
       amenities: form.amenities.split(",").map(s => s.trim()).filter(Boolean),
       rating: form.rating, total_units: form.total_units, available_units: form.available_units,
@@ -128,7 +163,6 @@ const AdminProjectManagement = ({ adminId }: AdminProjectManagementProps) => {
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Configs (comma-separated)</label><input value={form.configs} onChange={e => setForm(f => ({ ...f, configs: e.target.value }))} placeholder="1 BHK, 2 BHK, 3 BHK" className={fieldClass} /></div>
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Min Price (₹)</label><input type="number" value={form.min_price} onChange={e => setForm(f => ({ ...f, min_price: Number(e.target.value) }))} className={fieldClass} /></div>
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Max Price (₹)</label><input type="number" value={form.max_price} onChange={e => setForm(f => ({ ...f, max_price: Number(e.target.value) }))} className={fieldClass} /></div>
-            <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Image URL</label><input value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} placeholder="https://..." className={fieldClass} /></div>
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Possession Date</label><input value={form.possession_date} onChange={e => setForm(f => ({ ...f, possession_date: e.target.value }))} placeholder="Dec 2026" className={fieldClass} /></div>
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">RERA ID</label><input value={form.rera_id} onChange={e => setForm(f => ({ ...f, rera_id: e.target.value }))} className={fieldClass} /></div>
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Amenities (comma-separated)</label><input value={form.amenities} onChange={e => setForm(f => ({ ...f, amenities: e.target.value }))} placeholder="Swimming Pool, Gym, Club House" className={fieldClass} /></div>
@@ -145,6 +179,33 @@ const AdminProjectManagement = ({ adminId }: AdminProjectManagementProps) => {
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_new} onChange={e => setForm(f => ({ ...f, is_new: e.target.checked }))} /> New Launch</label>
             </div>
           </div>
+
+          {/* Image Upload */}
+          <div className="mt-4">
+            <label className="text-xs font-medium text-muted-foreground mb-2 block">Project Images</label>
+            <div className="flex flex-wrap gap-3 mb-3">
+              {form.images.map((img, i) => (
+                <div key={i} className="relative w-24 h-20 rounded-xl overflow-hidden border border-border group">
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <button onClick={() => removeImage(i)} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                  {i === 0 && <span className="absolute bottom-1 left-1 text-[9px] px-1.5 py-0.5 rounded bg-accent text-accent-foreground font-medium">Cover</span>}
+                </div>
+              ))}
+              <label className={`w-24 h-20 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-accent hover:bg-accent/5 transition-all ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+                {uploading ? (
+                  <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5 text-muted-foreground mb-1" />
+                    <span className="text-[10px] text-muted-foreground">Upload</span>
+                  </>
+                )}
+                <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground">First image is used as cover. Upload up to 10 images.</p>
+          </div>
+
           <div className="mt-3"><label className="text-xs font-medium text-muted-foreground mb-1 block">Description</label><textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} placeholder="Project description..." className={fieldClass + " resize-none"} /></div>
           <div className="flex gap-2 mt-4">
             <button onClick={saveProject} className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium flex items-center gap-2"><Save className="w-4 h-4" /> {editingId ? "Update" : "Create"}</button>
@@ -165,13 +226,14 @@ const AdminProjectManagement = ({ adminId }: AdminProjectManagementProps) => {
           {projects.map(p => (
             <div key={p.id} className={`bg-card rounded-2xl border p-5 ${p.status === "published" ? "border-emerald-500/20" : "border-border"}`}>
               <div className="flex items-start gap-4">
-                {p.image && <img src={p.image} alt={p.name} className="w-20 h-16 rounded-xl object-cover flex-shrink-0" />}
+                {(p.image || p.images?.[0]) && <img src={p.images?.[0] || p.image} alt={p.name} className="w-20 h-16 rounded-xl object-cover flex-shrink-0" />}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <h4 className="font-display font-bold text-sm">{p.name}</h4>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${p.status === "published" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : p.status === "archived" ? "bg-gray-500/10 text-gray-500 border-gray-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"}`}>{p.status}</span>
                     {p.is_featured && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-600 border border-yellow-500/20">⭐ Featured</span>}
                     {p.is_new && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 border border-blue-500/20">New</span>}
+                    {p.images?.length > 0 && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-500/10 text-purple-600 border border-purple-500/20"><Image className="w-3 h-3 inline" /> {p.images.length}</span>}
                   </div>
                   <p className="text-xs text-muted-foreground">{p.builder} · {p.locality}, {p.city}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">

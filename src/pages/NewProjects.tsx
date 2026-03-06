@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { MapPin, Star, CheckCircle, Phone, Search, SlidersHorizontal } from "lucide-react";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const formatPrice = (price: number) => {
@@ -161,12 +161,12 @@ const NewProjects = () => {
                     )}
 
                     <div className="flex gap-2">
-                      <button className="flex-1 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1">
+                      <Link to={`/project/${project.id}`} className="flex-1 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1">
                         <Phone className="w-3.5 h-3.5" /> Enquire
-                      </button>
-                      <button className="flex-1 py-2 rounded-xl btn-gold text-sm">
+                      </Link>
+                      <Link to={`/project/${project.id}`} className="flex-1 py-2 rounded-xl btn-gold text-sm text-center">
                         View Details
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
