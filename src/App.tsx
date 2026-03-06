@@ -23,6 +23,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AgentDashboard from "./pages/AgentDashboard";
 import BecomeAgent from "./pages/BecomeAgent";
 import AgentProfile from "./pages/AgentProfile";
+import ProjectDetail from "./pages/ProjectDetail";
 import SupportChat from "./components/SupportChat";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/agent-dashboard" element={<AgentDashboard />} />
               <Route path="/become-agent" element={<BecomeAgent />} />
               <Route path="/agent/:id" element={<AgentProfile />} />
+              <Route path="/project/:id" element={<ProjectDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
