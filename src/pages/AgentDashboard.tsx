@@ -68,14 +68,27 @@ const AgentDashboard = () => {
 
   const saveProfile = async () => {
     await supabase.from("profiles").update(profileForm).eq("user_id", user!.id);
-    if (agentProfile) {
-      await (supabase.from("agent_profiles") as any).update({
-        experience_years: agentForm.experience_years,
-        specialization: agentForm.specialization || null,
-        languages: agentForm.languages || null,
-        areas_served: agentForm.areas_served ? agentForm.areas_served.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
-      }).eq("user_id", user!.id);
+
+    const agentPayload = {
+      experience_years: agentForm.experience_years,
+      specialization: agentForm.specialization || null,
+      languages: agentForm.languages || null,
+      areas_served: agentForm.areas_served
+        ? agentForm.areas_served.split(",").map((s: string) => s.trim()).filter(Boolean)
+        : [],
+    };
+
+    if (agentProfile?.id) {
+      await (supabase.from("agent_profiles") as any).update(agentPayload).eq("id", agentProfile.id);
+    } else {
+      const generatedAgentId = `AGT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+      await (supabase.from("agent_profiles") as any).insert({
+        user_id: user!.id,
+        agent_id: generatedAgentId,
+        ...agentPayload,
+      });
     }
+
     toast({ title: "Profile updated!" });
     setEditMode(false);
     fetchAll();
@@ -85,8 +98,8 @@ const AgentDashboard = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarUploading(true);
-    const ext = file.name.split(".").pop();
-    const path = `avatars/${user!.id}.${ext}`;
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${user!.id}/avatars/profile.${ext}`;
     const { error: uploadErr } = await supabase.storage.from("property-images").upload(path, file, { upsert: true });
     if (uploadErr) { toast({ title: "Upload failed", variant: "destructive" }); setAvatarUploading(false); return; }
     const { data: urlData } = supabase.storage.from("property-images").getPublicUrl(path);
