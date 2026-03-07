@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const AgentDashboard = () => {
-  const { user, role, signOut } = useAuth();
+  const { user, role, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [tab, setTab] = useState("overview");
@@ -29,16 +29,27 @@ const AgentDashboard = () => {
   const [avatarUploading, setAvatarUploading] = useState(false);
 
   useEffect(() => {
-    if (!user) { navigate("/auth"); return; }
-    if (role !== "agent") { navigate("/dashboard"); return; }
-    fetchAll();
-  }, [user, role]);
+    if (authLoading) return;
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    if (role !== "agent") {
+      navigate("/dashboard");
+      return;
+    }
+    void fetchAll();
+  }, [user, role, authLoading]);
 
   const fetchAll = async () => {
     setLoading(true);
     const [profileRes, agentRes, listRes, clientRes, notifRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", user!.id).single(),
-      (supabase.from("agent_profiles") as any).select("*").eq("user_id", user!.id).single(),
+      (supabase.from("agent_profiles") as any)
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false })
+        .limit(1),
       supabase.from("property_listings").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       (supabase.from("agent_clients") as any).select("*").eq("agent_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("notifications").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(30),
@@ -46,7 +57,7 @@ const AgentDashboard = () => {
     const p = profileRes.data;
     setProfile(p);
     if (p) setProfileForm({ full_name: p.full_name || "", phone: p.phone || "", city: p.city || "", bio: p.bio || "" });
-    const ap = agentRes.data;
+    const ap = agentRes.data?.[0] || null;
     setAgentProfile(ap);
     if (ap) setAgentForm({ experience_years: ap.experience_years || 0, specialization: ap.specialization || "", languages: ap.languages || "", areas_served: ap.areas_served?.join(", ") || "" });
     setListings(listRes.data || []);
