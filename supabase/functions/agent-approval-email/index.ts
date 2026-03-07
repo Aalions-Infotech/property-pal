@@ -66,6 +66,17 @@ serve(async (req) => {
             You now have access to your dedicated Agent Dashboard.
           </p>
           ${credentialsBlock}
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #d4a017, #b8860b); color: #0f1d3a; padding: 12px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px;">
+              Login to Agent Dashboard →
+            </a>
+          </div>
+          <p style="color: #999; font-size: 12px; text-align: center; margin-top: 24px;">
+            © 2026 PropEstate. India's Most Trusted Real Estate Platform.
+          </p>
+        </div>
+      </div>
+    `;
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
