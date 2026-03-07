@@ -35,28 +35,12 @@ const AuthPage = () => {
     setLoading(true);
     try {
       if (mode === "login") {
-        const { error, data } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
         });
         if (error) throw error;
         toast({ title: "Welcome back!", description: "You have been logged in." });
-        // Check role to redirect appropriately
-        if (data.user) {
-          const { data: roleData } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", data.user.id)
-            .limit(1)
-            .single();
-          if (roleData?.role === "admin" || roleData?.role === "moderator") {
-            navigate("/admin");
-          } else if (roleData?.role === "agent") {
-            navigate("/agent-dashboard");
-          } else {
-            navigate("/dashboard");
-          }
-        }
       } else if (mode === "signup") {
         const { error: signupError } = await supabase.auth.signUp({
           email: form.email,
