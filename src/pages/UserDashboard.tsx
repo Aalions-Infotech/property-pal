@@ -23,7 +23,7 @@ const STRIPE_PLANS = [
 ];
 
 const UserDashboard = () => {
-  const { user, role, signOut } = useAuth();
+  const { user, role, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -39,14 +39,27 @@ const UserDashboard = () => {
   const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", city: "", bio: "" });
 
   useEffect(() => {
-    if (!user) { navigate("/auth"); return; }
+    if (authLoading) return;
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    if (role === "agent") {
+      navigate("/agent-dashboard", { replace: true });
+      return;
+    }
+
+    if (role === "admin" || role === "moderator") {
+      navigate("/admin", { replace: true });
+      return;
+    }
+
     fetchAll();
 
-    // Check for sponsorship success
     const sponsorStatus = searchParams.get("sponsorship");
     const listingId = searchParams.get("listing");
     if (sponsorStatus === "success" && listingId) {
-      // Verify payment
       const sessionId = localStorage.getItem("pendingCheckoutSession");
       if (sessionId) {
         verifyPayment(sessionId);
@@ -58,7 +71,6 @@ const UserDashboard = () => {
       toast({ title: "Payment cancelled", description: "Your sponsorship was not activated.", variant: "destructive" });
     }
 
-    // Realtime notifications
     const notifSub = supabase
       .channel(`user-notifs-${user.id}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, (payload) => {
@@ -68,7 +80,7 @@ const UserDashboard = () => {
       .subscribe();
 
     return () => { supabase.removeChannel(notifSub); };
-  }, [user]);
+  }, [user, role, authLoading]);
 
   const verifyPayment = async (sessionId: string) => {
     try {
