@@ -2,6 +2,8 @@ import { useState, useEffect, createContext, useContext } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+type AppRole = "admin" | "moderator" | "agent" | "user";
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -20,42 +22,54 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
 });
 
+const resolvePrimaryRole = (roles: string[] = []): AppRole => {
+  if (roles.includes("admin")) return "admin";
+  if (roles.includes("moderator")) return "moderator";
+  if (roles.includes("agent")) return "agent";
+  return "user";
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string | null>(null);
 
-  const fetchRole = async (userId: string) => {
+  const fetchRole = async (userId: string): Promise<AppRole> => {
     const { data } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-    setRole(data?.role || "user");
+      .eq("user_id", userId);
+
+    const resolvedRole = resolvePrimaryRole((data || []).map((r) => r.role));
+    setRole(resolvedRole);
+    return resolvedRole;
+  };
+
+  const applySession = async (nextSession: Session | null) => {
+    setSession(nextSession);
+    setUser(nextSession?.user ?? null);
+
+    if (nextSession?.user) {
+      await fetchRole(nextSession.user.id);
+    } else {
+      setRole(null);
+    }
+
+    setLoading(false);
   };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          setTimeout(() => fetchRole(session.user.id), 0);
-        } else {
-          setRole(null);
-        }
-        setLoading(false);
+      (_event, nextSession) => {
+        setLoading(true);
+        void applySession(nextSession);
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) fetchRole(session.user.id);
-      setLoading(false);
+    setLoading(true);
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      void applySession(initialSession);
     });
 
     return () => subscription.unsubscribe();
