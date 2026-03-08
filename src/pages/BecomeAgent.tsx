@@ -141,12 +141,13 @@ const BecomeAgent = () => {
       } as any;
 
       if (existing?.status === "pending") {
-        const { error } = await (supabase.from("agent_applications") as any)
+        const { error } = await supabase
+          .from("agent_applications")
           .update(payload)
           .eq("id", existing.id);
         if (error) throw error;
       } else {
-        const { error } = await (supabase.from("agent_applications") as any).insert(payload);
+        const { error } = await supabase.from("agent_applications").insert(payload);
         if (error) throw error;
       }
 
