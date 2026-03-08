@@ -90,7 +90,8 @@ const BecomeAgent = () => {
     setLoading(true);
 
     try {
-      const { data: existingApplications } = await (supabase.from("agent_applications") as any)
+      const { data: existingApplications } = await supabase
+        .from("agent_applications")
         .select("id, status")
         .eq("user_id", user.id)
         .in("status", ["pending", "approved"])
