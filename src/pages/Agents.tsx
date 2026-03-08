@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { Star, Phone, MapPin, CheckCircle, Search, Mail, MessageSquare, UserPlus, Briefcase, Building2 } from "lucide-react";
+import { Star, Phone, MapPin, CheckCircle, Search, MessageSquare, UserPlus, Building2 } from "lucide-react";
 
 const Agents = () => {
   const [city, setCity] = useState("All");
@@ -13,18 +13,14 @@ const Agents = () => {
 
   useEffect(() => {
     const fetchAgents = async () => {
-      // Get agent user IDs
-      const { data: roles } = await supabase.from("user_roles").select("user_id").eq("role", "agent");
-      if (roles && roles.length > 0) {
-        const agentUserIds = roles.map(r => r.user_id);
-        const [profilesRes, agentProfilesRes] = await Promise.all([
-          supabase.from("profiles").select("*").in("user_id", agentUserIds),
-          (supabase.from("agent_profiles") as any).select("*").in("user_id", agentUserIds),
-        ]);
-        const profiles = profilesRes.data || [];
-        const agentProfiles = agentProfilesRes.data || [];
-
-        const merged = profiles.map(p => {
+      // Query agent_profiles first (publicly readable), then get profiles
+      const { data: agentProfiles } = await (supabase.from("agent_profiles") as any).select("*");
+      
+      if (agentProfiles && agentProfiles.length > 0) {
+        const agentUserIds = agentProfiles.map((ap: any) => ap.user_id);
+        const { data: profiles } = await supabase.from("profiles").select("*").in("user_id", agentUserIds);
+        
+        const merged = (profiles || []).map(p => {
           const ap = agentProfiles.find((a: any) => a.user_id === p.user_id);
           return {
             id: p.user_id,
@@ -43,6 +39,7 @@ const Agents = () => {
             totalReviews: ap?.total_reviews || 0,
             languages: ap?.languages || "",
             areasServed: ap?.areas_served || [],
+            agentId: ap?.agent_id || "",
           };
         });
         setAgents(merged);
