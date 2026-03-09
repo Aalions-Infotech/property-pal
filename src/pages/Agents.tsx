@@ -13,37 +13,53 @@ const Agents = () => {
 
   useEffect(() => {
     const fetchAgents = async () => {
-      // Query agent_profiles first (publicly readable), then get profiles
-      const { data: agentProfiles } = await (supabase.from("agent_profiles") as any).select("*");
-      
-      if (agentProfiles && agentProfiles.length > 0) {
-        const agentUserIds = agentProfiles.map((ap: any) => ap.user_id);
-        const { data: profiles } = await supabase.from("profiles").select("*").in("user_id", agentUserIds);
-        
-        const merged = (profiles || []).map(p => {
-          const ap = agentProfiles.find((a: any) => a.user_id === p.user_id);
-          return {
-            id: p.user_id,
-            name: p.full_name || "Agent",
-            bio: p.bio || "PropEstate Verified Agent",
-            city: p.city || "India",
-            phone: p.phone || "",
-            email: p.email || "",
-            verified: p.is_verified || false,
-            avatarUrl: p.avatar_url,
-            experience: ap?.experience_years || 0,
-            specialization: ap?.specialization || "",
-            totalSales: ap?.total_sales || 0,
-            propertiesListed: ap?.properties_listed || 0,
-            rating: ap?.rating || 0,
-            totalReviews: ap?.total_reviews || 0,
-            languages: ap?.languages || "",
-            areasServed: ap?.areas_served || [],
-            agentId: ap?.agent_id || "",
-          };
-        });
-        setAgents(merged);
+      setLoading(true);
+
+      const { data: agentProfiles, error: agentProfilesError } = await (supabase.from("agent_profiles") as any).select("*");
+
+      if (agentProfilesError) {
+        setAgents([]);
+        setLoading(false);
+        return;
       }
+
+      const agentRows = agentProfiles || [];
+      const userIds = Array.from(new Set(agentRows.map((ap: any) => ap.user_id).filter(Boolean)));
+
+      let profiles: any[] = [];
+      if (userIds.length > 0) {
+        const { data: profileRows } = await supabase.from("profiles").select("*").in("user_id", userIds);
+        profiles = profileRows || [];
+      }
+
+      const profileMap = new Map(profiles.map((p) => [p.user_id, p]));
+
+      const merged = agentRows.map((ap: any) => {
+        const profile = profileMap.get(ap.user_id);
+        const fallbackName = ap.agent_id ? `Agent ${String(ap.agent_id).slice(-4)}` : "Agent";
+
+        return {
+          id: ap.user_id,
+          name: profile?.full_name || fallbackName,
+          bio: profile?.bio || ap.specialization || "PropEstate Verified Agent",
+          city: profile?.city || (ap.areas_served?.[0] ?? "India"),
+          phone: profile?.phone || "",
+          email: profile?.email || "",
+          verified: Boolean(profile?.is_verified ?? true),
+          avatarUrl: profile?.avatar_url || "",
+          experience: ap?.experience_years || 0,
+          specialization: ap?.specialization || "",
+          totalSales: ap?.total_sales || 0,
+          propertiesListed: ap?.properties_listed || 0,
+          rating: ap?.rating || 0,
+          totalReviews: ap?.total_reviews || 0,
+          languages: ap?.languages || "",
+          areasServed: ap?.areas_served || [],
+          agentId: ap?.agent_id || "",
+        };
+      });
+
+      setAgents(merged);
       setLoading(false);
     };
     fetchAgents();
