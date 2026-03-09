@@ -197,6 +197,15 @@ const AgentProfile = () => {
                     </a>
                   )}
                   {profile.phone && (
+                    <a href={`sms:${profile.phone}`} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors">
+                      <MessageCircle className="w-4 h-4 text-sky-500" />
+                      <div>
+                        <p className="text-sm font-medium">SMS</p>
+                        <p className="text-xs text-muted-foreground">Send a text message</p>
+                      </div>
+                    </a>
+                  )}
+                  {profile.phone && (
                     <a href={`https://wa.me/${profile.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors">
                       <MessageSquare className="w-4 h-4 text-green-500" />
                       <div>
@@ -205,8 +214,6 @@ const AgentProfile = () => {
                       </div>
                     </a>
                   )}
-                </div>
-              </div>
 
               {/* Specialization */}
               {agentProfile?.specialization && (
