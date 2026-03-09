@@ -278,6 +278,8 @@ const AgentProfile = () => {
                   ))}
                 </div>
               )}
+              {/* Agent Reviews */}
+              <AgentReviews agentUserId={id!} agentName={profile.full_name || "Agent"} />
             </div>
           </div>
         </div>
