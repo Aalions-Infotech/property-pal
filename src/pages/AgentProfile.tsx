@@ -3,7 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Star, Phone, Mail, MapPin, CheckCircle, Briefcase, Award, MessageSquare, Building2, Globe, Users, TrendingUp, Calendar, ExternalLink } from "lucide-react";
+import { Star, Phone, Mail, MapPin, CheckCircle, Briefcase, Award, MessageSquare, Building2, Globe, Users, TrendingUp, Calendar, ExternalLink, MessageCircle } from "lucide-react";
+import AgentContactButtons from "@/components/agent/AgentContactButtons";
+import AgentReviews from "@/components/agent/AgentReviews";
 
 const AgentProfile = () => {
   const { id } = useParams();
@@ -95,27 +97,11 @@ const AgentProfile = () => {
                   {agentProfile?.agent_id && <span className="flex items-center gap-1 text-white/40 text-xs"><Globe className="w-3 h-3" />ID: {agentProfile.agent_id}</span>}
                 </div>
 
-                {/* Quick Contact Buttons */}
-                <div className="flex gap-2 mt-4 flex-wrap">
-                  {profile.phone && (
-                    <a href={`tel:${profile.phone}`} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">
-                      <Phone className="w-4 h-4" /> Call Now
-                    </a>
-                  )}
-                  {profile.phone && (
-                    <a href={`https://wa.me/${profile.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors">
-                      <MessageSquare className="w-4 h-4" /> WhatsApp
-                    </a>
-                  )}
-                  {profile.email && (
-                    <a href={`mailto:${profile.email}`} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors">
-                      <Mail className="w-4 h-4" /> Email
-                    </a>
-                  )}
-                  <button onClick={() => setShowEnquiry(!showEnquiry)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition-colors border border-white/20">
-                    <ExternalLink className="w-4 h-4" /> Send Enquiry
-                  </button>
-                </div>
+                <AgentContactButtons
+                  phone={profile.phone}
+                  email={profile.email}
+                  onEnquiryToggle={() => setShowEnquiry(!showEnquiry)}
+                />
               </div>
             </div>
           </div>
@@ -211,6 +197,15 @@ const AgentProfile = () => {
                     </a>
                   )}
                   {profile.phone && (
+                    <a href={`sms:${profile.phone}`} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors">
+                      <MessageCircle className="w-4 h-4 text-sky-500" />
+                      <div>
+                        <p className="text-sm font-medium">SMS</p>
+                        <p className="text-xs text-muted-foreground">Send a text message</p>
+                      </div>
+                    </a>
+                  )}
+                  {profile.phone && (
                     <a href={`https://wa.me/${profile.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors">
                       <MessageSquare className="w-4 h-4 text-green-500" />
                       <div>
@@ -292,6 +287,8 @@ const AgentProfile = () => {
                   ))}
                 </div>
               )}
+              {/* Agent Reviews */}
+              <AgentReviews agentUserId={id!} agentName={profile.full_name || "Agent"} />
             </div>
           </div>
         </div>
