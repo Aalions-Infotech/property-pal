@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -15,6 +15,9 @@ import {
   Clock,
   XCircle,
   Camera,
+  Upload,
+  Star,
+  AlertCircle,
 } from "lucide-react";
 
 interface AdminAgentManagementProps {
@@ -37,11 +40,22 @@ const resolveRole = (roles: string[]) => {
   return "user";
 };
 
+const getProfileCompleteness = (agent: any) => {
+  const fields = [
+    { name: "Photo", complete: !!agent.avatar_url },
+    { name: "Phone", complete: !!agent.phone },
+    { name: "City", complete: !!agent.city },
+    { name: "Bio", complete: !!agent.bio },
+  ];
+  const completedCount = fields.filter(f => f.complete).length;
+  return { fields, completedCount, total: fields.length, percentage: Math.round((completedCount / fields.length) * 100) };
+};
+
 const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAgentManagementProps) => {
   const { toast } = useToast();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ full_name: "", phone: "", city: "", bio: "" });
+  const [editForm, setEditForm] = useState({ full_name: "", phone: "", city: "", bio: "", rating: 0 });
   const [createForm, setCreateForm] = useState({
     email: "",
     password: "",
@@ -51,10 +65,15 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
     bio: "",
     experience_years: 0,
     specialization: "",
+    avatar_url: "",
   });
   const [loading, setLoading] = useState(false);
   const [applications, setApplications] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<"agents" | "applications">("agents");
+  const [uploadingPhoto, setUploadingPhoto] = useState<string | null>(null);
+  const [agentProfiles, setAgentProfiles] = useState<any[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   const getUserRole = (userId: string) => {
     const roles = userRoles.filter((r) => r.user_id === userId).map((r) => r.role);
@@ -65,6 +84,7 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
 
   useEffect(() => {
     void fetchApplications();
+    void fetchAgentProfiles();
   }, []);
 
   const fetchApplications = async () => {
@@ -72,6 +92,74 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
       .select("*")
       .order("created_at", { ascending: false });
     setApplications(data || []);
+  };
+
+  const fetchAgentProfiles = async () => {
+    const { data } = await (supabase.from("agent_profiles") as any).select("*");
+    setAgentProfiles(data || []);
+  };
+
+  const getAgentProfile = (userId: string) => {
+    return agentProfiles.find(ap => ap.user_id === userId);
+  };
+
+  const handlePhotoUpload = async (file: File, userId?: string) => {
+    if (!file) return null;
+    
+    const fileExt = file.name.split(".").pop();
+    const fileName = `agent-${userId || "new"}-${Date.now()}.${fileExt}`;
+    const filePath = `agents/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("property-images")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from("property-images").getPublicUrl(filePath);
+    return publicUrl;
+  };
+
+  const handleCreatePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setUploadingPhoto("create");
+    const url = await handlePhotoUpload(file);
+    if (url) {
+      setCreateForm(f => ({ ...f, avatar_url: url }));
+    }
+    setUploadingPhoto(null);
+  };
+
+  const handleEditPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>, userId: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setUploadingPhoto(userId);
+    const url = await handlePhotoUpload(file, userId);
+    if (url) {
+      await supabase.from("profiles").update({ avatar_url: url }).eq("user_id", userId);
+      toast({ title: "Photo updated!" });
+      onRefresh();
+    }
+    setUploadingPhoto(null);
+  };
+
+  const updateAgentRating = async (userId: string, rating: number) => {
+    const { error } = await (supabase.from("agent_profiles") as any)
+      .update({ rating })
+      .eq("user_id", userId);
+    
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Rating updated!" });
+      await fetchAgentProfiles();
+    }
   };
 
   const createAgent = async () => {
@@ -103,6 +191,7 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
               phone: createForm.phone || null,
               city: createForm.city || null,
               bio: createForm.bio || null,
+              avatar_url: createForm.avatar_url || null,
               is_verified: true,
             },
             { onConflict: "user_id" }
@@ -159,9 +248,11 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
         bio: "",
         experience_years: 0,
         specialization: "",
+        avatar_url: "",
       });
       setShowCreateForm(false);
       onRefresh();
+      await fetchAgentProfiles();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -266,6 +357,7 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
 
       toast({ title: "✅ Application Approved!", description: `Agent ID: ${agentId}` });
       await fetchApplications();
+      await fetchAgentProfiles();
       onRefresh();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -314,12 +406,14 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
   };
 
   const startEdit = (agent: any) => {
+    const ap = getAgentProfile(agent.user_id);
     setEditingId(agent.user_id);
     setEditForm({
       full_name: agent.full_name || "",
       phone: agent.phone || "",
       city: agent.city || "",
       bio: agent.bio || "",
+      rating: ap?.rating || 0,
     });
   };
 
@@ -329,16 +423,67 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
       .update({ full_name: editForm.full_name, phone: editForm.phone || null, city: editForm.city || null, bio: editForm.bio || null })
       .eq("user_id", userId);
 
+    await (supabase.from("agent_profiles") as any)
+      .update({ rating: editForm.rating })
+      .eq("user_id", userId);
+
     toast({ title: "Agent profile updated!" });
     setEditingId(null);
     onRefresh();
+    await fetchAgentProfiles();
   };
 
   const pendingApps = applications.filter((a) => a.status === "pending");
   const fieldClass = "w-full px-3 py-2 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent";
 
+  const RatingStars = ({ rating, onRate, editable = false }: { rating: number; onRate?: (r: number) => void; editable?: boolean }) => (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map(star => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => editable && onRate?.(star)}
+          className={`${editable ? "cursor-pointer hover:scale-110" : "cursor-default"} transition-transform`}
+          disabled={!editable}
+        >
+          <Star className={`w-4 h-4 ${star <= rating ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"}`} />
+        </button>
+      ))}
+    </div>
+  );
+
+  const ProfileCompletenessBar = ({ agent }: { agent: any }) => {
+    const completeness = getProfileCompleteness(agent);
+    return (
+      <div className="mt-2">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-xs text-muted-foreground">Profile: {completeness.percentage}%</span>
+          {completeness.percentage < 100 && (
+            <span className="text-xs text-amber-500 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" /> Incomplete
+            </span>
+          )}
+        </div>
+        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+          <div
+            className={`h-full transition-all ${completeness.percentage === 100 ? "bg-emerald-500" : completeness.percentage >= 50 ? "bg-amber-500" : "bg-destructive"}`}
+            style={{ width: `${completeness.percentage}%` }}
+          />
+        </div>
+        {completeness.percentage < 100 && (
+          <p className="text-[10px] text-muted-foreground mt-1">
+            Missing: {completeness.fields.filter(f => !f.complete).map(f => f.name).join(", ")}
+          </p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
+      <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleCreatePhotoChange} />
+      <input type="file" ref={editFileInputRef} accept="image/*" className="hidden" />
+
       <div className="flex items-center gap-2 border-b border-border pb-3">
         <button
           onClick={() => setActiveTab("agents")}
@@ -374,6 +519,30 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
           {showCreateForm && (
             <div className="bg-card rounded-2xl border border-accent/30 p-6">
               <h4 className="font-display font-semibold mb-4">Create New Agent</h4>
+              
+              {/* Photo Upload */}
+              <div className="flex items-center gap-4 mb-4">
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-20 h-20 rounded-2xl border-2 border-dashed border-border bg-muted flex items-center justify-center cursor-pointer hover:border-accent transition-colors overflow-hidden"
+                >
+                  {uploadingPhoto === "create" ? (
+                    <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                  ) : createForm.avatar_url ? (
+                    <img src={createForm.avatar_url} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-center">
+                      <Upload className="w-5 h-5 text-muted-foreground mx-auto" />
+                      <p className="text-[10px] text-muted-foreground mt-1">Photo</p>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Profile Photo</p>
+                  <p className="text-xs text-muted-foreground">Click to upload agent photo</p>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Full Name *</label><input value={createForm.full_name} onChange={(e) => setCreateForm((f) => ({ ...f, full_name: e.target.value }))} placeholder="Rajesh Mehta" className={fieldClass} /></div>
                 <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Email *</label><input value={createForm.email} onChange={(e) => setCreateForm((f) => ({ ...f, email: e.target.value }))} placeholder="agent@email.com" type="email" className={fieldClass} /></div>
@@ -391,62 +560,135 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
           )}
 
           <div className="space-y-3">
-            {agents.map((agent) => (
-              <div key={agent.id} className="bg-card rounded-2xl border border-border p-5">
-                {editingId === agent.user_id ? (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <input value={editForm.full_name} onChange={(e) => setEditForm((f) => ({ ...f, full_name: e.target.value }))} placeholder="Full Name" className={fieldClass} />
-                      <input value={editForm.phone} onChange={(e) => setEditForm((f) => ({ ...f, phone: e.target.value }))} placeholder="Phone" className={fieldClass} />
-                      <input value={editForm.city} onChange={(e) => setEditForm((f) => ({ ...f, city: e.target.value }))} placeholder="City" className={fieldClass} />
-                      <input value={editForm.bio} onChange={(e) => setEditForm((f) => ({ ...f, bio: e.target.value }))} placeholder="Bio" className={fieldClass} />
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => saveEdit(agent.user_id)} className="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 text-sm font-medium border border-emerald-500/20 flex items-center gap-1"><Save className="w-3 h-3" /> Save</button>
-                      <button onClick={() => setEditingId(null)} className="px-4 py-2 rounded-xl border border-border text-sm hover:bg-muted flex items-center gap-1"><X className="w-3 h-3" /> Cancel</button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                      {agent.avatar_url ? (
-                        <img src={agent.avatar_url} alt={agent.full_name || "Agent"} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="font-display font-bold text-lg">{(agent.full_name || "A")[0].toUpperCase()}</span>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-display font-bold text-sm">{agent.full_name || "No name"}</h4>
-                        {agent.is_verified && <CheckCircle className="w-4 h-4 text-emerald-500" />}
-                        <span className="px-2 py-0.5 rounded-full text-[10px] bg-accent/10 text-accent border border-accent/20 font-medium">Agent</span>
+            {agents.map((agent) => {
+              const ap = getAgentProfile(agent.user_id);
+              return (
+                <div key={agent.id} className="bg-card rounded-2xl border border-border p-5">
+                  {editingId === agent.user_id ? (
+                    <div className="space-y-3">
+                      {/* Photo edit */}
+                      <div className="flex items-center gap-4 mb-2">
+                        <div 
+                          onClick={() => {
+                            const input = document.createElement("input");
+                            input.type = "file";
+                            input.accept = "image/*";
+                            input.onchange = (e: any) => handleEditPhotoChange(e, agent.user_id);
+                            input.click();
+                          }}
+                          className="w-16 h-16 rounded-2xl border-2 border-dashed border-border bg-muted flex items-center justify-center cursor-pointer hover:border-accent transition-colors overflow-hidden"
+                        >
+                          {uploadingPhoto === agent.user_id ? (
+                            <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                          ) : agent.avatar_url ? (
+                            <img src={agent.avatar_url} alt={agent.full_name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Camera className="w-5 h-5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">Click photo to change</p>
                       </div>
-                      <p className="text-xs text-muted-foreground">{agent.email}</p>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground flex-wrap">
-                        {agent.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{agent.phone}</span>}
-                        {agent.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{agent.city}</span>}
-                        {agent.bio && <span>{agent.bio}</span>}
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input value={editForm.full_name} onChange={(e) => setEditForm((f) => ({ ...f, full_name: e.target.value }))} placeholder="Full Name" className={fieldClass} />
+                        <input value={editForm.phone} onChange={(e) => setEditForm((f) => ({ ...f, phone: e.target.value }))} placeholder="Phone" className={fieldClass} />
+                        <input value={editForm.city} onChange={(e) => setEditForm((f) => ({ ...f, city: e.target.value }))} placeholder="City" className={fieldClass} />
+                        <input value={editForm.bio} onChange={(e) => setEditForm((f) => ({ ...f, bio: e.target.value }))} placeholder="Bio" className={fieldClass} />
                       </div>
-                      <div className="flex gap-2 mt-3">
-                        <a href={`tel:${agent.phone || ""}`} className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
-                          <Phone className="w-3.5 h-3.5 text-emerald-500" /> Call
-                        </a>
-                        <a href={`sms:${agent.phone || ""}`} className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
-                          <MessageSquare className="w-3.5 h-3.5 text-blue-500" /> Message
-                        </a>
-                        <a href={`mailto:${agent.email || ""}`} className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
-                          <Mail className="w-3.5 h-3.5 text-accent" /> Email
-                        </a>
+
+                      {/* Rating edit */}
+                      <div className="flex items-center gap-3">
+                        <label className="text-xs font-medium text-muted-foreground">Rating:</label>
+                        <RatingStars rating={editForm.rating} onRate={(r) => setEditForm(f => ({ ...f, rating: r }))} editable />
+                        <span className="text-sm text-muted-foreground">({editForm.rating}/5)</span>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button onClick={() => saveEdit(agent.user_id)} className="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 text-sm font-medium border border-emerald-500/20 flex items-center gap-1"><Save className="w-3 h-3" /> Save</button>
+                        <button onClick={() => setEditingId(null)} className="px-4 py-2 rounded-xl border border-border text-sm hover:bg-muted flex items-center gap-1"><X className="w-3 h-3" /> Cancel</button>
                       </div>
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      <button onClick={() => startEdit(agent)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground" title="Edit"><Edit className="w-4 h-4" /></button>
-                      <button onClick={() => removeAgent(agent.user_id)} className="p-2 rounded-xl hover:bg-destructive/10 text-destructive" title="Remove agent"><Trash2 className="w-4 h-4" /></button>
+                  ) : (
+                    <div className="flex items-start gap-4">
+                      <div 
+                        onClick={() => {
+                          const input = document.createElement("input");
+                          input.type = "file";
+                          input.accept = "image/*";
+                          input.onchange = (e: any) => handleEditPhotoChange(e, agent.user_id);
+                          input.click();
+                        }}
+                        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:ring-2 hover:ring-accent transition-all group relative"
+                      >
+                        {uploadingPhoto === agent.user_id ? (
+                          <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                        ) : agent.avatar_url ? (
+                          <>
+                            <img src={agent.avatar_url} alt={agent.full_name || "Agent"} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <Camera className="w-4 h-4 text-white" />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <span className="font-display font-bold text-lg">{(agent.full_name || "A")[0].toUpperCase()}</span>
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <Camera className="w-4 h-4 text-white" />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="font-display font-bold text-sm">{agent.full_name || "No name"}</h4>
+                          {agent.is_verified && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-accent/10 text-accent border border-accent/20 font-medium">Agent</span>
+                          {ap?.rating > 0 && (
+                            <span className="flex items-center gap-1 text-xs">
+                              <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                              {ap.rating}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{agent.email}</p>
+                        <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground flex-wrap">
+                          {agent.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{agent.phone}</span>}
+                          {agent.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{agent.city}</span>}
+                          {agent.bio && <span>{agent.bio}</span>}
+                        </div>
+
+                        <ProfileCompletenessBar agent={agent} />
+
+                        <div className="flex gap-2 mt-3 flex-wrap">
+                          {agent.phone && (
+                            <a href={`tel:${agent.phone}`} className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
+                              <Phone className="w-3.5 h-3.5 text-emerald-500" /> Call
+                            </a>
+                          )}
+                          {agent.phone && (
+                            <a href={`sms:${agent.phone}`} className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
+                              <MessageSquare className="w-3.5 h-3.5 text-blue-500" /> SMS
+                            </a>
+                          )}
+                          {agent.phone && (
+                            <a href={`https://wa.me/${agent.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
+                              <MessageSquare className="w-3.5 h-3.5 text-green-500" /> WhatsApp
+                            </a>
+                          )}
+                          <a href={`mailto:${agent.email || ""}`} className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
+                            <Mail className="w-3.5 h-3.5 text-accent" /> Email
+                          </a>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button onClick={() => startEdit(agent)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground" title="Edit"><Edit className="w-4 h-4" /></button>
+                        <button onClick={() => removeAgent(agent.user_id)} className="p-2 rounded-xl hover:bg-destructive/10 text-destructive" title="Remove agent"><Trash2 className="w-4 h-4" /></button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
             {agents.length === 0 && (
               <div className="bg-card rounded-2xl border border-border p-12 text-center">
                 <UserPlus className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
@@ -499,6 +741,23 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
                         </div>
                         {app.reason && <p className="text-xs text-muted-foreground mt-2 italic">"{app.reason}"</p>}
                         <p className="text-xs text-muted-foreground mt-1">Applied: {new Date(app.created_at).toLocaleDateString("en-IN")}</p>
+
+                        {/* Contact buttons for applications */}
+                        <div className="flex gap-2 mt-3 flex-wrap">
+                          {app.phone && (
+                            <a href={`tel:${app.phone}`} className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
+                              <Phone className="w-3.5 h-3.5 text-emerald-500" /> Call
+                            </a>
+                          )}
+                          {app.phone && (
+                            <a href={`https://wa.me/${app.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
+                              <MessageSquare className="w-3.5 h-3.5 text-green-500" /> WhatsApp
+                            </a>
+                          )}
+                          <a href={`mailto:${app.email}`} className="px-3 py-1.5 rounded-xl border border-border text-xs font-medium hover:bg-muted flex items-center gap-1.5 transition-colors">
+                            <Mail className="w-3.5 h-3.5 text-accent" /> Email
+                          </a>
+                        </div>
                       </div>
 
                       {app.status === "pending" && (
