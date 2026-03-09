@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { Star, Phone, MapPin, CheckCircle, Search, MessageSquare, UserPlus, Building2 } from "lucide-react";
+import { Star, Phone, MapPin, CheckCircle, Search, MessageSquare, UserPlus, Building2, Mail } from "lucide-react";
 
 const Agents = () => {
   const [city, setCity] = useState("All");
@@ -162,18 +162,28 @@ const Agents = () => {
                       </div>
                     </div>
                   </Link>
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {agent.phone && (
-                      <a href={`tel:${agent.phone}`} onClick={e => e.stopPropagation()} className="flex-1 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-emerald-500" /> Call
+                      <a href={`tel:${agent.phone}`} onClick={e => e.stopPropagation()} className="py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1.5">
+                        <Phone className="w-3.5 h-3.5 text-accent" /> Call
                       </a>
                     )}
                     {agent.phone && (
-                      <a href={`https://wa.me/${agent.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex-1 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1.5">
-                        <MessageSquare className="w-3.5 h-3.5 text-green-500" /> WhatsApp
+                      <a href={`sms:${agent.phone}`} onClick={e => e.stopPropagation()} className="py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1.5">
+                        <MessageSquare className="w-3.5 h-3.5 text-accent" /> SMS
                       </a>
                     )}
-                    <Link to={`/agent/${agent.id}`} className="flex-1 py-2 rounded-xl btn-gold text-sm flex items-center justify-center gap-1.5">
+                    {agent.email && (
+                      <a href={`mailto:${agent.email}`} onClick={e => e.stopPropagation()} className="py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-accent" /> Email
+                      </a>
+                    )}
+                    {agent.phone && (
+                      <a href={`https://wa.me/${agent.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-all flex items-center justify-center gap-1.5">
+                        <MessageSquare className="w-3.5 h-3.5 text-accent" /> WhatsApp
+                      </a>
+                    )}
+                    <Link to={`/agent/${agent.id}`} className="col-span-2 py-2 rounded-xl btn-gold text-sm flex items-center justify-center gap-1.5">
                       View Profile
                     </Link>
                   </div>
