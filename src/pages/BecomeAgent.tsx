@@ -228,79 +228,79 @@ const BecomeAgent = () => {
             <h2 className="text-xl font-display font-bold mb-1">Agent Application Form</h2>
             <p className="text-sm text-muted-foreground mb-6">Fill in your details and upload your profile photo. Admin will review and approve your profile.</p>
 
-            {!user && (
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
+            {!user ? (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
                 <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">You need to be logged in to apply.</p>
                 <button onClick={() => navigate("/auth")} className="mt-2 btn-gold px-4 py-2 rounded-xl text-sm font-medium">Sign In / Sign Up</button>
               </div>
-            )}
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5">Profile Photo *</label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-2xl bg-muted border border-border overflow-hidden flex items-center justify-center">
+                      {avatarPreview ? (
+                        <img src={avatarPreview} alt="Selected profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <Camera className="w-6 h-6 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div>
+                      <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarSelect} className="hidden" />
+                      <button type="button" onClick={() => fileRef.current?.click()} className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">
+                        {avatarPreview ? "Change Photo" : "Upload Photo"}
+                      </button>
+                      <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WEBP · max 5MB</p>
+                    </div>
+                  </div>
+                </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1.5">Profile Photo *</label>
-                <div className="flex items-center gap-4">
-                  <div className="w-20 h-20 rounded-2xl bg-muted border border-border overflow-hidden flex items-center justify-center">
-                    {avatarPreview ? (
-                      <img src={avatarPreview} alt="Selected profile" className="w-full h-full object-cover" />
-                    ) : (
-                      <Camera className="w-6 h-6 text-muted-foreground" />
-                    )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Full Name *</label>
+                    <input value={form.full_name} onChange={(e) => update("full_name", e.target.value)} placeholder="Your full name" required className={fieldClass} />
                   </div>
                   <div>
-                    <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarSelect} className="hidden" />
-                    <button type="button" onClick={() => fileRef.current?.click()} className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">
-                      {avatarPreview ? "Change Photo" : "Upload Photo"}
-                    </button>
-                    <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WEBP · max 5MB</p>
+                    <label className="block text-sm font-medium mb-1.5">Email *</label>
+                    <input value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="your@email.com" type="email" required className={fieldClass} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Phone *</label>
+                    <input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+91 98765 43210" required className={fieldClass} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">City</label>
+                    <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Mumbai" className={fieldClass} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Experience (Years)</label>
+                    <input value={form.experience_years} onChange={(e) => update("experience_years", parseInt(e.target.value) || 0)} type="number" min={0} className={fieldClass} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Specialization</label>
+                    <input value={form.specialization} onChange={(e) => update("specialization", e.target.value)} placeholder="Residential, Commercial, Luxury..." className={fieldClass} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Languages</label>
+                    <input value={form.languages} onChange={(e) => update("languages", e.target.value)} placeholder="English, Hindi, Marathi..." className={fieldClass} />
                   </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">Full Name *</label>
-                  <input value={form.full_name} onChange={(e) => update("full_name", e.target.value)} placeholder="Your full name" required className={fieldClass} />
+                  <label className="block text-sm font-medium mb-1.5">Bio / About You</label>
+                  <textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} placeholder="Tell us about your real estate experience..." rows={3} className={fieldClass + " resize-none"} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">Email *</label>
-                  <input value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="your@email.com" type="email" required className={fieldClass} />
+                  <label className="block text-sm font-medium mb-1.5">Why do you want to join PropEstate?</label>
+                  <textarea value={form.reason} onChange={(e) => update("reason", e.target.value)} placeholder="Your motivation..." rows={2} className={fieldClass + " resize-none"} />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Phone *</label>
-                  <input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+91 98765 43210" required className={fieldClass} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">City</label>
-                  <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Mumbai" className={fieldClass} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Experience (Years)</label>
-                  <input value={form.experience_years} onChange={(e) => update("experience_years", parseInt(e.target.value) || 0)} type="number" min={0} className={fieldClass} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Specialization</label>
-                  <input value={form.specialization} onChange={(e) => update("specialization", e.target.value)} placeholder="Residential, Commercial, Luxury..." className={fieldClass} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Languages</label>
-                  <input value={form.languages} onChange={(e) => update("languages", e.target.value)} placeholder="English, Hindi, Marathi..." className={fieldClass} />
-                </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1.5">Bio / About You</label>
-                <textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} placeholder="Tell us about your real estate experience..." rows={3} className={fieldClass + " resize-none"} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5">Why do you want to join PropEstate?</label>
-                <textarea value={form.reason} onChange={(e) => update("reason", e.target.value)} placeholder="Your motivation..." rows={2} className={fieldClass + " resize-none"} />
-              </div>
-
-              <button type="submit" disabled={loading || uploadingAvatar || !user} className="w-full py-3 rounded-xl btn-gold font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-60">
-                {(loading || uploadingAvatar) && <Loader2 className="w-4 h-4 animate-spin" />}
-                Submit Application
-              </button>
-            </form>
+                <button type="submit" disabled={loading || uploadingAvatar} className="w-full py-3 rounded-xl btn-gold font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-60">
+                  {(loading || uploadingAvatar) && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Submit Application
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>
