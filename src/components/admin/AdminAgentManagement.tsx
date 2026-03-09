@@ -192,14 +192,18 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
 
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({
-          full_name: app.full_name,
-          phone: app.phone || null,
-          city: app.city || null,
-          bio: app.bio || null,
-          is_verified: true,
-        })
-        .eq("user_id", app.user_id);
+        .upsert(
+          {
+            user_id: app.user_id,
+            full_name: app.full_name,
+            email: app.email,
+            phone: app.phone || null,
+            city: app.city || null,
+            bio: app.bio || null,
+            is_verified: true,
+          },
+          { onConflict: "user_id" }
+        );
       if (profileError) throw profileError;
 
       if (existingAgentProfile?.id) {
