@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { Star, Phone, MapPin, CheckCircle, Search, MessageSquare, UserPlus, Building2 } from "lucide-react";
+import { Star, Phone, MapPin, CheckCircle, Search, MessageSquare, UserPlus, Building2, Mail } from "lucide-react";
 
 const Agents = () => {
   const [city, setCity] = useState("All");
