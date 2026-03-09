@@ -209,6 +209,36 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_reviews: {
+        Row: {
+          agent_user_id: string
+          created_at: string
+          id: string
+          rating: number
+          review_text: string | null
+          reviewer_name: string
+          reviewer_user_id: string
+        }
+        Insert: {
+          agent_user_id: string
+          created_at?: string
+          id?: string
+          rating: number
+          review_text?: string | null
+          reviewer_name: string
+          reviewer_user_id: string
+        }
+        Update: {
+          agent_user_id?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          review_text?: string | null
+          reviewer_name?: string
+          reviewer_user_id?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author_id: string
