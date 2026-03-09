@@ -93,36 +93,46 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
       if (authErr) throw authErr;
 
       if (authData.user) {
-        await supabase
+        const { error: profileUpsertError } = await supabase
           .from("profiles")
-          .update({
-            full_name: createForm.full_name,
-            phone: createForm.phone || null,
-            city: createForm.city || null,
-            bio: createForm.bio || null,
-            is_verified: true,
-          })
-          .eq("user_id", authData.user.id);
+          .upsert(
+            {
+              user_id: authData.user.id,
+              full_name: createForm.full_name,
+              email: createForm.email,
+              phone: createForm.phone || null,
+              city: createForm.city || null,
+              bio: createForm.bio || null,
+              is_verified: true,
+            },
+            { onConflict: "user_id" }
+          );
+        if (profileUpsertError) throw profileUpsertError;
 
-        await supabase.from("user_roles").delete().eq("user_id", authData.user.id);
-        await supabase
+        const { error: deleteRoleError } = await supabase.from("user_roles").delete().eq("user_id", authData.user.id);
+        if (deleteRoleError) throw deleteRoleError;
+
+        const { error: insertRoleError } = await supabase
           .from("user_roles")
           .insert({ user_id: authData.user.id, role: "agent" as any, assigned_by: adminId });
+        if (insertRoleError) throw insertRoleError;
 
-        await (supabase.from("agent_profiles") as any).insert({
+        const { error: agentProfileError } = await (supabase.from("agent_profiles") as any).insert({
           user_id: authData.user.id,
           agent_id: agentId,
           experience_years: createForm.experience_years || 0,
           specialization: createForm.specialization || null,
         });
+        if (agentProfileError) throw agentProfileError;
 
-        await supabase.from("admin_activity_log").insert({
+        const { error: activityLogError } = await supabase.from("admin_activity_log").insert({
           admin_id: adminId,
           action: "create_agent",
           entity_type: "user",
           entity_id: authData.user.id,
           details: { email: createForm.email, name: createForm.full_name, agent_id: agentId },
         });
+        if (activityLogError) throw activityLogError;
 
         try {
           await supabase.functions.invoke("agent-approval-email", {
