@@ -3,7 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Star, Phone, Mail, MapPin, CheckCircle, Briefcase, Award, MessageSquare, Building2, Globe, Users, TrendingUp, Calendar, ExternalLink } from "lucide-react";
+import { Star, Phone, Mail, MapPin, CheckCircle, Briefcase, Award, MessageSquare, Building2, Globe, Users, TrendingUp, Calendar, ExternalLink, MessageCircle } from "lucide-react";
+import AgentContactButtons from "@/components/agent/AgentContactButtons";
+import AgentReviews from "@/components/agent/AgentReviews";
 
 const AgentProfile = () => {
   const { id } = useParams();
