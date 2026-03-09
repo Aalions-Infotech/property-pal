@@ -214,6 +214,8 @@ const AgentProfile = () => {
                       </div>
                     </a>
                   )}
+                </div>
+              </div>
 
               {/* Specialization */}
               {agentProfile?.specialization && (
