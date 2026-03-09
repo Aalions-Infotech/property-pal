@@ -90,13 +90,15 @@ const BecomeAgent = () => {
     setLoading(true);
 
     try {
-      const { data: existingApplications } = await supabase
+      const { data: existingApplications, error: existingError } = await supabase
         .from("agent_applications")
         .select("id, status")
         .eq("user_id", user.id)
         .in("status", ["pending", "approved"])
         .order("created_at", { ascending: false })
         .limit(1);
+
+      if (existingError) throw existingError;
 
       const existing = existingApplications?.[0];
 
@@ -109,21 +111,34 @@ const BecomeAgent = () => {
         return;
       }
 
+      if (existing?.status === "pending") {
+        toast({
+          title: "Application already submitted",
+          description: "Your application is under review. Please wait for admin approval.",
+        });
+        return;
+      }
+
       const avatarUrl = await uploadProfilePhoto(user.id);
 
-      await supabase
+      const { error: profileError } = await supabase
         .from("profiles")
-        .update({
-          full_name: form.full_name,
-          email: form.email,
-          phone: form.phone,
-          city: form.city || null,
-          bio: form.bio || null,
-          avatar_url: avatarUrl,
-        })
-        .eq("user_id", user.id);
+        .upsert(
+          {
+            user_id: user.id,
+            full_name: form.full_name,
+            email: form.email,
+            phone: form.phone,
+            city: form.city || null,
+            bio: form.bio || null,
+            avatar_url: avatarUrl,
+          },
+          { onConflict: "user_id" }
+        );
 
-      const payload = {
+      if (profileError) throw profileError;
+
+      const { error: applicationError } = await supabase.from("agent_applications").insert({
         user_id: user.id,
         full_name: form.full_name,
         email: form.email,
@@ -138,18 +153,9 @@ const BecomeAgent = () => {
         reviewed_by: null,
         reviewed_at: null,
         admin_note: null,
-      } as any;
+      });
 
-      if (existing?.status === "pending") {
-        const { error } = await supabase
-          .from("agent_applications")
-          .update(payload)
-          .eq("id", existing.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("agent_applications").insert(payload);
-        if (error) throw error;
-      }
+      if (applicationError) throw applicationError;
 
       setSubmitted(true);
       toast({
