@@ -46,6 +46,7 @@ const AdminDashboard = () => {
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [userFilterRole, setUserFilterRole] = useState("all");
   const [expandedListing, setExpandedListing] = useState<string | null>(null);
+  const [editingListing, setEditingListing] = useState<any | null>(null);
   const [notifForm, setNotifForm] = useState({ userId: "", title: "", message: "" });
   const [showNotifModal, setShowNotifModal] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
