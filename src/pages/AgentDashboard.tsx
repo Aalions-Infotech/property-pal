@@ -34,7 +34,8 @@ const AgentDashboard = () => {
       navigate("/auth");
       return;
     }
-    if (role !== "agent") {
+    // Allow admin to view agent dashboard
+    if (role !== "agent" && role !== "admin" && role !== "moderator") {
       navigate("/dashboard");
       return;
     }

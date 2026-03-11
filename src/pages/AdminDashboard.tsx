@@ -15,6 +15,7 @@ import {
   Sun, Moon, Menu, X, Plus, UserPlus
 } from "lucide-react";
 import AdminAddProperty from "@/components/admin/AdminAddProperty";
+import AdminListingEditor from "@/components/admin/AdminListingEditor";
 import AdminAgentManagement from "@/components/admin/AdminAgentManagement";
 import AdminArticleManagement from "@/components/admin/AdminArticleManagement";
 import AdminProjectManagement from "@/components/admin/AdminProjectManagement";
@@ -45,6 +46,7 @@ const AdminDashboard = () => {
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [userFilterRole, setUserFilterRole] = useState("all");
   const [expandedListing, setExpandedListing] = useState<string | null>(null);
+  const [editingListing, setEditingListing] = useState<any | null>(null);
   const [notifForm, setNotifForm] = useState({ userId: "", title: "", message: "" });
   const [showNotifModal, setShowNotifModal] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -467,6 +469,9 @@ const AdminDashboard = () => {
           <Link to="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
             <LayoutDashboard className="w-4 h-4" /> {!sidebarCollapsed && "User Dashboard"}
           </Link>
+          <Link to="/agent-dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
+            <UserPlus className="w-4 h-4" /> {!sidebarCollapsed && "Agent Dashboard"}
+          </Link>
           <button onClick={signOut} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
             <LogOut className="w-4 h-4" /> {!sidebarCollapsed && "Sign Out"}
           </button>
@@ -707,6 +712,9 @@ const AdminDashboard = () => {
                             </button>
                             <button onClick={() => setExpandedListing(expandedListing === l.id ? null : l.id)} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
                               <Eye className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => setEditingListing(l)} className="p-1.5 rounded-lg hover:bg-accent/10 text-muted-foreground hover:text-accent" title="Full Edit">
+                              <Edit className="w-4 h-4" />
                             </button>
                             <button onClick={() => deleteListing(l.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500">
                               <Trash2 className="w-4 h-4" />
@@ -1246,6 +1254,16 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Listing Editor Modal */}
+      {editingListing && (
+        <AdminListingEditor
+          listing={editingListing}
+          adminId={user!.id}
+          onSave={() => { setEditingListing(null); fetchAll(); }}
+          onClose={() => setEditingListing(null)}
+        />
+      )}
 
       {/* Notification Modal */}
       {showNotifModal && (

@@ -23,7 +23,8 @@ const STRIPE_PLANS = [
 ];
 
 const UserDashboard = () => {
-  const { user, role, loading: authLoading, signOut } = useAuth();
+  const { user, role, loading: authLoading, signOut, isAdmin } = useAuth();
+  const isAdminViewing = isAdmin;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -45,13 +46,9 @@ const UserDashboard = () => {
       return;
     }
 
-    if (role === "agent") {
+    // Allow admin to access user dashboard (don't redirect them)
+    if (role === "agent" && !isAdminViewing) {
       navigate("/agent-dashboard", { replace: true });
-      return;
-    }
-
-    if (role === "admin" || role === "moderator") {
-      navigate("/admin", { replace: true });
       return;
     }
 

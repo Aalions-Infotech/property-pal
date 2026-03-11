@@ -78,7 +78,7 @@ const BecomeAgent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      navigate("/auth");
+      navigate("/auth?redirect=/become-agent");
       return;
     }
 
@@ -231,7 +231,7 @@ const BecomeAgent = () => {
             {!user && (
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
                 <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">You need to be logged in to complete self-registration.</p>
-                <button onClick={() => navigate("/auth")} className="mt-2 btn-gold px-4 py-2 rounded-xl text-sm font-medium">Sign In / Sign Up</button>
+                <button onClick={() => navigate("/auth?redirect=/become-agent")} className="mt-2 btn-gold px-4 py-2 rounded-xl text-sm font-medium">Sign In / Sign Up</button>
               </div>
             )}
 
