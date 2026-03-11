@@ -469,6 +469,9 @@ const AdminDashboard = () => {
           <Link to="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
             <LayoutDashboard className="w-4 h-4" /> {!sidebarCollapsed && "User Dashboard"}
           </Link>
+          <Link to="/agent-dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
+            <UserPlus className="w-4 h-4" /> {!sidebarCollapsed && "Agent Dashboard"}
+          </Link>
           <button onClick={signOut} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
             <LogOut className="w-4 h-4" /> {!sidebarCollapsed && "Sign Out"}
           </button>
