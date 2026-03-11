@@ -32,11 +32,35 @@ const Agents = () => {
         profiles = profileRows || [];
       }
 
+      // Fetch real review stats from agent_reviews
+      let reviewStats: Record<string, { avg: number; count: number }> = {};
+      if (userIds.length > 0) {
+        const { data: reviews } = await supabase
+          .from("agent_reviews")
+          .select("agent_user_id, rating")
+          .in("agent_user_id", userIds);
+        
+        if (reviews) {
+          const grouped: Record<string, number[]> = {};
+          reviews.forEach((r: any) => {
+            if (!grouped[r.agent_user_id]) grouped[r.agent_user_id] = [];
+            grouped[r.agent_user_id].push(r.rating);
+          });
+          Object.entries(grouped).forEach(([uid, ratings]) => {
+            reviewStats[uid] = {
+              avg: Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10,
+              count: ratings.length,
+            };
+          });
+        }
+      }
+
       const profileMap = new Map(profiles.map((p) => [p.user_id, p]));
 
       const merged = agentRows.map((ap: any) => {
         const profile = profileMap.get(ap.user_id);
         const fallbackName = ap.agent_id ? `Agent ${String(ap.agent_id).slice(-4)}` : "Agent";
+        const stats = reviewStats[ap.user_id];
 
         return {
           id: ap.user_id,
@@ -51,8 +75,8 @@ const Agents = () => {
           specialization: ap?.specialization || "",
           totalSales: ap?.total_sales || 0,
           propertiesListed: ap?.properties_listed || 0,
-          rating: ap?.rating || 0,
-          totalReviews: ap?.total_reviews || 0,
+          rating: stats?.avg || ap?.rating || 0,
+          totalReviews: stats?.count || ap?.total_reviews || 0,
           languages: ap?.languages || "",
           areasServed: ap?.areas_served || [],
           agentId: ap?.agent_id || "",

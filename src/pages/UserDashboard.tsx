@@ -23,8 +23,8 @@ const STRIPE_PLANS = [
 ];
 
 const UserDashboard = () => {
-  const { user, role, loading: authLoading, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user, role, loading: authLoading, signOut, isAdmin } = useAuth();
+  const isAdminViewing = isAdmin;
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [tab, setTab] = useState("overview");
