@@ -45,13 +45,9 @@ const UserDashboard = () => {
       return;
     }
 
-    if (role === "agent") {
+    // Allow admin to access user dashboard (don't redirect them)
+    if (role === "agent" && !isAdminViewing) {
       navigate("/agent-dashboard", { replace: true });
-      return;
-    }
-
-    if (role === "admin" || role === "moderator") {
-      navigate("/admin", { replace: true });
       return;
     }
 
