@@ -1252,6 +1252,16 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Listing Editor Modal */}
+      {editingListing && (
+        <AdminListingEditor
+          listing={editingListing}
+          adminId={user!.id}
+          onSave={() => { setEditingListing(null); fetchAll(); }}
+          onClose={() => setEditingListing(null)}
+        />
+      )}
+
       {/* Notification Modal */}
       {showNotifModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowNotifModal(false)}>
