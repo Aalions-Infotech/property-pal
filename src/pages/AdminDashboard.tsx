@@ -15,6 +15,7 @@ import {
   Sun, Moon, Menu, X, Plus, UserPlus
 } from "lucide-react";
 import AdminAddProperty from "@/components/admin/AdminAddProperty";
+import AdminListingEditor from "@/components/admin/AdminListingEditor";
 import AdminAgentManagement from "@/components/admin/AdminAgentManagement";
 import AdminArticleManagement from "@/components/admin/AdminArticleManagement";
 import AdminProjectManagement from "@/components/admin/AdminProjectManagement";
