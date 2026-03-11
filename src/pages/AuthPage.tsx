@@ -12,10 +12,14 @@ const AuthPage = () => {
   const { user, role, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
 
-  // Redirect authenticated users based on role
+  // Redirect authenticated users based on role (respecting ?redirect param)
   useEffect(() => {
     if (!authLoading && user && role) {
-      if (role === "admin" || role === "moderator") {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect");
+      if (redirect) {
+        navigate(redirect, { replace: true });
+      } else if (role === "admin" || role === "moderator") {
         navigate("/admin", { replace: true });
       } else if (role === "agent") {
         navigate("/agent-dashboard", { replace: true });
