@@ -710,6 +710,9 @@ const AdminDashboard = () => {
                             <button onClick={() => setExpandedListing(expandedListing === l.id ? null : l.id)} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
                               <Eye className="w-4 h-4" />
                             </button>
+                            <button onClick={() => setEditingListing(l)} className="p-1.5 rounded-lg hover:bg-accent/10 text-muted-foreground hover:text-accent" title="Full Edit">
+                              <Edit className="w-4 h-4" />
+                            </button>
                             <button onClick={() => deleteListing(l.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500">
                               <Trash2 className="w-4 h-4" />
                             </button>
