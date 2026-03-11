@@ -78,7 +78,7 @@ const BecomeAgent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      navigate("/auth");
+      navigate("/auth?redirect=/become-agent");
       return;
     }
 
