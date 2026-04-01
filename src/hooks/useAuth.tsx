@@ -1,8 +1,10 @@
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect, useCallback, createContext, useContext } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 type AppRole = "admin" | "moderator" | "agent" | "user";
+
+const SESSION_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
 
 interface AuthContextType {
   user: User | null;
@@ -52,12 +54,70 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (nextSession?.user) {
       await fetchRole(nextSession.user.id);
+      // Track last activity for session timeout
+      localStorage.setItem("lastActivity", Date.now().toString());
     } else {
       setRole(null);
+      localStorage.removeItem("lastActivity");
     }
 
     setLoading(false);
   };
+
+  const handleSignOut = useCallback(async () => {
+    localStorage.removeItem("lastActivity");
+    await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+    setRole(null);
+    window.location.href = "/auth";
+  }, []);
+
+  // Session timeout check
+  useEffect(() => {
+    if (!user) return;
+
+    const updateActivity = () => {
+      localStorage.setItem("lastActivity", Date.now().toString());
+    };
+
+    const checkExpiry = () => {
+      const last = parseInt(localStorage.getItem("lastActivity") || "0", 10);
+      if (last && Date.now() - last > SESSION_TIMEOUT_MS) {
+        handleSignOut();
+      }
+    };
+
+    // Check every 30s
+    const interval = setInterval(checkExpiry, 30_000);
+
+    // Update activity on user interaction
+    window.addEventListener("click", updateActivity);
+    window.addEventListener("keydown", updateActivity);
+    window.addEventListener("scroll", updateActivity);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("click", updateActivity);
+      window.removeEventListener("keydown", updateActivity);
+      window.removeEventListener("scroll", updateActivity);
+    };
+  }, [user, handleSignOut]);
+
+  // Auto-logout when leaving dashboard via back button
+  useEffect(() => {
+    const handlePopState = () => {
+      const dashboardPaths = ["/admin", "/dashboard", "/agent-dashboard"];
+      const wasOnDashboard = dashboardPaths.some(p => document.referrer.includes(p));
+      const isNowOffDashboard = !dashboardPaths.some(p => window.location.pathname.startsWith(p));
+      if (wasOnDashboard && isNowOffDashboard && user) {
+        handleSignOut();
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [user, handleSignOut]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -75,15 +135,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
-
   return (
     <AuthContext.Provider value={{
       user, session, loading, role,
       isAdmin: role === "admin" || role === "moderator",
-      signOut,
+      signOut: handleSignOut,
     }}>
       {children}
     </AuthContext.Provider>
