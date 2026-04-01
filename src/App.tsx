@@ -24,6 +24,7 @@ import AgentDashboard from "./pages/AgentDashboard";
 import BecomeAgent from "./pages/BecomeAgent";
 import AgentProfile from "./pages/AgentProfile";
 import ProjectDetail from "./pages/ProjectDetail";
+import ResetPassword from "./pages/ResetPassword";
 import SupportChat from "./components/SupportChat";
 
 const queryClient = new QueryClient();
