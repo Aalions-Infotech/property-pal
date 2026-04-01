@@ -24,6 +24,7 @@ import AgentDashboard from "./pages/AgentDashboard";
 import BecomeAgent from "./pages/BecomeAgent";
 import AgentProfile from "./pages/AgentProfile";
 import ProjectDetail from "./pages/ProjectDetail";
+import ResetPassword from "./pages/ResetPassword";
 import SupportChat from "./components/SupportChat";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
               <Route path="/become-agent" element={<BecomeAgent />} />
               <Route path="/agent/:id" element={<AgentProfile />} />
               <Route path="/project/:id" element={<ProjectDetail />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
