@@ -59,6 +59,7 @@ const App = () => (
               <Route path="/become-agent" element={<BecomeAgent />} />
               <Route path="/agent/:id" element={<AgentProfile />} />
               <Route path="/project/:id" element={<ProjectDetail />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
