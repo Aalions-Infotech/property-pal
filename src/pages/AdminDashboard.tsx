@@ -395,6 +395,8 @@ const AdminDashboard = () => {
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "plans", label: "Pricing Plans", icon: DollarSign },
     { id: "realtime", label: "Live Alerts", icon: Activity, badge: realtimeAlerts.length },
+    { id: "view-user-dashboard", label: "User Dashboard", icon: Eye },
+    { id: "view-agent-dashboard", label: "Agent Dashboard", icon: Briefcase },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
