@@ -1248,6 +1248,16 @@ const AdminDashboard = () => {
               </div>
             </div>
           )}
+
+          {/* Embedded User Dashboard View */}
+          {tab === "view-user-dashboard" && (
+            <AdminUserDashboardView users={users} userRoles={userRoles} listings={listings} sponsorships={sponsorships} />
+          )}
+
+          {/* Embedded Agent Dashboard View */}
+          {tab === "view-agent-dashboard" && (
+            <AdminAgentDashboardView users={users} userRoles={userRoles} />
+          )}
         </div>
       </div>
 
