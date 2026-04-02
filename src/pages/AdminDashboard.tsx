@@ -12,13 +12,15 @@ import {
   History, Download, Upload, MoreHorizontal, Globe,
   Megaphone, BarChart3, PieChart, Calendar, Mail,
   UserCheck, UserX, Layers, Sliders, Database,
-  Sun, Moon, Menu, X, Plus, UserPlus
+  Sun, Moon, Menu, X, Plus, UserPlus, Briefcase
 } from "lucide-react";
 import AdminAddProperty from "@/components/admin/AdminAddProperty";
 import AdminListingEditor from "@/components/admin/AdminListingEditor";
 import AdminAgentManagement from "@/components/admin/AdminAgentManagement";
 import AdminArticleManagement from "@/components/admin/AdminArticleManagement";
 import AdminProjectManagement from "@/components/admin/AdminProjectManagement";
+import AdminUserDashboardView from "@/components/admin/AdminUserDashboardView";
+import AdminAgentDashboardView from "@/components/admin/AdminAgentDashboardView";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
@@ -395,6 +397,8 @@ const AdminDashboard = () => {
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "plans", label: "Pricing Plans", icon: DollarSign },
     { id: "realtime", label: "Live Alerts", icon: Activity, badge: realtimeAlerts.length },
+    { id: "view-user-dashboard", label: "User Dashboard", icon: Eye },
+    { id: "view-agent-dashboard", label: "Agent Dashboard", icon: Briefcase },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
@@ -465,12 +469,6 @@ const AdminDashboard = () => {
         <div className="p-2 border-t border-border space-y-0.5">
           <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
             <Globe className="w-4 h-4" /> {!sidebarCollapsed && "View Site"}
-          </Link>
-          <Link to="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
-            <LayoutDashboard className="w-4 h-4" /> {!sidebarCollapsed && "User Dashboard"}
-          </Link>
-          <Link to="/agent-dashboard" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
-            <UserPlus className="w-4 h-4" /> {!sidebarCollapsed && "Agent Dashboard"}
           </Link>
           <button onClick={() => signOut()} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
             <LogOut className="w-4 h-4" /> {!sidebarCollapsed && "Sign Out"}
@@ -1251,6 +1249,16 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Embedded User Dashboard View */}
+          {tab === "view-user-dashboard" && (
+            <AdminUserDashboardView users={users} userRoles={userRoles} listings={listings} sponsorships={sponsorships} />
+          )}
+
+          {/* Embedded Agent Dashboard View */}
+          {tab === "view-agent-dashboard" && (
+            <AdminAgentDashboardView users={users} userRoles={userRoles} />
           )}
         </div>
       </div>
