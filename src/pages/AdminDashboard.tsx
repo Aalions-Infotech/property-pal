@@ -12,7 +12,7 @@ import {
   History, Download, Upload, MoreHorizontal, Globe,
   Megaphone, BarChart3, PieChart, Calendar, Mail,
   UserCheck, UserX, Layers, Sliders, Database,
-  Sun, Moon, Menu, X, Plus, UserPlus
+  Sun, Moon, Menu, X, Plus, UserPlus, Briefcase
 } from "lucide-react";
 import AdminAddProperty from "@/components/admin/AdminAddProperty";
 import AdminListingEditor from "@/components/admin/AdminListingEditor";
