@@ -58,6 +58,7 @@ export type Database = {
           languages: string | null
           phone: string | null
           reason: string | null
+          rera_number: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           specialization: string | null
@@ -78,6 +79,7 @@ export type Database = {
           languages?: string | null
           phone?: string | null
           reason?: string | null
+          rera_number?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           specialization?: string | null
@@ -98,6 +100,7 @@ export type Database = {
           languages?: string | null
           phone?: string | null
           reason?: string | null
+          rera_number?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           specialization?: string | null
@@ -316,6 +319,68 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      leads: {
+        Row: {
+          agent_id: string | null
+          budget: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          otp_code: string | null
+          otp_verified: boolean | null
+          phone: string
+          property_id: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          visit_date: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          budget?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          otp_code?: string | null
+          otp_verified?: boolean | null
+          phone: string
+          property_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          visit_date?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          budget?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          otp_code?: string | null
+          otp_verified?: boolean | null
+          phone?: string
+          property_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          visit_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "property_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       new_projects: {
         Row: {
