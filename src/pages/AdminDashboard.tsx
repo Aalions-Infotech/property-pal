@@ -21,6 +21,7 @@ import AdminArticleManagement from "@/components/admin/AdminArticleManagement";
 import AdminProjectManagement from "@/components/admin/AdminProjectManagement";
 import AdminUserDashboardView from "@/components/admin/AdminUserDashboardView";
 import AdminAgentDashboardView from "@/components/admin/AdminAgentDashboardView";
+import AdminLeadsView from "@/components/admin/AdminLeadsView";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
