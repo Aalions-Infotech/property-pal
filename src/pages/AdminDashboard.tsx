@@ -1167,6 +1167,8 @@ const AdminDashboard = () => {
             <AdminArticleManagement adminId={user!.id} />
           )}
 
+          {tab === "leads" && <AdminLeadsView />}
+
 
           {tab === "settings" && (
             <div className="space-y-6">
