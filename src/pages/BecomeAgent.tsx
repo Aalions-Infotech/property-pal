@@ -282,10 +282,15 @@ const BecomeAgent = () => {
                   <label className="block text-sm font-medium mb-1.5">Specialization</label>
                   <input value={form.specialization} onChange={(e) => update("specialization", e.target.value)} placeholder="Residential, Commercial, Luxury..." className={fieldClass} />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Languages</label>
-                  <input value={form.languages} onChange={(e) => update("languages", e.target.value)} placeholder="English, Hindi, Marathi..." className={fieldClass} />
-                </div>
+                 <div>
+                   <label className="block text-sm font-medium mb-1.5">Languages</label>
+                   <input value={form.languages} onChange={(e) => update("languages", e.target.value)} placeholder="English, Hindi, Marathi..." className={fieldClass} />
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium mb-1.5">RERA Registration No.</label>
+                   <input value={form.rera_number} onChange={(e) => update("rera_number", e.target.value)} placeholder="e.g. P52100026542" className={fieldClass} />
+                   <p className="text-xs text-muted-foreground mt-1">If you are RERA registered, enter your number for verification badge</p>
+                 </div>
               </div>
 
               <div>
