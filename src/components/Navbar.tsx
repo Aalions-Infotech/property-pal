@@ -45,7 +45,7 @@ const Navbar = () => {
   const megaMenuBuyers = [
     { label: "Buy a Home", links: ["/buy?type=apartment", "/buy?type=villa", "/buy?type=plot", "/buy?type=penthouse"], names: ["Apartments", "Villas", "Plots/Land", "Penthouses"] },
     { label: "Commercial", links: ["/commercial?type=office", "/commercial?type=shop", "/commercial?type=warehouse"], names: ["Office Space", "Shops/Retail", "Warehouses"] },
-    { label: "Insights", links: ["/price-trends", "/locality", "/news"], names: ["Price Trends", "Locality Guide", "Real Estate News"] },
+    { label: "Land & More", links: ["/buy?type=agriculture-land", "/price-trends", "/news"], names: ["Agriculture Land", "Price Trends", "Real Estate News"] },
   ];
 
   return (
@@ -362,6 +362,7 @@ const Navbar = () => {
               { to: "/buy", label: "Buy Property", icon: Building2 },
               { to: "/rent", label: "Rent Property", icon: MapPin },
               { to: "/commercial", label: "Commercial", icon: Building2 },
+              { to: "/buy?type=agriculture-land", label: "Agriculture Land", icon: MapPin },
               { to: "/new-projects", label: "New Projects", icon: Star },
               { to: "/pg", label: "PG / Co-Living", icon: User },
               { to: "/post-property", label: "Post Property (FREE)", icon: Building2 },
