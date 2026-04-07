@@ -392,6 +392,7 @@ const AdminDashboard = () => {
     { id: "users", label: "Users & Roles", icon: Users },
     { id: "sponsorships", label: "Sponsorships", icon: Crown },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "leads", label: "Leads", icon: Mail },
     { id: "audit", label: "Audit Trail", icon: History },
     { id: "moderation", label: "Moderation", icon: Shield },
     { id: "notifications", label: "Notifications", icon: Bell },
