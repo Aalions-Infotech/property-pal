@@ -150,6 +150,7 @@ const BecomeAgent = () => {
         specialization: form.specialization || null,
         languages: form.languages || null,
         reason: form.reason || null,
+        rera_number: form.rera_number || null,
         status: "pending",
         reviewed_by: null,
         reviewed_at: null,

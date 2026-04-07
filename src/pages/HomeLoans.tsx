@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Calculator, DollarSign, TrendingDown, ChevronDown } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LeadForm from "@/components/LeadForm";
 
 const HomeLoans = () => {
   const [loanAmount, setLoanAmount] = useState(5000000);
@@ -119,6 +120,11 @@ const HomeLoans = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Lead form section */}
+          <div className="mt-10 max-w-lg mx-auto">
+            <LeadForm title="Get Home Loan Assistance" />
           </div>
         </div>
       </div>
