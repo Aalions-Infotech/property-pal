@@ -12,6 +12,8 @@ import SearchBar from "@/components/SearchBar";
 import PropertyCard from "@/components/PropertyCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LeadForm from "@/components/LeadForm";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { formatPrice, cities } from "@/data/properties";
 
 const PLAN_PRIORITY: Record<string, number> = {
@@ -30,6 +32,15 @@ const Index = () => {
   const [loadingProps, setLoadingProps] = useState(true);
   const [priceTrends, setPriceTrends] = useState<any[]>([]);
   const [articles, setArticles] = useState<any[]>([]);
+  const [showLeadPopup, setShowLeadPopup] = useState(false);
+
+  useEffect(() => {
+    const dismissed = sessionStorage.getItem("lead_popup_dismissed");
+    if (!dismissed) {
+      const timer = setTimeout(() => setShowLeadPopup(true), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -425,6 +436,16 @@ const Index = () => {
       </section>
 
       <Footer />
+
+      <Dialog open={showLeadPopup} onOpenChange={(open) => {
+        setShowLeadPopup(open);
+        if (!open) sessionStorage.setItem("lead_popup_dismissed", "true");
+      }}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <DialogTitle className="sr-only">Enquiry Form</DialogTitle>
+          <LeadForm title="Looking for a Property? Let Us Help!" />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
