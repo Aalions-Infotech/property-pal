@@ -138,7 +138,7 @@ const FilterSidebar = ({ type, onFilterChange }: FilterSidebarProps) => {
       <FilterSection title="Property Type" sectionKey="propertyType">
         <div className="space-y-1.5">
           {(type === "buy" || type === "rent" 
-            ? ["Apartment", "Villa", "Builder Floor", "Penthouse", "Studio", "Row House"]
+            ? ["Apartment", "Villa", "Builder Floor", "Penthouse", "Studio", "Row House", "Agriculture Land"]
             : type === "commercial" 
               ? ["Office Space", "Shop/Retail", "Showroom", "Warehouse", "Plot"]
               : ["Single Room", "Double Sharing", "Triple Sharing"]).map(ptype => (

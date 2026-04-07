@@ -155,7 +155,7 @@ const AdminAddProperty = ({ userId, onSuccess }: AdminAddPropertyProps) => {
           <div>
             <label className={labelClass}>Property Type *</label>
             <select name="property_type" value={form.property_type} onChange={handleChange} className={fieldClass}>
-              {["Apartment", "Villa", "Builder Floor", "Penthouse", "Row House", "Plot", "Studio", "Office Space", "Shop", "Warehouse"].map(t => (
+              {["Apartment", "Villa", "Builder Floor", "Penthouse", "Row House", "Plot", "Studio", "Office Space", "Shop", "Warehouse", "Agriculture Land"].map(t => (
                 <option key={t} value={t}>{t}</option>
               ))}
             </select>

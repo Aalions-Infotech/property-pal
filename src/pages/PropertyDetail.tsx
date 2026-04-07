@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { MapPin, BedDouble, Bath, Maximize2, Heart, Share2, Phone, MessageCircle, Shield, CheckCircle, Building2, Calendar, Car, Layers, Star, ChevronRight, Home, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LeadForm from "@/components/LeadForm";
 import { supabase } from "@/integrations/supabase/client";
 import { properties, formatPrice } from "@/data/properties";
 import PropertyCard from "@/components/PropertyCard";
@@ -281,6 +282,8 @@ const PropertyDetail = () => {
             {/* Contact Sidebar */}
             <aside className="hidden lg:block w-80 flex-shrink-0">
               <div className="sticky top-20 space-y-4">
+                <LeadForm propertyId={isLive ? property.id : undefined} title="Interested? Get in Touch" />
+
                 <div className="bg-card rounded-2xl border border-border p-5 shadow-card">
                   <div className="flex items-center gap-3 mb-5 pb-4 border-b border-border">
                     <div className="w-12 h-12 rounded-full bg-gradient-gold flex items-center justify-center font-display font-bold text-lg text-foreground">
