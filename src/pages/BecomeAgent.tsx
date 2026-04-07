@@ -29,6 +29,7 @@ const BecomeAgent = () => {
     specialization: "",
     languages: "",
     reason: "",
+    rera_number: "",
   });
 
   useEffect(() => {

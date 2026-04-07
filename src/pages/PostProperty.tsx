@@ -207,7 +207,7 @@ const PostProperty = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2">Property Type</label>
                   <div className="grid grid-cols-3 gap-2">
-                    {["Apartment", "Villa", "Builder Floor", "Plot", "Studio", "Office", "Shop", "Warehouse", "PG"].map(t => (
+                    {["Apartment", "Villa", "Builder Floor", "Plot", "Studio", "Office", "Shop", "Warehouse", "PG", "Agriculture Land"].map(t => (
                       <button key={t} onClick={() => update("propertyType", t)} className={`py-2 rounded-xl border text-sm font-medium transition-all ${form.propertyType === t ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{t}</button>
                     ))}
                   </div>
