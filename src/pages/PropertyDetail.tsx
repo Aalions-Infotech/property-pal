@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { MapPin, BedDouble, Bath, Maximize2, Heart, Share2, Phone, MessageCircle, Shield, CheckCircle, Building2, Calendar, Car, Layers, Star, ChevronRight, Home, Loader2 } from "lucide-react";
+import { MapPin, BedDouble, Bath, Maximize2, Heart, Share2, Phone, MessageCircle, MessageSquare, Shield, CheckCircle, Building2, Calendar, Car, Layers, Star, ChevronRight, Home, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LeadForm from "@/components/LeadForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { properties, formatPrice } from "@/data/properties";
 import PropertyCard from "@/components/PropertyCard";
@@ -15,6 +16,7 @@ const PropertyDetail = () => {
   const [tab, setTab] = useState<"overview" | "amenities" | "nearby" | "reviews">("overview");
   const [liveListing, setLiveListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showLeadForm, setShowLeadForm] = useState(false);
 
   // Try to find from static data first, then from DB
   const staticProperty = properties.find(p => p.id === id);
@@ -342,6 +344,24 @@ const PropertyDetail = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Floating Enquire Now Button */}
+      <button
+        onClick={() => setShowLeadForm(true)}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-accent text-accent-foreground font-medium text-sm shadow-lg hover:shadow-xl transition-all hover:scale-105"
+      >
+        <MessageSquare className="w-5 h-5" />
+        Enquire Now
+      </button>
+
+      <Dialog open={showLeadForm} onOpenChange={setShowLeadForm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enquire About This Property</DialogTitle>
+          </DialogHeader>
+          <LeadForm propertyId={id} onSuccess={() => setShowLeadForm(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
