@@ -16,6 +16,7 @@ const PropertyDetail = () => {
   const [tab, setTab] = useState<"overview" | "amenities" | "nearby" | "reviews">("overview");
   const [liveListing, setLiveListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showLeadForm, setShowLeadForm] = useState(false);
 
   // Try to find from static data first, then from DB
   const staticProperty = properties.find(p => p.id === id);
