@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { Grid3X3, List, SlidersHorizontal } from "lucide-react";
+import { Grid3X3, List, SlidersHorizontal, MessageSquare } from "lucide-react";
 import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LeadForm from "@/components/LeadForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import FilterSidebar, { FilterState } from "@/components/FilterSidebar";
 import SearchBar from "@/components/SearchBar";
 import { supabase } from "@/integrations/supabase/client";
@@ -112,6 +114,7 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
   const [filters, setFilters] = useState<FilterState>({});
   const [sortBy, setSortBy] = useState("relevance");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showLeadForm, setShowLeadForm] = useState(false);
   const [liveListings, setLiveListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -255,6 +258,24 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
           </div>
         </div>
       )}
+
+      {/* Floating Enquire Now Button */}
+      <button
+        onClick={() => setShowLeadForm(true)}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-semibold shadow-lg hover:bg-primary/90 transition-all hover:scale-105"
+      >
+        <MessageSquare className="w-5 h-5" />
+        Enquire Now
+      </button>
+
+      <Dialog open={showLeadForm} onOpenChange={setShowLeadForm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Enquire Now</DialogTitle>
+          </DialogHeader>
+          <LeadForm title="Enquire Now" />
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
