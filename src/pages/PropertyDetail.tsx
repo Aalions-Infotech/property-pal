@@ -344,6 +344,24 @@ const PropertyDetail = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Floating Enquire Now Button */}
+      <button
+        onClick={() => setShowLeadForm(true)}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-accent text-accent-foreground font-medium text-sm shadow-lg hover:shadow-xl transition-all hover:scale-105"
+      >
+        <MessageSquare className="w-5 h-5" />
+        Enquire Now
+      </button>
+
+      <Dialog open={showLeadForm} onOpenChange={setShowLeadForm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enquire About This Property</DialogTitle>
+          </DialogHeader>
+          <LeadForm propertyId={id} onSuccess={() => setShowLeadForm(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
