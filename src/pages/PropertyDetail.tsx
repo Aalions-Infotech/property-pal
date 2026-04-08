@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { MapPin, BedDouble, Bath, Maximize2, Heart, Share2, Phone, MessageCircle, Shield, CheckCircle, Building2, Calendar, Car, Layers, Star, ChevronRight, Home, Loader2 } from "lucide-react";
+import { MapPin, BedDouble, Bath, Maximize2, Heart, Share2, Phone, MessageCircle, MessageSquare, Shield, CheckCircle, Building2, Calendar, Car, Layers, Star, ChevronRight, Home, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LeadForm from "@/components/LeadForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { properties, formatPrice } from "@/data/properties";
 import PropertyCard from "@/components/PropertyCard";
