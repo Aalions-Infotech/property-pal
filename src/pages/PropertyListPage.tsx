@@ -114,6 +114,7 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
   const [filters, setFilters] = useState<FilterState>({});
   const [sortBy, setSortBy] = useState("relevance");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showLeadForm, setShowLeadForm] = useState(false);
   const [liveListings, setLiveListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
