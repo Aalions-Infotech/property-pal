@@ -7,15 +7,17 @@ interface LeadFormProps {
   propertyId?: string;
   agentId?: string;
   title?: string;
+  onSuccess?: () => void;
 }
 
-const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry" }: LeadFormProps) => {
+const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", onSuccess }: LeadFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
-  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [storedOtp, setStoredOtp] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
 
   const [form, setForm] = useState({
     full_name: "",
@@ -28,19 +30,29 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry" }:
 
   const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
-  const sendOtp = () => {
+  const sendOtp = async () => {
     if (!form.phone || form.phone.length < 10) {
       toast({ title: "Enter a valid phone number", variant: "destructive" });
       return;
     }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedOtp(otp);
-    setOtpSent(true);
-    toast({ title: `OTP sent to ${form.phone}`, description: `Demo OTP: ${otp}` });
+    setSendingOtp(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-otp", {
+        body: { phone: form.phone, action: "send" },
+      });
+      if (error) throw error;
+      setStoredOtp(data.otp_code);
+      setOtpSent(true);
+      toast({ title: `OTP sent to ${form.phone}`, description: `Demo OTP: ${data.otp_code}` });
+    } catch (err: any) {
+      toast({ title: "Failed to send OTP", description: err.message, variant: "destructive" });
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
   const verifyOtp = () => {
-    if (form.otp === generatedOtp) {
+    if (form.otp === storedOtp) {
       setOtpVerified(true);
       toast({ title: "✅ Phone verified successfully!" });
     } else {
@@ -75,6 +87,7 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry" }:
       if (error) throw error;
       setSubmitted(true);
       toast({ title: "🎉 Enquiry submitted successfully!" });
+      onSuccess?.();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -114,7 +127,8 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry" }:
               <input value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="+91 98765 43210" required disabled={otpVerified} className={`${fieldClass} pl-9`} />
             </div>
             {!otpVerified && (
-              <button type="button" onClick={sendOtp} className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium whitespace-nowrap">
+              <button type="button" onClick={sendOtp} disabled={sendingOtp} className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium whitespace-nowrap disabled:opacity-50 flex items-center gap-1">
+                {sendingOtp ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
                 {otpSent ? "Resend" : "Send OTP"}
               </button>
             )}
