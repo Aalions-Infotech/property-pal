@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { Grid3X3, List, SlidersHorizontal } from "lucide-react";
+import { Grid3X3, List, SlidersHorizontal, MessageSquare } from "lucide-react";
 import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LeadForm from "@/components/LeadForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import FilterSidebar, { FilterState } from "@/components/FilterSidebar";
 import SearchBar from "@/components/SearchBar";
 import { supabase } from "@/integrations/supabase/client";
