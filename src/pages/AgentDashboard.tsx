@@ -172,10 +172,8 @@ const AgentDashboard = () => {
       <div className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-navy rounded-lg flex items-center justify-center">
-              <span className="text-white text-sm font-bold">P</span>
-            </div>
-            <span className="font-display font-bold hidden sm:inline">PropEstate</span>
+            <img src="/ekananda-logo.webp" alt="Ekananda Estate" className="w-8 h-8 rounded-lg object-cover" />
+            <span className="font-display font-bold hidden sm:inline">Ekananda Estate</span>
             <span className="px-2 py-0.5 rounded-full text-[10px] bg-accent/10 text-accent border border-accent/20 font-semibold">AGENT</span>
           </Link>
           <div className="flex items-center gap-3">

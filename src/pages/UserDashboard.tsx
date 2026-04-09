@@ -186,10 +186,8 @@ const UserDashboard = () => {
       <div className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-navy rounded-lg flex items-center justify-center">
-              <span className="text-white text-sm font-bold">P</span>
-            </div>
-            <span className="font-display font-bold hidden sm:inline">PropEstate</span>
+            <img src="/ekananda-logo.webp" alt="Ekananda Estate" className="w-8 h-8 rounded-lg object-cover" />
+            <span className="font-display font-bold hidden sm:inline">Ekananda Estate</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/post-property" className="btn-gold px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2">

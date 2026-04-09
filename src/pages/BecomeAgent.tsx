@@ -190,7 +190,7 @@ const BecomeAgent = () => {
               <CheckCircle className="w-8 h-8 text-emerald-500" />
             </div>
             <h2 className="text-2xl font-display font-bold mb-2">Application Submitted!</h2>
-            <p className="text-muted-foreground mb-6">Your application to become a PropEstate agent has been submitted. Our admin team will review it soon and notify you after approval.</p>
+            <p className="text-muted-foreground mb-6">Your application to become an Ekananda Estate agent has been submitted. Our admin team will review it soon and notify you after approval.</p>
             <button onClick={() => navigate("/")} className="btn-gold px-6 py-2.5 rounded-xl text-sm font-medium">Back to Home</button>
           </div>
         </div>
@@ -205,7 +205,7 @@ const BecomeAgent = () => {
       <div className="pt-16">
         <div className="bg-gradient-navy py-16">
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <p className="text-gold text-xs font-bold tracking-widest mb-3">BECOME A PROPESTATE AGENT</p>
+            <p className="text-gold text-xs font-bold tracking-widest mb-3">BECOME AN EKANANDA ESTATE AGENT</p>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
               Join India's Largest<br /><span className="text-gold">Real Estate Network</span>
             </h1>
@@ -299,7 +299,7 @@ const BecomeAgent = () => {
                 <textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} placeholder="Tell us about your real estate experience..." rows={3} className={fieldClass + " resize-none"} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5">Why do you want to join PropEstate?</label>
+                <label className="block text-sm font-medium mb-1.5">Why do you want to join Ekananda Estate?</label>
                 <textarea value={form.reason} onChange={(e) => update("reason", e.target.value)} placeholder="Your motivation..." rows={2} className={fieldClass + " resize-none"} />
               </div>
 
