@@ -57,7 +57,7 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
             html: `
               <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 24px; border-radius: 12px; margin-bottom: 20px;">
-                  <h1 style="color: #ffffff; font-size: 20px; margin: 0;">PropEstate</h1>
+                  <h1 style="color: #ffffff; font-size: 20px; margin: 0;">Ekananda Estate</h1>
                   <p style="color: #94a3b8; font-size: 13px; margin: 4px 0 0 0;">New Lead Notification</p>
                 </div>
                 <div style="background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px;">
@@ -70,7 +70,7 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
                     ${form.visit_date ? `<tr><td style="padding: 8px 0; color: #64748b; font-size: 14px;">Visit Date</td><td style="padding: 8px 0; color: #0f172a; font-size: 14px;">${form.visit_date}</td></tr>` : ""}
                   </table>
                 </div>
-                <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 16px;">PropEstate · Enterprise Real Estate Platform</p>
+                <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 16px;">Ekananda Estate · Enterprise Real Estate Platform</p>
               </div>
             `,
           },
