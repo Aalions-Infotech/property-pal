@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Phone, Mail, IndianRupee, Calendar, ShieldCheck, Loader2, CheckCircle } from "lucide-react";
+import { User, Phone, Mail, IndianRupee, Calendar, Loader2, CheckCircle } from "lucide-react";
 
 interface LeadFormProps {
   propertyId?: string;
@@ -14,10 +14,6 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [storedOtp, setStoredOtp] = useState("");
-  const [sendingOtp, setSendingOtp] = useState(false);
 
   const [form, setForm] = useState({
     full_name: "",
@@ -25,49 +21,14 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
     email: "",
     budget: "",
     visit_date: "",
-    otp: "",
   });
 
   const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
-
-  const sendOtp = async () => {
-    if (!form.phone || form.phone.length < 10) {
-      toast({ title: "Enter a valid phone number", variant: "destructive" });
-      return;
-    }
-    setSendingOtp(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("send-otp", {
-        body: { phone: form.phone, action: "send" },
-      });
-      if (error) throw error;
-      setStoredOtp(data.otp_code);
-      setOtpSent(true);
-      toast({ title: `OTP sent to ${form.phone}`, description: `Demo OTP: ${data.otp_code}` });
-    } catch (err: any) {
-      toast({ title: "Failed to send OTP", description: err.message, variant: "destructive" });
-    } finally {
-      setSendingOtp(false);
-    }
-  };
-
-  const verifyOtp = () => {
-    if (form.otp === storedOtp) {
-      setOtpVerified(true);
-      toast({ title: "✅ Phone verified successfully!" });
-    } else {
-      toast({ title: "Invalid OTP. Please try again.", variant: "destructive" });
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.full_name || !form.phone) {
       toast({ title: "Please fill required fields", variant: "destructive" });
-      return;
-    }
-    if (!otpVerified) {
-      toast({ title: "Please verify your phone number first", variant: "destructive" });
       return;
     }
 
@@ -79,12 +40,46 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
         email: form.email || null,
         budget: form.budget || null,
         visit_date: form.visit_date || null,
-        otp_verified: true,
+        otp_verified: false,
         property_id: propertyId || null,
         agent_id: agentId || null,
         status: "new",
       });
       if (error) throw error;
+
+      // Send admin email notification
+      try {
+        await supabase.functions.invoke("admin-email-notify", {
+          body: {
+            to: "azmata601010@gmail.com",
+            subject: `📩 New Lead: ${form.full_name}`,
+            type: "new_lead",
+            html: `
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 24px; border-radius: 12px; margin-bottom: 20px;">
+                  <h1 style="color: #ffffff; font-size: 20px; margin: 0;">PropEstate</h1>
+                  <p style="color: #94a3b8; font-size: 13px; margin: 4px 0 0 0;">New Lead Notification</p>
+                </div>
+                <div style="background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px;">
+                  <h2 style="color: #0f172a; font-size: 18px; margin: 0 0 16px 0;">New Enquiry Received</h2>
+                  <table style="width: 100%; border-collapse: collapse;">
+                    <tr><td style="padding: 8px 0; color: #64748b; font-size: 14px;">Name</td><td style="padding: 8px 0; color: #0f172a; font-size: 14px; font-weight: 600;">${form.full_name}</td></tr>
+                    <tr><td style="padding: 8px 0; color: #64748b; font-size: 14px;">Phone</td><td style="padding: 8px 0; color: #0f172a; font-size: 14px;">${form.phone}</td></tr>
+                    ${form.email ? `<tr><td style="padding: 8px 0; color: #64748b; font-size: 14px;">Email</td><td style="padding: 8px 0; color: #0f172a; font-size: 14px;">${form.email}</td></tr>` : ""}
+                    ${form.budget ? `<tr><td style="padding: 8px 0; color: #64748b; font-size: 14px;">Budget</td><td style="padding: 8px 0; color: #0f172a; font-size: 14px;">${form.budget}</td></tr>` : ""}
+                    ${form.visit_date ? `<tr><td style="padding: 8px 0; color: #64748b; font-size: 14px;">Visit Date</td><td style="padding: 8px 0; color: #0f172a; font-size: 14px;">${form.visit_date}</td></tr>` : ""}
+                  </table>
+                </div>
+                <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 16px;">PropEstate · Enterprise Real Estate Platform</p>
+              </div>
+            `,
+          },
+        });
+      } catch {
+        // Email notification failure shouldn't block lead submission
+        console.warn("Admin email notification failed");
+      }
+
       setSubmitted(true);
       toast({ title: "🎉 Enquiry submitted successfully!" });
       onSuccess?.();
@@ -121,35 +116,11 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
 
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone Number *</label>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="+91 98765 43210" required disabled={otpVerified} className={`${fieldClass} pl-9`} />
-            </div>
-            {!otpVerified && (
-              <button type="button" onClick={sendOtp} disabled={sendingOtp} className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium whitespace-nowrap disabled:opacity-50 flex items-center gap-1">
-                {sendingOtp ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-                {otpSent ? "Resend" : "Send OTP"}
-              </button>
-            )}
-            {otpVerified && (
-              <div className="flex items-center gap-1 px-3 text-emerald-500">
-                <ShieldCheck className="w-4 h-4" />
-                <span className="text-xs font-medium">Verified</span>
-              </div>
-            )}
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="+91 98765 43210" required className={`${fieldClass} pl-9`} />
           </div>
         </div>
-
-        {otpSent && !otpVerified && (
-          <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Enter OTP</label>
-            <div className="flex gap-2">
-              <input value={form.otp} onChange={e => update("otp", e.target.value)} placeholder="6-digit OTP" maxLength={6} className={`${fieldClass} flex-1`} />
-              <button type="button" onClick={verifyOtp} className="px-4 py-2 rounded-xl bg-emerald-500 text-white text-xs font-medium">Verify</button>
-            </div>
-          </div>
-        )}
 
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
@@ -183,7 +154,7 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
           </div>
         </div>
 
-        <button type="submit" disabled={loading || !otpVerified} className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+        <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm disabled:opacity-50 flex items-center justify-center gap-2">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
           {loading ? "Submitting..." : "Submit Enquiry"}
         </button>
