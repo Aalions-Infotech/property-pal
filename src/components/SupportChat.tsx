@@ -12,7 +12,7 @@ const WHATSAPP_MESSAGE = "Hello! I need help with a property on PropEstate.";
 const SupportChat = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "👋 Hi! I'm PropEstate AI Assistant. I can help you with property searches, pricing, home loans, and more. How can I help you today?" }
+    { role: "assistant", content: "👋 Hi! I'm Ekananda Estate AI Assistant. I can help you with property searches, pricing, home loans, and more. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -134,7 +134,7 @@ const SupportChat = () => {
               <Bot className="w-5 h-5 text-primary-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-primary-foreground text-sm">PropEstate AI</p>
+              <p className="font-semibold text-primary-foreground text-sm">Ekananda Estate AI</p>
               <p className="text-primary-foreground/60 text-xs">Online · Instant replies</p>
             </div>
             <a
@@ -222,7 +222,7 @@ const SupportChat = () => {
                 {loading ? <Loader2 className="w-4 h-4 text-primary-foreground animate-spin" /> : <Send className="w-4 h-4 text-primary-foreground" />}
               </button>
             </div>
-            <p className="text-center text-[10px] text-muted-foreground mt-2">Powered by PropEstate AI · <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" className="text-accent hover:underline">WhatsApp Support</a></p>
+            <p className="text-center text-[10px] text-muted-foreground mt-2">Powered by Ekananda Estate AI · <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" className="text-accent hover:underline">WhatsApp Support</a></p>
           </div>
         </div>
       )}

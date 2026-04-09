@@ -262,7 +262,7 @@ const ProjectDetail = () => {
                     <Phone className="w-4 h-4 text-emerald-500" />
                     <span className="text-sm">Call Now</span>
                   </a>
-                  <a href="mailto:enquiry@propestate.in" className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors">
+                  <a href="mailto:enquiry@ekanandaestate.in" className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors">
                     <Mail className="w-4 h-4 text-blue-500" />
                     <span className="text-sm">Email Us</span>
                   </a>

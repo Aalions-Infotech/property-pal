@@ -379,7 +379,7 @@ const PostProperty = () => {
                   </div>
                 </div>
                 <div className="bg-muted/30 rounded-xl p-4 text-sm text-muted-foreground">
-                  ✅ Listing on PropEstate is <strong>completely FREE</strong>. Optional sponsorship is available to boost your listing to the top.
+                  ✅ Listing on Ekananda Estate is <strong>completely FREE</strong>. Optional sponsorship is available to boost your listing to the top.
                 </div>
               </div>
             )}

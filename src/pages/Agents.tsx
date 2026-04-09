@@ -65,7 +65,7 @@ const Agents = () => {
         return {
           id: ap.user_id,
           name: profile?.full_name || fallbackName,
-          bio: profile?.bio || ap.specialization || "PropEstate Verified Agent",
+          bio: profile?.bio || ap.specialization || "Ekananda Estate Verified Agent",
           city: profile?.city || (ap.areas_served?.[0] ?? "India"),
           phone: profile?.phone || "",
           email: profile?.email || "",

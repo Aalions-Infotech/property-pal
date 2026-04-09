@@ -430,7 +430,7 @@ const AdminDashboard = () => {
               <div className="w-8 h-8 rounded-lg bg-gradient-navy flex items-center justify-center flex-shrink-0">
                 <Building2 className="w-4 h-4 text-white" />
               </div>
-              {!sidebarCollapsed && <span className="font-display font-bold">PropEstate</span>}
+              {!sidebarCollapsed && <span className="font-display font-bold">Ekananda Estate</span>}
             </Link>
             <div className="flex items-center gap-1">
               <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="p-1 rounded hover:bg-muted text-muted-foreground hidden md:block">

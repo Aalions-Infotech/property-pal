@@ -89,7 +89,7 @@ const AgentProfile = () => {
                     </span>
                   )}
                 </div>
-                <p className="text-white/60 text-sm mt-1">{profile.bio || "PropEstate Verified Real Estate Professional"}</p>
+                <p className="text-white/60 text-sm mt-1">{profile.bio || "Ekananda Estate Verified Real Estate Professional"}</p>
                 <div className="flex items-center gap-4 mt-3 flex-wrap">
                   {profile.city && <span className="flex items-center gap-1 text-white/50 text-xs"><MapPin className="w-3 h-3" />{profile.city}</span>}
                   {agentProfile?.experience_years > 0 && <span className="flex items-center gap-1 text-white/50 text-xs"><Briefcase className="w-3 h-3" />{agentProfile.experience_years} Years Experience</span>}

@@ -8,6 +8,8 @@ import {
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { cities } from "@/data/properties";
+import { BRAND_NAME } from "@/constants/brand";
+import logoImg from "@/assets/ekananda-logo.webp";
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -60,13 +62,11 @@ const Navbar = () => {
         <div className="flex items-center h-16 gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-9 h-9 bg-gradient-gold rounded-lg flex items-center justify-center shadow-gold">
-              <Building2 className="w-5 h-5 text-foreground" strokeWidth={2.5} />
-            </div>
+            <img src={logoImg} alt={BRAND_NAME} className="w-9 h-9 rounded-lg object-cover" />
             <span className={`font-display font-800 text-xl tracking-tight ${
               !scrolled && location.pathname === "/" ? "text-white" : "text-foreground"
             }`}>
-              PropEstate
+              {BRAND_NAME}
             </span>
           </Link>
 

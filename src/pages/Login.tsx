@@ -52,7 +52,7 @@ const Login = () => {
                 </div>
               </div>
               <button className="w-full btn-navy py-3 rounded-xl text-sm font-medium mt-2">
-                {mode === "login" ? "Login to PropEstate" : "Create Account"}
+                {mode === "login" ? "Login to Ekananda Estate" : "Create Account"}
               </button>
             </div>
 

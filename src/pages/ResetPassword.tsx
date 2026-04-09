@@ -79,18 +79,16 @@ const ResetPassword = () => {
           <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-blue-400 blur-3xl" />
         </div>
         <Link to="/" className="flex items-center gap-3 relative z-10">
-          <div className="w-10 h-10 rounded-xl bg-gradient-gold flex items-center justify-center">
-            <Building2 className="w-6 h-6 text-navy" />
-          </div>
-          <span className="text-2xl font-display font-bold text-white">PropEstate</span>
+          <img src="/ekananda-logo.webp" alt="Ekananda Estate" className="w-10 h-10 rounded-xl object-cover" />
+          <span className="text-2xl font-display font-bold text-white">Ekananda Estate</span>
         </Link>
         <div className="relative z-10">
           <h1 className="text-4xl font-display font-bold text-white mb-4 leading-tight">
             Reset Your<br /><span className="text-gold">Password</span>
           </h1>
-          <p className="text-white/60 text-lg">Set a new secure password for your PropEstate account.</p>
+          <p className="text-white/60 text-lg">Set a new secure password for your Ekananda Estate account.</p>
         </div>
-        <p className="text-white/30 text-sm relative z-10">© 2026 PropEstate. All rights reserved.</p>
+        <p className="text-white/30 text-sm relative z-10">© 2026 Ekananda Estate. All rights reserved.</p>
       </div>
 
       {/* Right form */}
