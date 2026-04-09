@@ -6,7 +6,7 @@ const generateSessionId = () => Math.random().toString(36).substring(2) + Date.n
 
 type Message = { role: "user" | "assistant"; content: string };
 
-const WHATSAPP_NUMBER = "919999999999"; // Replace with actual number
+const WHATSAPP_NUMBER = "919369556641"; // Replace with actual number
 const WHATSAPP_MESSAGE = "Hello! I need help with a property on PropEstate.";
 
 const SupportChat = () => {

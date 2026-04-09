@@ -45,7 +45,7 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const megaMenuBuyers = [
-    { label: "Buy a Home", links: ["/buy?type=apartment", "/buy?type=villa", "/buy?type=plot", "/buy?type=penthouse"], names: ["Apartments", "Villas", "Plots/Land", "Penthouses"] },
+    { label: "Buy a Home", links: ["/buy?type=apartment", "/buy?type=villa", "/buy?type=plot", "/buy?type=penthouse"], names: ["Apartments", "Villas", "Plots/Land",] },
     { label: "Commercial", links: ["/commercial?type=office", "/commercial?type=shop", "/commercial?type=warehouse"], names: ["Office Space", "Shops/Retail", "Warehouses"] },
     { label: "Land & More", links: ["/buy?type=agriculture-land", "/price-trends", "/news"], names: ["Agriculture Land", "Price Trends", "Real Estate News"] },
   ];
