@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
-import { Building2, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube, Linkedin } from "lucide-react";
+import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube, Linkedin } from "lucide-react";
+import { BRAND_NAME, BRAND_EMAIL, BRAND_PHONE, BRAND_COPYRIGHT } from "@/constants/brand";
+import logoImg from "@/assets/ekananda-logo.webp";
 
 const Footer = () => {
   return (
@@ -9,10 +11,8 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 bg-gradient-gold rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-foreground" strokeWidth={2.5} />
-              </div>
-              <span className="font-display font-bold text-xl">PropEstate</span>
+              <img src={logoImg} alt={BRAND_NAME} className="w-9 h-9 rounded-lg object-cover" />
+              <span className="font-display font-bold text-xl">{BRAND_NAME}</span>
             </div>
             <p className="text-sm text-white/60 mb-5 leading-relaxed max-w-xs">
               India's most trusted real estate platform. Find your dream home, office, or investment property with confidence.
@@ -20,11 +20,11 @@ const Footer = () => {
             <div className="space-y-2 text-sm text-white/70">
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-gold" />
-                <span>1800 41 99099 (Toll Free)</span>
+                <span>{BRAND_PHONE} (Toll Free)</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-gold" />
-                <span>services@propestate.in</span>
+                <span>{BRAND_EMAIL}</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gold" />
@@ -125,7 +125,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/40">
-            © 2026 PropEstate India Pvt. Ltd. All rights reserved.
+            {BRAND_COPYRIGHT}
           </p>
           <div className="flex gap-4 text-xs text-white/40">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
