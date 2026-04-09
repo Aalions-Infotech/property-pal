@@ -13,6 +13,7 @@ import PropertyCard from "@/components/PropertyCard";
 
 const PropertyDetail = () => {
   const { id } = useParams();
+  const { addItem, removeItem, isInCompare } = useCompare();
   const [activeImg, setActiveImg] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
   const [tab, setTab] = useState<"overview" | "amenities" | "nearby" | "reviews">("overview");
@@ -125,6 +126,22 @@ const PropertyDetail = () => {
                 <div className="relative h-80 md:h-[450px]">
                   <img src={images[activeImg] || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
                   <div className="absolute top-4 right-4 flex gap-2">
+                    <button
+                      onClick={() => {
+                        const compareItem = {
+                          id: property.id || id || "",
+                          title, image: images[0] || "/placeholder.svg",
+                          price, area, areaUnit: areaUnit || "sq.ft",
+                          bedrooms, bathrooms, city, locality,
+                          furnishing, propertyType,
+                        };
+                        isInCompare(compareItem.id) ? removeItem(compareItem.id) : addItem(compareItem);
+                      }}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center shadow transition-colors ${isInCompare(property.id || id || "") ? "bg-accent text-accent-foreground" : "bg-card/90"}`}
+                      title={isInCompare(property.id || id || "") ? "Remove from compare" : "Add to compare"}
+                    >
+                      <GitCompareArrows className="w-5 h-5" />
+                    </button>
                     <button onClick={() => setWishlisted(!wishlisted)} className="w-10 h-10 rounded-full bg-card/90 flex items-center justify-center shadow">
                       <Heart className={`w-5 h-5 ${wishlisted ? "fill-red-500 text-red-500" : ""}`} />
                     </button>
