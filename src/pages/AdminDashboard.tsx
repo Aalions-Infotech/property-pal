@@ -23,6 +23,8 @@ import AdminProjectManagement from "@/components/admin/AdminProjectManagement";
 import AdminUserDashboardView from "@/components/admin/AdminUserDashboardView";
 import AdminAgentDashboardView from "@/components/admin/AdminAgentDashboardView";
 import AdminLeadsView from "@/components/admin/AdminLeadsView";
+import AdminAdvancedAnalytics from "@/components/admin/AdminAdvancedAnalytics";
+import AdminUserManagement from "@/components/admin/AdminUserManagement";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
