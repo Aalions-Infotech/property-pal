@@ -6,6 +6,8 @@ import { useCompare } from "@/context/CompareContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LeadForm from "@/components/LeadForm";
+import SavePropertyButton from "@/components/SavePropertyButton";
+import PropertyReviews from "@/components/PropertyReviews";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { properties, formatPrice } from "@/data/properties";
@@ -142,9 +144,7 @@ const PropertyDetail = () => {
                     >
                       <GitCompareArrows className="w-5 h-5" />
                     </button>
-                    <button onClick={() => setWishlisted(!wishlisted)} className="w-10 h-10 rounded-full bg-card/90 flex items-center justify-center shadow">
-                      <Heart className={`w-5 h-5 ${wishlisted ? "fill-red-500 text-red-500" : ""}`} />
-                    </button>
+                    <SavePropertyButton propertyId={property.id || id || ""} className="w-10 h-10 bg-card/90" />
                     <button className="w-10 h-10 rounded-full bg-card/90 flex items-center justify-center shadow">
                       <Share2 className="w-5 h-5" />
                     </button>
@@ -293,10 +293,7 @@ const PropertyDetail = () => {
               )}
 
               {tab === "reviews" && (
-                <div>
-                  <h3 className="font-display font-semibold mb-4">Ratings & Reviews</h3>
-                  <p className="text-sm text-muted-foreground text-center py-8">Connect with {BRAND_NAME} to read verified resident reviews.</p>
-                </div>
+                <PropertyReviews propertyId={property.id || id || ""} />
               )}
             </div>
 

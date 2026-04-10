@@ -23,6 +23,8 @@ import AdminProjectManagement from "@/components/admin/AdminProjectManagement";
 import AdminUserDashboardView from "@/components/admin/AdminUserDashboardView";
 import AdminAgentDashboardView from "@/components/admin/AdminAgentDashboardView";
 import AdminLeadsView from "@/components/admin/AdminLeadsView";
+import AdminAdvancedAnalytics from "@/components/admin/AdminAdvancedAnalytics";
+import AdminUserManagement from "@/components/admin/AdminUserManagement";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
@@ -761,67 +763,7 @@ const AdminDashboard = () => {
 
           {/* USERS TAB */}
           {tab === "users" && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input value={userSearchQuery} onChange={e => setUserSearchQuery(e.target.value)} placeholder="Search by name, email, city, phone..." className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
-                </div>
-                <div className="flex gap-2">
-                  {["all", "admin", "moderator", "agent", "user"].map(r => (
-                    <button key={r} onClick={() => setUserFilterRole(r)} className={`px-3 py-2 rounded-xl text-xs font-medium capitalize ${userFilterRole === r ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground">{filteredUsers.length} users</p>
-              <div className="space-y-3">
-                {filteredUsers.map(u => {
-                  const ur = userRoles.find(r => r.user_id === u.user_id);
-                  const userListings = listings.filter(l => l.user_id === u.user_id);
-                  const userSponsors = sponsorships.filter(s => s.user_id === u.user_id);
-                  return (
-                    <div key={u.id} className="bg-card rounded-2xl border border-border p-5">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-navy flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-sm font-bold">{(u.full_name || u.email || "?")[0].toUpperCase()}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-sm">{u.full_name || "No name"}</p>
-                            {u.is_verified && <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">Verified</span>}
-                          </div>
-                          <p className="text-xs text-muted-foreground">{u.email}</p>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
-                            <span>{userListings.length} listings</span>
-                            <span>{userSponsors.length} sponsorships</span>
-                            <span>{u.city || "No city"}</span>
-                            <span>{u.phone || "No phone"}</span>
-                            <span>Joined {new Date(u.created_at).toLocaleDateString('en-IN')}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          <button onClick={() => verifyUser(u.user_id, !u.is_verified)} className={`p-1.5 rounded-lg text-xs ${u.is_verified ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"} hover:opacity-80`} title={u.is_verified ? "Remove verification" : "Verify user"}>
-                            {u.is_verified ? <UserCheck className="w-4 h-4" /> : <UserX className="w-4 h-4" />}
-                          </button>
-                          <select
-                            value={ur?.role || "user"}
-                            onChange={e => changeUserRole(u.user_id, e.target.value)}
-                            className="px-3 py-1.5 rounded-xl border border-border bg-background text-xs font-medium outline-none focus:ring-2 focus:ring-accent"
-                          >
-                            {["user", "agent", "moderator", "admin"].map(r => <option key={r} value={r}>{r}</option>)}
-                          </select>
-                          <button onClick={() => { setNotifForm({ userId: u.user_id, title: "", message: "" }); setShowNotifModal(true); }} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground" title="Send notification">
-                            <Send className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <AdminUserManagement users={users} userRoles={userRoles} listings={listings} sponsorships={sponsorships} adminId={user!.id} onRefresh={fetchAll} />
           )}
 
           {/* SPONSORSHIPS TAB */}
@@ -891,74 +833,7 @@ const AdminDashboard = () => {
 
           {/* ANALYTICS TAB */}
           {tab === "analytics" && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-card rounded-2xl border border-border p-4 text-center">
-                  <p className="text-3xl font-display font-bold">{listings.length}</p>
-                  <p className="text-xs text-muted-foreground">Total Listings</p>
-                </div>
-                <div className="bg-card rounded-2xl border border-border p-4 text-center">
-                  <p className="text-3xl font-display font-bold">{users.length}</p>
-                  <p className="text-xs text-muted-foreground">Total Users</p>
-                </div>
-                <div className="bg-card rounded-2xl border border-border p-4 text-center">
-                  <p className="text-3xl font-display font-bold text-accent">₹{totalRevenue.toLocaleString('en-IN')}</p>
-                  <p className="text-xs text-muted-foreground">Total Revenue</p>
-                </div>
-                <div className="bg-card rounded-2xl border border-border p-4 text-center">
-                  <p className="text-3xl font-display font-bold">{sponsorships.length}</p>
-                  <p className="text-xs text-muted-foreground">Total Sponsorships</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-card rounded-2xl border border-border p-6">
-                  <h3 className="font-display font-semibold mb-4">Listings by City</h3>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={listingsByCity}><CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" /><XAxis dataKey="name" tick={{ fontSize: 11 }} /><YAxis tick={{ fontSize: 11 }} /><Tooltip /><Bar dataKey="value" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} /></BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="bg-card rounded-2xl border border-border p-6">
-                  <h3 className="font-display font-semibold mb-4">Status Distribution</h3>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <RPieChart>
-                      <Pie data={statusPieData} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                        {statusPieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                      </Pie>
-                      <Tooltip /><Legend />
-                    </RPieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="bg-card rounded-2xl border border-border p-6">
-                  <h3 className="font-display font-semibold mb-4">Revenue Trend</h3>
-                  {revenueByMonth.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={revenueByMonth}><CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" /><XAxis dataKey="name" tick={{ fontSize: 11 }} /><YAxis tick={{ fontSize: 11 }} /><Tooltip /><Line type="monotone" dataKey="revenue" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 4 }} /></LineChart>
-                    </ResponsiveContainer>
-                  ) : <p className="text-muted-foreground text-center py-12">No revenue data yet</p>}
-                </div>
-                <div className="bg-card rounded-2xl border border-border p-6">
-                  <h3 className="font-display font-semibold mb-4">Listings Trend (Daily)</h3>
-                  {listingsTrend.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={250}>
-                      <BarChart data={listingsTrend}><CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" /><XAxis dataKey="name" tick={{ fontSize: 10 }} /><YAxis tick={{ fontSize: 11 }} /><Tooltip /><Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} /></BarChart>
-                    </ResponsiveContainer>
-                  ) : <p className="text-muted-foreground text-center py-12">No data yet</p>}
-                </div>
-              </div>
-
-              <div className="bg-card rounded-2xl border border-border p-6">
-                <h3 className="font-display font-semibold mb-4">Property Type Breakdown</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {Object.entries(listings.reduce((acc: Record<string, number>, l) => { acc[l.property_type] = (acc[l.property_type] || 0) + 1; return acc; }, {})).sort((a, b) => (b[1] as number) - (a[1] as number)).map(([type, count]) => (
-                    <div key={type} className="bg-muted/30 rounded-xl p-3 text-center">
-                      <p className="text-xl font-display font-bold">{count as number}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{type}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <AdminAdvancedAnalytics listings={listings} users={users} userRoles={userRoles} sponsorships={sponsorships} />
           )}
 
           {/* AUDIT TRAIL */}
