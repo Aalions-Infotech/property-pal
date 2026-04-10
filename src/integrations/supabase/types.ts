@@ -499,12 +499,15 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          ban_reason: string | null
+          banned_at: string | null
           bio: string | null
           city: string | null
           created_at: string
           email: string | null
           full_name: string | null
           id: string
+          is_banned: boolean | null
           is_verified: boolean | null
           phone: string | null
           updated_at: string
@@ -512,12 +515,15 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          ban_reason?: string | null
+          banned_at?: string | null
           bio?: string | null
           city?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          is_banned?: boolean | null
           is_verified?: boolean | null
           phone?: string | null
           updated_at?: string
@@ -525,12 +531,15 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          ban_reason?: string | null
+          banned_at?: string | null
           bio?: string | null
           city?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          is_banned?: boolean | null
           is_verified?: boolean | null
           phone?: string | null
           updated_at?: string
@@ -672,6 +681,79 @@ export type Database = {
           whatsapp_number?: string | null
         }
         Relationships: []
+      }
+      property_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          is_verified: boolean | null
+          property_id: string
+          rating: number
+          review_text: string | null
+          reviewer_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          property_id: string
+          rating: number
+          review_text?: string | null
+          reviewer_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          property_id?: string
+          rating?: number
+          review_text?: string | null
+          reviewer_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_reviews_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "property_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_properties: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "property_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sponsorship_plans: {
         Row: {
