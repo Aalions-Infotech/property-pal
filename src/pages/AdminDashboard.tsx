@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import logoImg from "@/assets/ekananda-logo.webp";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -427,9 +428,7 @@ const AdminDashboard = () => {
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-navy flex items-center justify-center flex-shrink-0">
-                <Building2 className="w-4 h-4 text-white" />
-              </div>
+              <img src={logoImg} alt="Ekananda Estate" className="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
               {!sidebarCollapsed && <span className="font-display font-bold">Ekananda Estate</span>}
             </Link>
             <div className="flex items-center gap-1">
