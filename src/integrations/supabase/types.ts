@@ -899,6 +899,7 @@ export type Database = {
       }
     }
     Functions: {
+      admin_delete_user: { Args: { _target_user_id: string }; Returns: Json }
       has_role:
         | {
             Args: {
