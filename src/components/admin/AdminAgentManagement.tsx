@@ -700,7 +700,8 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
                         <button onClick={() => startEdit(agent)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground" title="Edit"><Edit className="w-4 h-4" /></button>
-                        <button onClick={() => removeAgent(agent.user_id)} className="p-2 rounded-xl hover:bg-destructive/10 text-destructive" title="Remove agent"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => removeAgent(agent.user_id)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground" title="Demote to regular user"><X className="w-4 h-4" /></button>
+                        <button onClick={() => deleteAgentPermanently(agent.user_id, agent.full_name || agent.email || "agent")} className="p-2 rounded-xl hover:bg-destructive/10 text-destructive" title="Permanently delete agent and all data"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </div>
                   )}
