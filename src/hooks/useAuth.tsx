@@ -104,20 +104,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [user, handleSignOut]);
 
-  // Auto-logout when leaving dashboard via back button
-  useEffect(() => {
-    const handlePopState = () => {
-      const dashboardPaths = ["/admin", "/dashboard", "/agent-dashboard"];
-      const wasOnDashboard = dashboardPaths.some(p => document.referrer.includes(p));
-      const isNowOffDashboard = !dashboardPaths.some(p => window.location.pathname.startsWith(p));
-      if (wasOnDashboard && isNowOffDashboard && user) {
-        handleSignOut();
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [user, handleSignOut]);
+  // (Removed: aggressive popstate auto-logout was signing users out on
+  // ordinary back-button navigation, causing widespread session loss bugs.)
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

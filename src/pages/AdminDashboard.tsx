@@ -29,7 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
 const AdminDashboard = () => {
-  const { user, isAdmin, role, signOut } = useAuth();
+  const { user, isAdmin, role, signOut, loading: authLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -59,8 +59,9 @@ const AdminDashboard = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (!user) { navigate("/auth"); return; }
-    if (!isAdmin) { navigate("/dashboard"); return; }
+    if (authLoading) return;
+    if (!user) { navigate("/auth", { replace: true }); return; }
+    if (!isAdmin) { navigate("/dashboard", { replace: true }); return; }
     fetchAll();
 
     const listingSub = supabase
@@ -97,7 +98,7 @@ const AdminDashboard = () => {
       supabase.removeChannel(sponsorSub);
       supabase.removeChannel(userSub);
     };
-  }, [user, isAdmin]);
+  }, [user, isAdmin, authLoading]);
 
   const fetchAll = async () => {
     setLoading(true);
