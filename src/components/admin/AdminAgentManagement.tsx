@@ -405,6 +405,24 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
     onRefresh();
   };
 
+  const deleteAgentPermanently = async (userId: string, name: string) => {
+    const confirm1 = confirm(`⚠️ PERMANENTLY DELETE agent "${name}"?\n\nThis removes their profile, listings, sponsorships, reviews, leads and all data. This CANNOT be undone.`);
+    if (!confirm1) return;
+    const typed = prompt(`Type DELETE to confirm permanent deletion of "${name}":`);
+    if (typed !== "DELETE") {
+      toast({ title: "Cancelled (confirmation text did not match)" });
+      return;
+    }
+    const { error } = await (supabase.rpc as any)("admin_delete_user", { _target_user_id: userId });
+    if (error) {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Agent permanently deleted" });
+    await fetchAgentProfiles();
+    onRefresh();
+  };
+
   const startEdit = (agent: any) => {
     const ap = getAgentProfile(agent.user_id);
     setEditingId(agent.user_id);
