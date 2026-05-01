@@ -6,7 +6,7 @@ import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
 import { BRAND_NAME } from "@/constants/brand";
 import logoImg from "@/assets/ekananda-logo.webp";
 import { useToast } from "@/hooks/use-toast";
-import AdminSetup from "@/components/AdminSetup";
+
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -188,7 +188,7 @@ const AuthPage = () => {
               </>
             )}
           </div>
-          <AdminSetup />
+
         </div>
       </div>
     </div>
