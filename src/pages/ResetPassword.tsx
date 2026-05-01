@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Building2, ArrowLeft, Loader2, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import logoImg from "@/assets/ekananda-logo.webp";
+import { BRAND_NAME } from "@/constants/brand";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -79,16 +81,16 @@ const ResetPassword = () => {
           <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-blue-400 blur-3xl" />
         </div>
         <Link to="/" className="flex items-center gap-3 relative z-10">
-          <img src="/ekananda-logo.webp" alt="Ekananda Estate" className="w-10 h-10 rounded-xl object-cover" />
-          <span className="text-2xl font-display font-bold text-white">Ekananda Estate</span>
+          <img src={logoImg} alt={BRAND_NAME} className="w-10 h-10 rounded-xl object-cover" />
+          <span className="text-2xl font-display font-bold text-white">{BRAND_NAME}</span>
         </Link>
         <div className="relative z-10">
           <h1 className="text-4xl font-display font-bold text-white mb-4 leading-tight">
             Reset Your<br /><span className="text-gold">Password</span>
           </h1>
-          <p className="text-white/60 text-lg">Set a new secure password for your Ekananda Estate account.</p>
+          <p className="text-white/60 text-lg">Set a new secure password for your {BRAND_NAME} account.</p>
         </div>
-        <p className="text-white/30 text-sm relative z-10">© 2026 Ekananda Estate. All rights reserved.</p>
+        <p className="text-white/30 text-sm relative z-10">© 2026 {BRAND_NAME}. All rights reserved.</p>
       </div>
 
       {/* Right form */}
