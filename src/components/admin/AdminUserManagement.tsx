@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Search, UserCheck, UserX, Ban, Shield, Send, Eye, RotateCcw, ChevronDown } from "lucide-react";
+import { User, Search, UserCheck, UserX, Ban, Shield, Send, Eye, RotateCcw, ChevronDown, Trash2 } from "lucide-react";
 
 interface Props {
   users: any[];
@@ -22,6 +22,9 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
   const [banReason, setBanReason] = useState("");
   const [notifModal, setNotifModal] = useState<{ userId: string; name: string } | null>(null);
   const [notifForm, setNotifForm] = useState({ title: "", message: "" });
+  const [deleteModal, setDeleteModal] = useState<{ userId: string; name: string } | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   const logAction = async (action: string, entityType: string, entityId: string, details?: any) => {
     await supabase.from("admin_activity_log").insert({
@@ -91,6 +94,25 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
     toast({ title: "Notification sent!" });
     setNotifModal(null);
     setNotifForm({ title: "", message: "" });
+  };
+
+  const deleteUser = async () => {
+    if (!deleteModal) return;
+    if (deleteConfirmText !== "DELETE") {
+      toast({ title: "Type DELETE to confirm", variant: "destructive" });
+      return;
+    }
+    setDeleting(true);
+    const { error } = await (supabase.rpc as any)("admin_delete_user", { _target_user_id: deleteModal.userId });
+    setDeleting(false);
+    if (error) {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "User permanently deleted" });
+    setDeleteModal(null);
+    setDeleteConfirmText("");
+    onRefresh();
   };
 
   return (
@@ -170,6 +192,13 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
                   <button onClick={() => { setNotifModal({ userId: u.user_id, name: u.full_name || u.email }); }} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground" title="Send notification">
                     <Send className="w-4 h-4" />
                   </button>
+                  <button
+                    onClick={() => setDeleteModal({ userId: u.user_id, name: u.full_name || u.email })}
+                    className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-500"
+                    title="Permanently delete user"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                   <button onClick={() => setExpandedUser(isExpanded ? null : u.user_id)} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
                     <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                   </button>
@@ -224,6 +253,43 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
                 <button onClick={sendNotification} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium">Send</button>
                 <button onClick={() => setNotifModal(null)} className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted">Cancel</button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Permanent Delete Modal */}
+      {deleteModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => { setDeleteModal(null); setDeleteConfirmText(""); }}>
+          <div className="bg-card rounded-2xl border border-red-500/30 p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h3 className="font-display font-bold mb-2 flex items-center gap-2 text-red-600">
+              <Trash2 className="w-5 h-5" /> Permanently Delete User
+            </h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Permanently remove <strong className="text-foreground">{deleteModal.name}</strong> and ALL their data:
+            </p>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 mb-4 space-y-0.5">
+              <li>Profile, role, and verification</li>
+              <li>All property listings and sponsorships</li>
+              <li>Saved properties, reviews, leads, notifications</li>
+              <li>Agent profile and client data (if any)</li>
+            </ul>
+            <p className="text-xs text-red-600 mb-2">This action cannot be undone. Type <strong>DELETE</strong> to confirm:</p>
+            <input
+              value={deleteConfirmText}
+              onChange={e => setDeleteConfirmText(e.target.value)}
+              placeholder="Type DELETE"
+              className="w-full px-4 py-2.5 rounded-xl border border-red-500/30 bg-background text-sm outline-none focus:ring-2 focus:ring-red-500 mb-3"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={deleteUser}
+                disabled={deleting || deleteConfirmText !== "DELETE"}
+                className="px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleting ? "Deleting..." : "Permanently Delete"}
+              </button>
+              <button onClick={() => { setDeleteModal(null); setDeleteConfirmText(""); }} className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted">Cancel</button>
             </div>
           </div>
         </div>
