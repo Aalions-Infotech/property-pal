@@ -556,12 +556,12 @@ const AdminDashboard = () => {
                   </div>
                   <div className="space-y-3">
                     {listings.filter(l => l.status === "pending").slice(0, 5).map(l => (
-                      <div key={l.id} className="flex items-center gap-4 p-3 rounded-xl bg-amber-500/5 border border-amber-500/10">
+                      <div key={l.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-3 rounded-xl bg-amber-500/5 border border-amber-500/10">
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{l.title}</p>
                           <p className="text-xs text-muted-foreground">{l.locality}, {l.city} · ₹{Number(l.price).toLocaleString('en-IN')}</p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-shrink-0">
                           <button onClick={() => approveListing(l.id)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 flex items-center gap-1">
                             <CheckCircle className="w-3 h-3" /> Approve
                           </button>
