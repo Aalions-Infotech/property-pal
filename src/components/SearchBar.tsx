@@ -41,12 +41,12 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   return (
     <div className={`${variant === "hero" ? "w-full max-w-3xl" : "w-full"}`}>
       {/* Tabs */}
-      <div className={`flex items-center gap-1 mb-0 ${variant === "hero" ? "" : ""}`}>
+      <div className={`flex items-center gap-1 mb-0 overflow-x-auto scrollbar-hide ${variant === "hero" ? "" : ""}`}>
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all flex items-center gap-1 ${
+            className={`px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-medium rounded-t-xl transition-all flex items-center gap-1 flex-shrink-0 whitespace-nowrap ${
               activeTab === tab.key
                 ? "bg-card text-accent border-t-2 border-t-accent shadow-sm"
                 : variant === "hero"
@@ -60,7 +60,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
             )}
           </button>
         ))}
-        <div className="ml-auto">
+        <div className="ml-auto hidden md:block">
           <button
             onClick={() => navigate("/post-property")}
             className={`px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all flex items-center gap-1 ${
@@ -75,12 +75,12 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
 
       {/* Search Box */}
       <div className="bg-card rounded-b-2xl rounded-tr-2xl shadow-lg border border-border overflow-hidden">
-        <div className="flex items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center">
           {/* Property Type Selector */}
-          <div className="relative flex-shrink-0">
+          <div className="relative flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border">
             <button
               onClick={() => setPropertyTypeOpen(!propertyTypeOpen)}
-              className="flex items-center gap-2 px-4 py-4 text-sm font-medium border-r border-border hover:bg-muted transition-colors"
+              className="w-full sm:w-auto flex items-center gap-2 px-4 py-3 sm:py-4 text-sm font-medium hover:bg-muted transition-colors"
             >
               <span className="truncate max-w-28">{selectedType}</span>
               <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -101,19 +101,19 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
           </div>
 
           {/* Search Input */}
-          <div className="flex-1 flex items-center px-4 gap-2">
+          <div className="flex-1 min-w-0 flex items-center px-3 sm:px-4 gap-2 border-b sm:border-b-0 border-border">
             <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search city, locality, project, landmark..."
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60 py-4"
+              className="flex-1 min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60 py-3 sm:py-4"
             />
-            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors hidden sm:block">
               <Mic className="w-4 h-4 text-muted-foreground" />
             </button>
-            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors">
+            <button className="p-1.5 rounded-lg hover:bg-muted transition-colors hidden sm:block">
               <MapPin className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
@@ -121,7 +121,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="px-6 py-4 btn-navy text-sm font-medium flex-shrink-0 flex items-center gap-2"
+            className="px-6 py-3 sm:py-4 btn-navy text-sm font-medium flex-shrink-0 flex items-center justify-center gap-2"
           >
             <Search className="w-4 h-4" />
             Search

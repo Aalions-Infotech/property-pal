@@ -120,12 +120,12 @@ const PropertyDetail = () => {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex gap-8">
-            <div className="flex-1">
+        <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+            <div className="flex-1 min-w-0">
               {/* Images */}
               <div className="mb-6 rounded-2xl overflow-hidden">
-                <div className="relative h-80 md:h-[450px]">
+                <div className="relative h-64 sm:h-80 md:h-[450px]">
                   <img src={images[activeImg] || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
                   <div className="absolute top-4 right-4 flex gap-2">
                     <button
@@ -168,20 +168,20 @@ const PropertyDetail = () => {
 
               {/* Title + Price */}
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap gap-2 mb-2">
                     {featured && <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent text-accent-foreground">Featured</span>}
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${status === "Ready to Move" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}`}>{status}</span>
                     {reraId && <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 font-medium">RERA Verified</span>}
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">{title}</h1>
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-bold mb-2 break-words">{title}</h1>
                   <div className="flex items-center gap-1 text-muted-foreground text-sm">
                     <MapPin className="w-4 h-4" />
                     <span>{address || `${locality}, ${city}`}</span>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-3xl font-display font-bold text-accent">{formatPrice(price, priceUnit)}</p>
+                <div className="text-left md:text-right flex-shrink-0">
+                  <p className="text-2xl md:text-3xl font-display font-bold text-accent break-words">{formatPrice(price, priceUnit)}</p>
                   {pricePerSqft > 0 && <p className="text-sm text-muted-foreground">₹{pricePerSqft.toLocaleString("en-IN")}/sq.ft</p>}
                 </div>
               </div>
