@@ -160,7 +160,7 @@ const Index = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-[88vh] flex items-center">
+      <section className="relative min-h-[88vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImg} alt="Real Estate" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-hero" />
@@ -168,29 +168,29 @@ const Index = () => {
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-20 pb-10">
           <div className="max-w-3xl mx-auto text-center mb-10">
             <p className="section-label mb-3">India's Most Trusted Real Estate Platform</p>
-            <h1 className="text-5xl md:text-6xl font-display font-bold text-white mb-4 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-bold text-white mb-4 leading-tight">
               Find Your Perfect<br />
               <span className="text-gold">Place to Live</span>
             </h1>
-            <p className="text-lg text-white/70 mb-8">
+            <p className="text-base sm:text-lg text-white/70 mb-8 px-2">
               5 lakh+ verified properties across 50+ cities. Buy, Rent, or Invest.
             </p>
           </div>
           <div className="max-w-4xl mx-auto">
             <SearchBar variant="hero" />
           </div>
-          <div className="max-w-4xl mx-auto mt-4 flex flex-wrap gap-2">
+          <div className="max-w-4xl mx-auto mt-4 hidden sm:flex flex-wrap gap-2">
             <span className="text-white/50 text-xs">Popular:</span>
             {["2BHK in Mumbai", "Apartments in Bangalore", "Villas in Goa", "Office Space Delhi", "Plots Hyderabad"].map(s => (
               <button key={s} className="glass px-3 py-1 rounded-full text-xs text-white/80 hover:text-white transition-all">{s}</button>
             ))}
           </div>
-          <div className="max-w-2xl mx-auto mt-12 glass rounded-2xl p-4">
-            <div className="grid grid-cols-4">
+          <div className="max-w-2xl mx-auto mt-8 sm:mt-12 glass rounded-2xl p-3 sm:p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4">
               {stats.map((stat) => (
-                <div key={stat.label} className="text-center py-2 hero-stat">
-                  <p className="text-2xl font-display font-bold text-white">{stat.value}</p>
-                  <p className="text-xs text-white/60 mt-0.5">{stat.label}</p>
+                <div key={stat.label} className="text-center py-2 sm:hero-stat">
+                  <p className="text-xl sm:text-2xl font-display font-bold text-white">{stat.value}</p>
+                  <p className="text-[10px] sm:text-xs text-white/60 mt-0.5">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -208,10 +208,10 @@ const Index = () => {
             <p className="section-label mb-2">ALL PROPERTY NEEDS · ONE PORTAL</p>
             <h2 className="text-3xl font-display font-bold">Explore Real Estate Options</h2>
           </div>
-          <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3 sm:gap-4">
             {quickCategories.map((cat) => (
-              <Link key={cat.label} to={cat.to} className={`flex flex-col items-center gap-2 p-4 rounded-2xl bg-gradient-to-br ${cat.color} border border-border hover:shadow-md transition-all text-center group hover:-translate-y-1`}>
-                <span className="text-3xl">{cat.icon}</span>
+              <Link key={cat.label} to={cat.to} className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-2xl bg-gradient-to-br ${cat.color} border border-border hover:shadow-md transition-all text-center group hover:-translate-y-1`}>
+                <span className="text-2xl sm:text-3xl">{cat.icon}</span>
                 <span className="text-xs font-medium text-foreground leading-tight">{cat.label}</span>
               </Link>
             ))}

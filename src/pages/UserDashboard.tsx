@@ -184,18 +184,18 @@ const UserDashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Top nav header */}
       <div className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/ekananda-logo.webp" alt="Ekananda Estate" className="w-8 h-8 rounded-lg object-cover" />
-            <span className="font-display font-bold hidden sm:inline">Ekananda Estate</span>
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+          <Link to="/" className="flex items-center gap-2 min-w-0">
+            <img src="/ekananda-logo.webp" alt="Ekananda Estate" className="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
+            <span className="font-display font-bold hidden sm:inline truncate">Ekananda Estate</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <Link to="/post-property" className="btn-gold px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Post Property
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link to="/post-property" className="btn-gold px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+              <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Post Property</span><span className="sm:hidden">Post</span>
             </Link>
             {(role === "admin" || role === "moderator") && (
-              <Link to="/admin" className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center gap-2">
-                <Star className="w-4 h-4" /> Admin Panel
+              <Link to="/admin" className="px-3 sm:px-4 py-2 rounded-xl border border-border text-xs sm:text-sm font-medium hover:bg-muted transition-colors flex items-center gap-1 sm:gap-2">
+                <Star className="w-4 h-4" /> <span className="hidden sm:inline">Admin Panel</span>
               </Link>
             )}
             <div className="flex items-center gap-2">
@@ -207,14 +207,14 @@ const UserDashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         {/* Welcome Banner */}
-        <div className="bg-gradient-navy rounded-2xl p-6 mb-8">
-          <div className="flex items-center justify-between">
+        <div className="bg-gradient-navy rounded-2xl p-4 sm:p-6 mb-6 md:mb-8">
+          <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-white/60 text-sm mb-1">Welcome back 👋</p>
-              <h1 className="text-2xl font-display font-bold text-white">{profile?.full_name || user?.email?.split("@")[0]}</h1>
-              <p className="text-white/50 text-xs mt-1 capitalize">{role} Account · Member since {new Date(user?.created_at || "").toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</p>
+              <h1 className="text-xl sm:text-2xl font-display font-bold text-white truncate max-w-[60vw]">{profile?.full_name || user?.email?.split("@")[0]}</h1>
+              <p className="text-white/50 text-[11px] sm:text-xs mt-1 capitalize">{role} · Since {new Date(user?.created_at || "").toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</p>
             </div>
           </div>
         </div>

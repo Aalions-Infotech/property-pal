@@ -556,12 +556,12 @@ const AdminDashboard = () => {
                   </div>
                   <div className="space-y-3">
                     {listings.filter(l => l.status === "pending").slice(0, 5).map(l => (
-                      <div key={l.id} className="flex items-center gap-4 p-3 rounded-xl bg-amber-500/5 border border-amber-500/10">
+                      <div key={l.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-3 rounded-xl bg-amber-500/5 border border-amber-500/10">
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{l.title}</p>
                           <p className="text-xs text-muted-foreground">{l.locality}, {l.city} · ₹{Number(l.price).toLocaleString('en-IN')}</p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-shrink-0">
                           <button onClick={() => approveListing(l.id)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 flex items-center gap-1">
                             <CheckCircle className="w-3 h-3" /> Approve
                           </button>
@@ -647,10 +647,10 @@ const AdminDashboard = () => {
               </div>
 
               {/* Bulk Actions */}
-              <div className="flex items-center gap-3 bg-card rounded-xl border border-border px-4 py-3">
-                <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 bg-card rounded-xl border border-border px-3 sm:px-4 py-3">
+                <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer whitespace-nowrap">
                   <input type="checkbox" checked={selectedListings.size === filteredListings.length && filteredListings.length > 0} onChange={selectAllFiltered} className="rounded" />
-                  Select All ({selectedListings.size} selected)
+                  Select All ({selectedListings.size})
                 </label>
                 <select value={bulkAction} onChange={e => setBulkAction(e.target.value)} className="px-3 py-1.5 rounded-lg border border-border bg-background text-xs">
                   <option value="">Bulk Action...</option>
@@ -660,7 +660,7 @@ const AdminDashboard = () => {
                   <option value="delete">Delete Selected</option>
                 </select>
                 <button onClick={handleBulkAction} disabled={!bulkAction || selectedListings.size === 0} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-primary text-primary-foreground disabled:opacity-50">Apply</button>
-                <button onClick={exportListingsCSV} className="ml-auto px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 flex items-center gap-1">
+                <button onClick={exportListingsCSV} className="sm:ml-auto px-3 py-1.5 rounded-lg text-xs font-medium bg-muted text-muted-foreground hover:bg-muted/80 flex items-center gap-1 whitespace-nowrap">
                   <Download className="w-3 h-3" /> Export CSV
                 </button>
               </div>
@@ -681,7 +681,7 @@ const AdminDashboard = () => {
                       </div>
                     ) : (
                       <div>
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-3 lg:gap-4">
                           <div className="flex items-start gap-3 flex-1 min-w-0">
                             <input type="checkbox" checked={selectedListings.has(l.id)} onChange={() => toggleSelectListing(l.id)} className="mt-1.5 rounded" />
                             <div className="flex-1 min-w-0">
@@ -692,7 +692,7 @@ const AdminDashboard = () => {
                                 {l.is_verified && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 border border-blue-500/20">✓ Verified</span>}
                               </div>
                               <p className="text-xs text-muted-foreground">{l.locality}, {l.city} · {l.property_type} · {l.listing_type}</p>
-                              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1 flex-wrap">
                                 <span className="font-semibold text-foreground">₹{Number(l.price).toLocaleString('en-IN')}</span>
                                 {l.bedrooms && <span>{l.bedrooms} BHK</span>}
                                 {l.area && <span>{l.area} {l.area_unit}</span>}
@@ -700,7 +700,7 @@ const AdminDashboard = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 flex-wrap lg:flex-nowrap lg:flex-shrink-0">
                             {l.status === "pending" && (
                               <>
                                 <button onClick={() => approveListing(l.id)} className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20">✓ Approve</button>

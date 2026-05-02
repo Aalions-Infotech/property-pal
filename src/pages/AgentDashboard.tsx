@@ -170,15 +170,15 @@ const AgentDashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Top bar */}
       <div className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/ekananda-logo.webp" alt="Ekananda Estate" className="w-8 h-8 rounded-lg object-cover" />
-            <span className="font-display font-bold hidden sm:inline">Ekananda Estate</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] bg-accent/10 text-accent border border-accent/20 font-semibold">AGENT</span>
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+          <Link to="/" className="flex items-center gap-2 min-w-0">
+            <img src="/ekananda-logo.webp" alt="Ekananda Estate" className="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
+            <span className="font-display font-bold hidden sm:inline truncate">Ekananda Estate</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] bg-accent/10 text-accent border border-accent/20 font-semibold flex-shrink-0">AGENT</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <Link to="/post-property" className="btn-gold px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Post Property
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link to="/post-property" className="btn-gold px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+              <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Post Property</span><span className="sm:hidden">Post</span>
             </Link>
             <div className="w-8 h-8 rounded-full bg-gradient-navy flex items-center justify-center overflow-hidden">
               {profile?.avatar_url ? (
@@ -191,21 +191,21 @@ const AgentDashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         {/* Welcome */}
-        <div className="bg-gradient-navy rounded-2xl p-6 mb-8">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="bg-gradient-navy rounded-2xl p-4 sm:p-6 mb-6 md:mb-8">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden flex-shrink-0">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-white text-xl font-bold">{(profile?.full_name || "A")[0].toUpperCase()}</span>
               )}
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-white/60 text-sm">Agent Dashboard</p>
-              <h1 className="text-xl font-display font-bold text-white">{profile?.full_name || "Agent"}</h1>
-              <p className="text-white/40 text-xs">Agent ID: {agentProfile?.agent_id || "N/A"} · {profile?.city || "India"}</p>
+              <h1 className="text-lg sm:text-xl font-display font-bold text-white truncate">{profile?.full_name || "Agent"}</h1>
+              <p className="text-white/40 text-[11px] sm:text-xs truncate">ID: {agentProfile?.agent_id || "N/A"} · {profile?.city || "India"}</p>
             </div>
           </div>
         </div>
