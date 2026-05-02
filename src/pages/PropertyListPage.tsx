@@ -28,8 +28,8 @@ const LivePropertyCard = ({ property, view = "grid" }: { property: any; view?: "
 
   if (view === "list") {
     return (
-      <div className="bg-card rounded-2xl border border-border shadow-card overflow-hidden flex hover:shadow-md transition-all">
-        <div className="relative w-64 flex-shrink-0">
+      <div className="bg-card rounded-2xl border border-border shadow-card overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-all">
+        <div className="relative w-full sm:w-64 h-48 sm:h-auto flex-shrink-0">
           <img src={mainImage} alt={property.title} className="w-full h-full object-cover" />
           <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
             {property.is_featured && <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent text-accent-foreground">Featured</span>}
@@ -41,19 +41,19 @@ const LivePropertyCard = ({ property, view = "grid" }: { property: any; view?: "
             )}
           </div>
         </div>
-        <div className="flex-1 p-5 flex flex-col justify-between">
+        <div className="flex-1 min-w-0 p-4 sm:p-5 flex flex-col justify-between">
           <div>
             <Link to={`/property/${property.id}`} className="font-display font-semibold text-base hover:text-accent transition-colors line-clamp-1">{property.title}</Link>
             <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
               <MapPin className="w-3.5 h-3.5" />{property.locality}, {property.city}
             </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-3 sm:gap-4 text-sm text-muted-foreground flex-wrap">
               {property.bedrooms && <span className="flex items-center gap-1"><BedDouble className="w-4 h-4" />{property.bedrooms} Beds</span>}
               {property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-4 h-4" />{property.bathrooms} Baths</span>}
               {property.area && <span className="flex items-center gap-1"><Maximize2 className="w-4 h-4" />{property.area} {property.area_unit}</span>}
             </div>
           </div>
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+          <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-border flex-wrap">
             <div>
               <p className="text-xl font-display font-bold text-accent">{formatPrice(Number(property.price), property.price_unit)}</p>
               {property.price_per_sqft && <p className="text-xs text-muted-foreground">₹{Number(property.price_per_sqft).toLocaleString("en-IN")}/sq.ft</p>}
@@ -180,9 +180,9 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-16 bg-gradient-navy">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-display font-bold text-white mb-1">{title}</h1>
-          <p className="text-white/60 text-sm mb-6">{subtitle}</p>
+        <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
+          <h1 className="text-2xl md:text-3xl font-display font-bold text-white mb-1">{title}</h1>
+          <p className="text-white/60 text-sm mb-4 md:mb-6">{subtitle}</p>
           <SearchBar variant="page" />
         </div>
       </div>
