@@ -12,7 +12,7 @@ import { BRAND_NAME } from "@/constants/brand";
 import logoImg from "@/assets/ekananda-logo.webp";
 
 const Navbar = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, enforced } = useTheme();
   const { user, isAdmin, role, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -281,6 +281,7 @@ const Navbar = () => {
           {/* Right Actions */}
           <div className="flex items-center gap-2 ml-auto">
             {/* Theme Toggle */}
+            {!enforced && (
             <button
               onClick={toggleTheme}
               className={`p-2 rounded-full transition-all ${
@@ -292,6 +293,7 @@ const Navbar = () => {
             >
               {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
+            )}
 
             {/* Wishlist */}
             <Link
