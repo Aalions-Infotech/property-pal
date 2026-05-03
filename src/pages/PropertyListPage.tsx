@@ -222,8 +222,22 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
 
           <div className="flex-1">
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="rounded-2xl border border-border bg-card overflow-hidden">
+                    <div className="aspect-[4/3] w-full bg-muted animate-pulse" />
+                    <div className="p-4 space-y-3">
+                      <div className="h-4 w-2/3 bg-muted rounded animate-pulse" />
+                      <div className="h-3 w-1/2 bg-muted rounded animate-pulse" />
+                      <div className="flex gap-2 pt-2">
+                        <div className="h-3 w-12 bg-muted rounded animate-pulse" />
+                        <div className="h-3 w-12 bg-muted rounded animate-pulse" />
+                        <div className="h-3 w-12 bg-muted rounded animate-pulse" />
+                      </div>
+                      <div className="h-5 w-1/3 bg-muted rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : liveListings.length === 0 ? (
               <div className="text-center py-20">
