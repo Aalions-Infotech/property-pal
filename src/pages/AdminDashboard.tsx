@@ -1141,6 +1141,8 @@ const AdminDashboard = () => {
           {tab === "view-agent-dashboard" && (
             <AdminAgentDashboardView users={users} userRoles={userRoles} />
           )}
+
+          {tab === "platform" && <AdminPlatformSettings />}
         </div>
       </div>
 
