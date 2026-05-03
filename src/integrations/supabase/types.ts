@@ -242,6 +242,27 @@ export type Database = {
         }
         Relationships: []
       }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author_id: string
@@ -754,6 +775,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_searches: {
+        Row: {
+          alerts_enabled: boolean
+          bedrooms: number | null
+          city: string | null
+          created_at: string
+          id: string
+          last_alerted_at: string | null
+          listing_type: string | null
+          locality: string | null
+          max_price: number | null
+          min_price: number | null
+          name: string
+          property_type: string | null
+          user_id: string
+        }
+        Insert: {
+          alerts_enabled?: boolean
+          bedrooms?: number | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          last_alerted_at?: string | null
+          listing_type?: string | null
+          locality?: string | null
+          max_price?: number | null
+          min_price?: number | null
+          name: string
+          property_type?: string | null
+          user_id: string
+        }
+        Update: {
+          alerts_enabled?: boolean
+          bedrooms?: number | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          last_alerted_at?: string | null
+          listing_type?: string | null
+          locality?: string | null
+          max_price?: number | null
+          min_price?: number | null
+          name?: string
+          property_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       sponsorship_plans: {
         Row: {

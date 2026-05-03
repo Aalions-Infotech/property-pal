@@ -5,9 +5,10 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   Home, Plus, Bell, Clock, CheckCircle, XCircle, Zap, TrendingUp,
   MapPin, Star, Eye, Edit, Trash2, ChevronRight, DollarSign, User, LogOut, Crown,
-  Activity, RefreshCw, Camera, CreditCard, AlertCircle, FileText, ExternalLink
+  Activity, RefreshCw, Camera, CreditCard, AlertCircle, FileText, ExternalLink, Search
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SavedSearches from "@/components/SavedSearches";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
   pending: { label: "Under Review", color: "bg-amber-500/10 text-amber-600 border-amber-500/20", emoji: "⏳" },
@@ -168,6 +169,7 @@ const UserDashboard = () => {
     { id: "overview", label: "Overview", icon: TrendingUp },
     { id: "listings", label: "My Listings", icon: Home, badge: listings.filter(l => l.status === "pending").length },
     { id: "sponsorships", label: "Boost Listing", icon: Crown },
+    { id: "saved-searches", label: "Saved Searches", icon: Search },
     { id: "notifications", label: "Notifications", icon: Bell, badge: unreadCount },
     { id: "profile", label: "My Profile", icon: User },
   ];
@@ -538,6 +540,8 @@ const UserDashboard = () => {
                 )}
               </div>
             )}
+
+            {tab === "saved-searches" && <SavedSearches />}
 
             {/* PROFILE */}
             {tab === "profile" && (
