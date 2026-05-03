@@ -16,8 +16,10 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const saved = localStorage.getItem("re-theme");
-    return (saved as Theme) || "light";
+    if (typeof window === "undefined") return "light";
+    const saved = localStorage.getItem("re-theme") as Theme | null;
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   });
 
   useEffect(() => {
@@ -27,8 +29,20 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       root.classList.remove("dark");
     }
+    root.style.colorScheme = theme;
     localStorage.setItem("re-theme", theme);
   }, [theme]);
+
+  // Sync theme across tabs/windows instantly
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "re-theme" && (e.newValue === "light" || e.newValue === "dark")) {
+        setThemeState(e.newValue);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   const toggleTheme = () => setThemeState((t) => (t === "light" ? "dark" : "light"));
   const setTheme = (t: Theme) => setThemeState(t);

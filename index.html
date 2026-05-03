@@ -20,6 +20,20 @@
 
   <body>
     <div id="root"></div>
+    <script>
+      // Apply theme before React mounts to prevent flash and ensure
+      // the selected theme persists instantly across refresh on every page.
+      (function () {
+        try {
+          var t = localStorage.getItem('re-theme');
+          if (!t) {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          if (t === 'dark') document.documentElement.classList.add('dark');
+          document.documentElement.style.colorScheme = t;
+        } catch (e) {}
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
