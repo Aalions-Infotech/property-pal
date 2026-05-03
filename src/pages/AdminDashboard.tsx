@@ -25,6 +25,7 @@ import AdminAgentDashboardView from "@/components/admin/AdminAgentDashboardView"
 import AdminLeadsView from "@/components/admin/AdminLeadsView";
 import AdminAdvancedAnalytics from "@/components/admin/AdminAdvancedAnalytics";
 import AdminUserManagement from "@/components/admin/AdminUserManagement";
+import AdminPlatformSettings from "@/components/admin/AdminPlatformSettings";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
@@ -405,6 +406,7 @@ const AdminDashboard = () => {
     { id: "realtime", label: "Live Alerts", icon: Activity, badge: realtimeAlerts.length },
     { id: "view-user-dashboard", label: "User Dashboard", icon: Eye },
     { id: "view-agent-dashboard", label: "Agent Dashboard", icon: Briefcase },
+    { id: "platform", label: "Platform Settings", icon: Sliders },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
