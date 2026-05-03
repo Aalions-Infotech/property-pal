@@ -541,6 +541,8 @@ const UserDashboard = () => {
               </div>
             )}
 
+            {tab === "saved-searches" && <SavedSearches />}
+
             {/* PROFILE */}
             {tab === "profile" && (
               <div className="space-y-5">
