@@ -58,12 +58,12 @@ const Navbar = () => {
           ? "bg-transparent" 
           : "bg-card border-b border-border"
     }`}>
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center h-16 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4">
+        <div className="flex items-center h-16 gap-2 sm:gap-3 lg:gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src={logoImg} alt={BRAND_NAME} className="w-9 h-9 rounded-lg object-cover" />
-            <span className={`font-display font-800 text-xl tracking-tight ${
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0 min-w-0">
+            <img src={logoImg} alt={BRAND_NAME} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover flex-shrink-0" />
+            <span className={`font-display font-800 text-sm sm:text-lg lg:text-xl tracking-tight truncate ${
               !scrolled && location.pathname === "/" ? "text-white" : "text-foreground"
             }`}>
               {BRAND_NAME}
@@ -71,7 +71,7 @@ const Navbar = () => {
           </Link>
 
           {/* City Selector */}
-          <div className="relative" ref={cityRef}>
+          <div className="relative hidden sm:block" ref={cityRef}>
             <button
               onClick={() => setCityDropdown(!cityDropdown)}
               className={`flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full border transition-all ${
@@ -279,26 +279,26 @@ const Navbar = () => {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-1 sm:gap-2 ml-auto flex-shrink-0">
             {/* Theme Toggle */}
             {!enforced && (
             <button
               onClick={toggleTheme}
-              className={`p-2 rounded-full transition-all ${
+              className={`p-1.5 sm:p-2 rounded-full transition-all ${
                 !scrolled && location.pathname === "/" 
                   ? "text-white hover:bg-white/10" 
                   : "text-foreground hover:bg-muted"
               }`}
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {theme === "dark" ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
             )}
 
             {/* Wishlist */}
             <Link
               to="/wishlist"
-              className={`p-2 rounded-full transition-all hidden sm:flex ${
+              className={`p-2 rounded-full transition-all hidden md:flex ${
                 !scrolled && location.pathname === "/" 
                   ? "text-white hover:bg-white/10" 
                   : "text-foreground hover:bg-muted"
@@ -310,7 +310,7 @@ const Navbar = () => {
             {/* Post Property */}
             <Link
               to="/post-property"
-              className="hidden md:flex items-center gap-1.5 px-4 py-2 btn-navy rounded-xl text-sm"
+              className="hidden lg:flex items-center gap-1.5 px-4 py-2 btn-navy rounded-xl text-sm"
             >
               Post Property
               <span className="badge-new">FREE</span>
@@ -318,32 +318,32 @@ const Navbar = () => {
 
             {/* Auth Actions */}
             {user ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 {isAdmin && (
-                  <Link to="/admin" className={`p-2 rounded-full transition-all hidden sm:flex items-center gap-1 text-xs font-medium px-3 ${!scrolled && location.pathname === "/" ? "text-white hover:bg-white/10" : "text-foreground hover:bg-muted"}`}>
+                  <Link to="/admin" className={`rounded-full transition-all hidden md:flex items-center gap-1 text-xs font-medium px-3 py-2 ${!scrolled && location.pathname === "/" ? "text-white hover:bg-white/10" : "text-foreground hover:bg-muted"}`}>
                     <Shield className="w-4 h-4" />
                     <span className="hidden lg:inline">Admin</span>
                   </Link>
                 )}
-                <Link to="/dashboard" className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all`}>
+                <Link to="/dashboard" className={`flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all`}>
                   <LayoutDashboard className="w-4 h-4" />
-                  <span className="hidden sm:inline">Dashboard</span>
+                  <span className="hidden md:inline">Dashboard</span>
                 </Link>
               </div>
             ) : (
               <Link
                 to="/auth"
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all"
+                className="flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all"
               >
                 <LogIn className="w-4 h-4" />
-                <span className="hidden sm:inline">Login</span>
+                <span className="hidden md:inline">Login</span>
               </Link>
             )}
 
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className={`p-2 rounded-full lg:hidden transition-all ${
+              className={`p-1.5 sm:p-2 rounded-full lg:hidden transition-all ${
                 !scrolled && location.pathname === "/" 
                   ? "text-white hover:bg-white/10" 
                   : "text-foreground hover:bg-muted"
@@ -357,8 +357,29 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden bg-card border-t border-border shadow-lg">
+        <div className="lg:hidden bg-card border-t border-border shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
+            {/* Mobile City Selector */}
+            <div className="sm:hidden pb-2 mb-2 border-b border-border">
+              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">CITY</p>
+              <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
+                <button
+                  onClick={() => { setSelectedCity("All India"); }}
+                  className={`text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted ${selectedCity === "All India" ? "font-semibold text-accent" : ""}`}
+                >
+                  All India
+                </button>
+                {cities.map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setSelectedCity(c)}
+                    className={`text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted ${selectedCity === c ? "font-semibold text-accent" : ""}`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
             {[
               { to: "/", label: "Home", icon: Home },
               { to: "/buy", label: "Buy Property", icon: Building2 },
