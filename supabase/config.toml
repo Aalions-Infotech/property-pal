@@ -20,3 +20,9 @@ verify_jwt = false
 
 [functions.listing-status-email]
 verify_jwt = false
+
+[functions.price-prediction]
+verify_jwt = false
+
+[functions.ai-recommendations]
+verify_jwt = false

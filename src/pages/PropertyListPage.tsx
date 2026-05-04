@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Grid3X3, List, SlidersHorizontal, MessageSquare } from "lucide-react";
+import { Grid3X3, List, SlidersHorizontal, MessageSquare, Map as MapIcon, X } from "lucide-react";
 import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import FilterSidebar, { FilterState } from "@/components/FilterSidebar";
 import SearchBar from "@/components/SearchBar";
 import { supabase } from "@/integrations/supabase/client";
+import PropertiesMapView from "@/components/PropertiesMapView";
+import { CITY_COORDS, getPropertyCoords, haversineKm, geocodeNominatim } from "@/lib/geo";
 import { MapPin, BedDouble, Bath, Maximize2, Heart, Shield, Zap, Phone, Eye, Star } from "lucide-react";
 
 interface PropertyListPageProps {
@@ -110,13 +112,17 @@ const LivePropertyCard = ({ property, view = "grid" }: { property: any; view?: "
 
 const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
   const [searchParams] = useSearchParams();
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const [view, setView] = useState<"grid" | "list" | "map">("grid");
   const [filters, setFilters] = useState<FilterState>({});
   const [sortBy, setSortBy] = useState("relevance");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [liveListings, setLiveListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [radiusKm, setRadiusKm] = useState<number>(0);
+  const [radiusCenter, setRadiusCenter] = useState<[number, number] | null>(null);
+  const [radiusLabel, setRadiusLabel] = useState<string>("");
+  const [radiusInput, setRadiusInput] = useState<string>("");
 
   useEffect(() => {
     fetchListings();
@@ -176,6 +182,41 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
     setLoading(false);
   };
 
+  // Apply radius filter client-side
+  const visibleListings = (() => {
+    if (!radiusCenter || !radiusKm) return liveListings;
+    return liveListings.filter(p => {
+      const c = getPropertyCoords(p);
+      if (!c) return false;
+      return haversineKm(radiusCenter, c) <= radiusKm;
+    });
+  })();
+
+  const applyRadius = async () => {
+    if (!radiusInput.trim() || !radiusKm) return;
+    // Try city-coord match first; else geocode
+    const cityHit = CITY_COORDS[radiusInput.trim()];
+    if (cityHit) {
+      setRadiusCenter(cityHit);
+      setRadiusLabel(radiusInput.trim());
+      return;
+    }
+    const c = await geocodeNominatim(`${radiusInput}, India`);
+    if (c) {
+      setRadiusCenter(c);
+      setRadiusLabel(radiusInput.trim());
+    } else {
+      alert("Could not find that location. Try a city name like 'Mumbai' or 'Bangalore'.");
+    }
+  };
+
+  const clearRadius = () => {
+    setRadiusCenter(null);
+    setRadiusKm(0);
+    setRadiusLabel("");
+    setRadiusInput("");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -188,13 +229,40 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Radius search bar */}
+        <div className="mb-4 flex flex-wrap items-center gap-2 bg-card border border-border rounded-xl p-3">
+          <MapIcon className="w-4 h-4 text-accent flex-shrink-0" />
+          <span className="text-xs font-medium text-muted-foreground">Radius search:</span>
+          <input
+            type="text"
+            value={radiusInput}
+            onChange={e => setRadiusInput(e.target.value)}
+            placeholder="Center (e.g. Mumbai, Bandra)"
+            className="flex-1 min-w-[140px] px-3 py-1.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+          />
+          <select
+            value={radiusKm}
+            onChange={e => setRadiusKm(Number(e.target.value))}
+            className="px-2 py-1.5 rounded-lg border border-border bg-background text-sm"
+          >
+            <option value={0}>Distance…</option>
+            {[1, 3, 5, 10, 20, 50].map(k => <option key={k} value={k}>{k} km</option>)}
+          </select>
+          <button onClick={applyRadius} disabled={!radiusKm || !radiusInput} className="px-3 py-1.5 rounded-lg bg-accent text-accent-foreground text-sm font-medium disabled:opacity-50">Apply</button>
+          {radiusCenter && (
+            <button onClick={clearRadius} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted text-xs">
+              <X className="w-3 h-3" /> {radiusLabel} · {radiusKm}km
+            </button>
+          )}
+        </div>
+
         <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
           <div className="flex items-center gap-2">
             <button onClick={() => setShowMobileFilters(true)} className="lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted">
               <SlidersHorizontal className="w-4 h-4" /> Filters
             </button>
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">{loading ? "..." : liveListings.length}</span> properties found
+              <span className="font-semibold text-foreground">{loading ? "..." : visibleListings.length}</span> properties found
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -210,6 +278,9 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
               </button>
               <button onClick={() => setView("list")} className={`p-2 ${view === "list" ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`}>
                 <List className="w-4 h-4" />
+              </button>
+              <button onClick={() => setView("map")} className={`p-2 ${view === "map" ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`} title="Map view">
+                <MapIcon className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -239,7 +310,7 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
                   </div>
                 ))}
               </div>
-            ) : liveListings.length === 0 ? (
+            ) : visibleListings.length === 0 ? (
               <div className="text-center py-20">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
                   <MapPin className="w-8 h-8 text-muted-foreground" />
@@ -247,13 +318,15 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
                 <h3 className="font-display font-semibold text-lg mb-2">No properties found</h3>
                 <p className="text-muted-foreground text-sm">Try adjusting your filters or check back later for new listings.</p>
               </div>
+            ) : view === "map" ? (
+              <PropertiesMapView properties={visibleListings} center={radiusCenter || undefined} radiusKm={radiusKm || undefined} />
             ) : view === "grid" ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {liveListings.map(p => <LivePropertyCard key={p.id} property={p} />)}
+                {visibleListings.map(p => <LivePropertyCard key={p.id} property={p} />)}
               </div>
             ) : (
               <div className="space-y-4">
-                {liveListings.map(p => <LivePropertyCard key={p.id} property={p} view="list" />)}
+                {visibleListings.map(p => <LivePropertyCard key={p.id} property={p} view="list" />)}
               </div>
             )}
           </div>
