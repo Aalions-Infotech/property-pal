@@ -12,6 +12,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { properties, formatPrice } from "@/data/properties";
 import PropertyCard from "@/components/PropertyCard";
+import PropertyMap from "@/components/PropertyMap";
+import AiPricePrediction from "@/components/AiPricePrediction";
+import AiRecommendations from "@/components/AiRecommendations";
+import { getPropertyCoords } from "@/lib/geo";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -271,30 +275,37 @@ const PropertyDetail = () => {
 
               {tab === "nearby" && (
                 <div>
-                  <h3 className="font-display font-semibold mb-4">Nearby Places</h3>
-                  {nearbyPlaces.length > 0 ? (
-                    <div className="space-y-3">
-                      {nearbyPlaces.map((place: any) => (
-                        <div key={place.name} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-accent">
-                              {place.type === "transport" ? "🚇" : place.type === "hospital" ? "🏥" : place.type === "shopping" ? "🛍️" : "🏢"}
-                            </div>
-                            <span className="text-sm font-medium">{place.name}</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground">{place.distance}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-sm">Nearby places info will be available soon.</p>
-                  )}
+                  <h3 className="font-display font-semibold mb-4">Location & Nearby Places</h3>
+                  {(() => {
+                    const coords = getPropertyCoords({ ...property, city, locality, id: property.id || id });
+                    if (!coords) {
+                      return <p className="text-muted-foreground text-sm">Location coordinates not available for this property.</p>;
+                    }
+                    return <PropertyMap center={coords} title={title} height="420px" radiusMeters={1500} />;
+                  })()}
                 </div>
               )}
 
               {tab === "reviews" && (
                 <PropertyReviews propertyId={property.id || id || ""} />
               )}
+
+              {/* AI Price Prediction + Recommendations */}
+              <div className="mt-8 space-y-6">
+                <AiPricePrediction
+                  property={{
+                    city, locality, propertyType, bedrooms, bathrooms,
+                    area: Number(area), areaUnit, price: Number(price),
+                    furnishing, ageOfProperty, listingType: isLive ? property.listing_type : property.type,
+                  }}
+                />
+                <AiRecommendations
+                  property={{
+                    id: property.id || id || "", city, locality, propertyType,
+                    bedrooms, price: Number(price), listingType: isLive ? property.listing_type : property.type,
+                  }}
+                />
+              </div>
             </div>
 
             {/* Contact Sidebar */}
