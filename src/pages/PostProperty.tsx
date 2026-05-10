@@ -37,9 +37,19 @@ const PostProperty = () => {
     phone: "",
     contactEmail: "",
     reraId: "",
+    approvalAuthority: "",
   });
 
-  const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+  const update = (k: string, v: string) =>
+    setForm(f => {
+      const next = { ...f, [k]: v };
+      // Reset propertyType when listing type changes so the user picks a valid one
+      if (k === "listingType") {
+        const types = PROPERTY_TYPES_BY_LISTING[v as keyof typeof PROPERTY_TYPES_BY_LISTING] || [];
+        next.propertyType = types[0] || "Apartment";
+      }
+      return next;
+    });
   const toggleAmenity = (a: string) => setForm(f => ({
     ...f,
     amenities: f.amenities.includes(a) ? f.amenities.filter(x => x !== a) : [...f.amenities, a],
