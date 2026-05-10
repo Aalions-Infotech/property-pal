@@ -224,17 +224,17 @@ const PostProperty = () => {
                 <h2 className="font-display font-bold text-xl mb-4">Property Information</h2>
                 <div>
                   <label className="block text-sm font-medium mb-2">I want to</label>
-                  <div className="flex gap-3">
-                    {[["sell", "Sell"], ["rent", "Rent Out"], ["pg", "Rent as PG"], ["commercial", "Commercial"]].map(([v, l]) => (
-                      <button key={v} onClick={() => update("listingType", v)} className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition-all ${form.listingType === v ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{l}</button>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                    {LISTING_TYPES.map(([v, l]) => (
+                      <button key={v} type="button" onClick={() => update("listingType", v)} className={`py-2.5 rounded-xl border text-sm font-medium transition-all ${form.listingType === v ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{l}</button>
                     ))}
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Property Type</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {["Apartment", "Villa", "Builder Floor", "Plot", "Studio", "Office", "Shop", "Warehouse", "PG", "Agriculture Land"].map(t => (
-                      <button key={t} onClick={() => update("propertyType", t)} className={`py-2 rounded-xl border text-sm font-medium transition-all ${form.propertyType === t ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{t}</button>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {(PROPERTY_TYPES_BY_LISTING[form.listingType] || []).map(t => (
+                      <button key={t} type="button" onClick={() => update("propertyType", t)} className={`py-2 rounded-xl border text-sm font-medium transition-all ${form.propertyType === t ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{t}</button>
                     ))}
                   </div>
                 </div>
@@ -252,9 +252,21 @@ const PostProperty = () => {
                   <label className="block text-sm font-medium mb-2">Full Address</label>
                   <input value={form.address} onChange={e => update("address", e.target.value)} placeholder="Street, building, landmark..." className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">RERA Registration Number (optional)</label>
-                  <input value={form.reraId} onChange={e => update("reraId", e.target.value)} placeholder="e.g. P52100026542" className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Approval Authority</label>
+                    <select value={form.approvalAuthority} onChange={e => update("approvalAuthority", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent">
+                      <option value="">Select authority</option>
+                      {APPROVAL_AUTHORITIES.map(a => <option key={a} value={a}>{a}</option>)}
+                    </select>
+                    <p className="text-[11px] text-muted-foreground mt-1">Helps buyers know who approved this property.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      {form.approvalAuthority === "RERA" ? "RERA Registration Number" : "Registration / Approval Number"} <span className="text-muted-foreground text-xs">(optional)</span>
+                    </label>
+                    <input value={form.reraId} onChange={e => update("reraId", e.target.value)} placeholder={form.approvalAuthority === "RERA" ? "e.g. P52100026542" : "Approval / khasra / file number"} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                  </div>
                 </div>
               </div>
             )}
