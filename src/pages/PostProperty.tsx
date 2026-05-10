@@ -157,7 +157,7 @@ const PostProperty = () => {
         facing: form.facing || null,
         parking: parseInt(form.parking) || 0,
         price: parseFloat(form.price),
-        price_unit: form.listingType === "sell" ? "total" : "monthly",
+        price_unit: form.listingType === "rent_lease" ? "monthly" : "total",
         price_per_sqft: form.area && form.price ? Math.round(parseFloat(form.price) / parseFloat(form.area)) : null,
         amenities: form.amenities,
         images: imageUrls.length > 0 ? imageUrls : null,
