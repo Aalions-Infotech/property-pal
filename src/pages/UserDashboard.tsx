@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SavedSearches from "@/components/SavedSearches";
+import RequestListingUpdateModal from "@/components/RequestListingUpdateModal";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
   pending: { label: "Under Review", color: "bg-amber-500/10 text-amber-600 border-amber-500/20", emoji: "⏳" },
@@ -39,6 +40,8 @@ const UserDashboard = () => {
   const [sponsorLoading, setSponsorLoading] = useState<string | null>(null);
   const [editProfile, setEditProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", city: "", bio: "" });
+  const [editListing, setEditListing] = useState<any | null>(null);
+  const [updateRequests, setUpdateRequests] = useState<any[]>([]);
 
   useEffect(() => {
     if (authLoading) return;
