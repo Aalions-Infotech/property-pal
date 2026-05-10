@@ -99,17 +99,19 @@ const UserDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [listRes, sponsorRes, notifRes, plansRes, profileRes] = await Promise.all([
+    const [listRes, sponsorRes, notifRes, plansRes, profileRes, urRes] = await Promise.all([
       supabase.from("property_listings").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("sponsorships").select("*, property_listings(title, city)").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("notifications").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(30),
       supabase.from("sponsorship_plans").select("*").eq("is_active", true).order("sort_order"),
       supabase.from("profiles").select("*").eq("user_id", user!.id).single(),
+      supabase.from("property_update_requests").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
     ]);
     setListings(listRes.data || []);
     setSponsorships(sponsorRes.data || []);
     setNotifications(notifRes.data || []);
     setPlans(plansRes.data || []);
+    setUpdateRequests(urRes.data || []);
     const p = profileRes.data;
     setProfile(p);
     if (p) setProfileForm({ full_name: p.full_name || "", phone: p.phone || "", city: p.city || "", bio: p.bio || "" });
