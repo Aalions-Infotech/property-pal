@@ -1145,6 +1145,10 @@ const AdminDashboard = () => {
           )}
 
           {tab === "platform" && <AdminPlatformSettings />}
+
+          {tab === "update-requests" && user && (
+            <AdminUpdateRequests adminId={user.id} />
+          )}
         </div>
       </div>
 
