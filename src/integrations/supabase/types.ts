@@ -574,6 +574,7 @@ export type Database = {
           admin_note: string | null
           age_of_property: string | null
           amenities: string[] | null
+          approval_authority: string | null
           area: number | null
           area_unit: string | null
           bathrooms: number | null
@@ -618,6 +619,7 @@ export type Database = {
           admin_note?: string | null
           age_of_property?: string | null
           amenities?: string[] | null
+          approval_authority?: string | null
           area?: number | null
           area_unit?: string | null
           bathrooms?: number | null
@@ -662,6 +664,7 @@ export type Database = {
           admin_note?: string | null
           age_of_property?: string | null
           amenities?: string[] | null
+          approval_authority?: string | null
           area?: number | null
           area_unit?: string | null
           bathrooms?: number | null
@@ -746,6 +749,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      property_update_requests: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          id: string
+          listing_id: string
+          proposed_changes: Json
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          id?: string
+          listing_id: string
+          proposed_changes?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string
+          proposed_changes?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       saved_properties: {
         Row: {

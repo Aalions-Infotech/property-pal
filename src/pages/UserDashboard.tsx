@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SavedSearches from "@/components/SavedSearches";
+import RequestListingUpdateModal from "@/components/RequestListingUpdateModal";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; emoji: string }> = {
   pending: { label: "Under Review", color: "bg-amber-500/10 text-amber-600 border-amber-500/20", emoji: "⏳" },
@@ -39,6 +40,8 @@ const UserDashboard = () => {
   const [sponsorLoading, setSponsorLoading] = useState<string | null>(null);
   const [editProfile, setEditProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({ full_name: "", phone: "", city: "", bio: "" });
+  const [editListing, setEditListing] = useState<any | null>(null);
+  const [updateRequests, setUpdateRequests] = useState<any[]>([]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -96,17 +99,19 @@ const UserDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [listRes, sponsorRes, notifRes, plansRes, profileRes] = await Promise.all([
+    const [listRes, sponsorRes, notifRes, plansRes, profileRes, urRes] = await Promise.all([
       supabase.from("property_listings").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("sponsorships").select("*, property_listings(title, city)").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("notifications").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }).limit(30),
       supabase.from("sponsorship_plans").select("*").eq("is_active", true).order("sort_order"),
       supabase.from("profiles").select("*").eq("user_id", user!.id).single(),
+      supabase.from("property_update_requests").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
     ]);
     setListings(listRes.data || []);
     setSponsorships(sponsorRes.data || []);
     setNotifications(notifRes.data || []);
     setPlans(plansRes.data || []);
+    setUpdateRequests(urRes.data || []);
     const p = profileRes.data;
     setProfile(p);
     if (p) setProfileForm({ full_name: p.full_name || "", phone: p.phone || "", city: p.city || "", bio: p.bio || "" });
@@ -183,6 +188,7 @@ const UserDashboard = () => {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-background">
       {/* Top nav header */}
       <div className="sticky top-0 z-40 bg-card/95 backdrop-blur border-b border-border">
@@ -390,6 +396,18 @@ const UserDashboard = () => {
                                 <ExternalLink className="w-3 h-3" /> View Live
                               </Link>
                             )}
+                            {l.status === "approved" && (() => {
+                              const pendingReq = updateRequests.find(r => r.listing_id === l.id && r.status === "pending");
+                              return pendingReq ? (
+                                <span className="px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center gap-1 whitespace-nowrap">
+                                  <Clock className="w-3 h-3" /> Update pending
+                                </span>
+                              ) : (
+                                <button onClick={() => setEditListing(l)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors flex items-center gap-1 whitespace-nowrap">
+                                  <Edit className="w-3 h-3" /> Request Edit
+                                </button>
+                              );
+                            })()}
                             <button onClick={() => handleDelete(l.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors">
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -630,6 +648,15 @@ const UserDashboard = () => {
         </div>
       </div>
     </div>
+    {editListing && user && (
+      <RequestListingUpdateModal
+        listing={editListing}
+        userId={user.id}
+        onClose={() => setEditListing(null)}
+        onSubmitted={fetchAll}
+      />
+    )}
+    </>
   );
 };
 

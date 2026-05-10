@@ -26,6 +26,7 @@ import AdminLeadsView from "@/components/admin/AdminLeadsView";
 import AdminAdvancedAnalytics from "@/components/admin/AdminAdvancedAnalytics";
 import AdminUserManagement from "@/components/admin/AdminUserManagement";
 import AdminPlatformSettings from "@/components/admin/AdminPlatformSettings";
+import AdminUpdateRequests from "@/components/admin/AdminUpdateRequests";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart as RPieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 
@@ -391,6 +392,7 @@ const AdminDashboard = () => {
   const navItems = [
     { id: "overview", label: "Dashboard", icon: LayoutDashboard },
     { id: "listings", label: "Listings", icon: Home, badge: pendingCount },
+    { id: "update-requests", label: "Update Requests", icon: FileText },
     { id: "add-property", label: "Add Property", icon: Plus },
     { id: "agents", label: "Manage Agents", icon: UserPlus },
     { id: "projects", label: "New Projects", icon: Building2 },
@@ -1143,6 +1145,10 @@ const AdminDashboard = () => {
           )}
 
           {tab === "platform" && <AdminPlatformSettings />}
+
+          {tab === "update-requests" && user && (
+            <AdminUpdateRequests adminId={user.id} />
+          )}
         </div>
       </div>
 
