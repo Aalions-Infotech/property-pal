@@ -7,6 +7,22 @@ import Footer from "@/components/Footer";
 import { CheckCircle, Upload, Clock, Info, X, ImagePlus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const LISTING_TYPES: Array<[string, string]> = [
+  ["sell", "Sell"],
+  ["rent_lease", "Rent / Lease"],
+  ["residential", "Residential"],
+  ["commercial", "Commercial"],
+];
+
+const PROPERTY_TYPES_BY_LISTING: Record<string, string[]> = {
+  sell:        ["Plot/Land", "House", "Apartment", "Villa", "Builder Floor", "Agriculture Land", "Warehouse", "Office", "Other"],
+  rent_lease:  ["Apartment", "Plot/Land", "House", "PG", "Warehouse", "Office", "Shop", "Other"],
+  residential: ["Plot/Land", "Apartment", "Villa", "House", "Builder Floor", "Agriculture Land", "Other"],
+  commercial:  ["Plot/Land", "Shop", "Warehouse", "Office", "Other"],
+};
+
+const APPROVAL_AUTHORITIES = ["RERA", "LDA", "Gram Panchayat", "Nagar Nigam", "Free Hold", "Other"];
+
 const PostProperty = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
