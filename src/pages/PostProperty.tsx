@@ -315,9 +315,9 @@ const PostProperty = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      {form.listingType === "sell" ? "Expected Price (₹)" : "Monthly Rent (₹)"} <span className="text-red-500">*</span>
+                      {form.listingType === "rent_lease" ? "Monthly Rent (₹)" : "Expected Price (₹)"} <span className="text-red-500">*</span>
                     </label>
-                    <input type="number" value={form.price} onChange={e => update("price", e.target.value)} placeholder={form.listingType === "sell" ? "e.g. 5000000" : "e.g. 25000"} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <input type="number" value={form.price} onChange={e => update("price", e.target.value)} placeholder={form.listingType === "rent_lease" ? "e.g. 25000" : "e.g. 5000000"} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                 </div>
                 <div>
