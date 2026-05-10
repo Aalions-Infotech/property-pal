@@ -165,6 +165,7 @@ const PostProperty = () => {
         contact_phone: form.phone || null,
         contact_email: form.contactEmail || user.email,
         rera_id: form.reraId || null,
+        approval_authority: form.approvalAuthority || null,
         status: "pending",
         is_new: true,
       });
