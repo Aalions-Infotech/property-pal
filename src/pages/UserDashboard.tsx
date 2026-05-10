@@ -647,6 +647,14 @@ const UserDashboard = () => {
         </div>
       </div>
     </div>
+    {editListing && user && (
+      <RequestListingUpdateModal
+        listing={editListing}
+        userId={user.id}
+        onClose={() => setEditListing(null)}
+        onSubmitted={fetchAll}
+      />
+    )}
   );
 };
 
