@@ -395,6 +395,18 @@ const UserDashboard = () => {
                                 <ExternalLink className="w-3 h-3" /> View Live
                               </Link>
                             )}
+                            {l.status === "approved" && (() => {
+                              const pendingReq = updateRequests.find(r => r.listing_id === l.id && r.status === "pending");
+                              return pendingReq ? (
+                                <span className="px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center gap-1 whitespace-nowrap">
+                                  <Clock className="w-3 h-3" /> Update pending
+                                </span>
+                              ) : (
+                                <button onClick={() => setEditListing(l)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors flex items-center gap-1 whitespace-nowrap">
+                                  <Edit className="w-3 h-3" /> Request Edit
+                                </button>
+                              );
+                            })()}
                             <button onClick={() => handleDelete(l.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors">
                               <Trash2 className="w-4 h-4" />
                             </button>
