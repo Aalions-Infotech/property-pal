@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { CheckCircle, Upload, Clock, Info, X, ImagePlus, Loader2 } from "lucide-react";
+import { CheckCircle, Upload, Clock, Info, X, ImagePlus, Loader2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const LISTING_TYPES: Array<[string, string]> = [
@@ -23,6 +23,83 @@ const PROPERTY_TYPES_BY_LISTING: Record<string, string[]> = {
 
 const APPROVAL_AUTHORITIES = ["RERA", "LDA", "Gram Panchayat", "Nagar Nigam", "Free Hold", "Other"];
 
+type FieldDef = { key: string; label: string; type: "text" | "number" | "select" | "boolean"; options?: string[]; placeholder?: string; required?: boolean };
+
+const FIELDS_BY_PROPERTY_TYPE: Record<string, FieldDef[]> = {
+  "Agriculture Land": [
+    { key: "front_width", label: "Front Width (ft)", type: "number" },
+    { key: "back_width", label: "Back Width (ft)", type: "number" },
+    { key: "plot_length", label: "Plot Length (ft)", type: "number" },
+    { key: "total_land_area", label: "Total Land Area (acre)", type: "number", required: true },
+    { key: "water_availability", label: "Water Availability", type: "select", options: ["Borewell", "Canal", "River", "None"] },
+    { key: "soil_type", label: "Soil Type", type: "select", options: ["Black", "Red", "Alluvial", "Sandy", "Loamy", "Other"] },
+    { key: "road_access", label: "Road Access", type: "select", options: ["Tar Road", "Mud Road", "Highway", "None"] },
+    { key: "irrigation_facility", label: "Irrigation Facility", type: "boolean" },
+    { key: "electricity_connection", label: "Electricity Connection", type: "boolean" },
+    { key: "boundary_available", label: "Boundary Available", type: "boolean" },
+  ],
+  "Plot/Land": [
+    { key: "plot_width", label: "Plot Width (ft)", type: "number" },
+    { key: "plot_length", label: "Plot Length (ft)", type: "number" },
+    { key: "corner_plot", label: "Corner Plot", type: "boolean" },
+    { key: "boundary_wall", label: "Boundary Wall", type: "boolean" },
+    { key: "road_width", label: "Road Width (ft)", type: "number" },
+    { key: "facing", label: "Facing", type: "select", options: ["East","West","North","South","North-East","North-West","South-East","South-West"] },
+    { key: "construction_allowed", label: "Construction Allowed", type: "boolean" },
+    { key: "zone_type", label: "Zone Type", type: "select", options: ["Residential","Commercial","Industrial","Mixed-use","Agricultural"] },
+  ],
+  "Office": [
+    { key: "cabin_count", label: "Cabin Count", type: "number" },
+    { key: "washrooms", label: "Washrooms", type: "number" },
+    { key: "reception_area", label: "Reception Area", type: "boolean" },
+    { key: "pantry", label: "Pantry", type: "boolean" },
+    { key: "parking", label: "Parking Spots", type: "number" },
+    { key: "floor", label: "Floor", type: "number" },
+    { key: "total_floors", label: "Total Floors", type: "number" },
+    { key: "power_backup", label: "Power Backup", type: "boolean" },
+    { key: "furnishing", label: "Furnishing", type: "select", options: ["Unfurnished","Semi-Furnished","Fully Furnished"] },
+    { key: "conference_room", label: "Conference Room", type: "boolean" },
+  ],
+  "Shop": [
+    { key: "frontage", label: "Shop Frontage (ft)", type: "number" },
+    { key: "floor", label: "Floor", type: "number" },
+    { key: "washrooms", label: "Washrooms", type: "number" },
+    { key: "power_backup", label: "Power Backup", type: "boolean" },
+    { key: "parking", label: "Parking Spots", type: "number" },
+  ],
+  "Warehouse": [
+    { key: "shed_height", label: "Shed Height (ft)", type: "number" },
+    { key: "power_load", label: "Power Load (kVA)", type: "number" },
+    { key: "dock_availability", label: "Dock Availability", type: "boolean" },
+    { key: "crane_facility", label: "Crane Facility", type: "boolean" },
+    { key: "industrial_water_supply", label: "Industrial Water Supply", type: "boolean" },
+    { key: "office_space", label: "Office Space", type: "boolean" },
+    { key: "warehouse_area", label: "Warehouse Area (sq.ft)", type: "number" },
+    { key: "truck_access", label: "Truck Access", type: "boolean" },
+  ],
+};
+
+const RESIDENTIAL_FIELDS: FieldDef[] = [
+  { key: "bedrooms", label: "Bedrooms", type: "select", options: ["1","2","3","4","5+"], required: true },
+  { key: "bathrooms", label: "Bathrooms", type: "select", options: ["1","2","3","4+"], required: true },
+  { key: "balconies", label: "Balconies", type: "number" },
+  { key: "furnishing", label: "Furnishing", type: "select", options: ["Unfurnished","Semi-Furnished","Fully Furnished"] },
+  { key: "floor", label: "Floor Number", type: "number" },
+  { key: "total_floors", label: "Total Floors", type: "number" },
+  { key: "parking", label: "Parking Spots", type: "number" },
+  { key: "facing", label: "Facing", type: "select", options: ["East","West","North","South","North-East","North-West","South-East","South-West"] },
+  { key: "carpet_area", label: "Carpet Area (sq.ft)", type: "number" },
+  { key: "super_builtup_area", label: "Super Built-up Area (sq.ft)", type: "number" },
+];
+
+const RESIDENTIAL_TYPES = new Set(["Apartment","House","Villa","Builder Floor","PG"]);
+
+function getFieldsForType(propertyType: string): FieldDef[] {
+  if (FIELDS_BY_PROPERTY_TYPE[propertyType]) return FIELDS_BY_PROPERTY_TYPE[propertyType];
+  if (RESIDENTIAL_TYPES.has(propertyType)) return RESIDENTIAL_FIELDS;
+  return RESIDENTIAL_FIELDS;
+}
+
 const PostProperty = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -33,6 +110,8 @@ const PostProperty = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attributes, setAttributes] = useState<Record<string, any>>({});
+  const [customAmenityInput, setCustomAmenityInput] = useState("");
   const [form, setForm] = useState({
     listingType: "sell",
     propertyType: "Apartment",
