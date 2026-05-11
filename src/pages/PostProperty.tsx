@@ -378,39 +378,50 @@ const PostProperty = () => {
 
             {step === 2 && (
               <div className="space-y-5">
-                <h2 className="font-display font-bold text-xl mb-4">Property Details</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Bedrooms</label>
-                    <div className="flex gap-2">
-                      {["1", "2", "3", "4", "5+"].map(b => (
-                        <button key={b} onClick={() => update("bedrooms", b)} className={`flex-1 py-2 rounded-lg border text-sm font-medium ${form.bedrooms === b ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{b}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Bathrooms</label>
-                    <div className="flex gap-2">
-                      {["1", "2", "3", "4+"].map(b => (
-                        <button key={b} onClick={() => update("bathrooms", b)} className={`flex-1 py-2 rounded-lg border text-sm font-medium ${form.bathrooms === b ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{b}</button>
-                      ))}
-                    </div>
-                  </div>
+                <div>
+                  <h2 className="font-display font-bold text-xl">Property Details</h2>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Showing fields for <span className="font-medium text-foreground">{form.propertyType}</span>. Switch property type in step 1 to see different fields.
+                  </p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Furnishing</label>
-                    <select value={form.furnishing} onChange={e => update("furnishing", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none">
-                      {["Unfurnished", "Semi-Furnished", "Fully Furnished"].map(f => <option key={f}>{f}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Facing</label>
-                    <select value={form.facing} onChange={e => update("facing", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none">
-                      <option value="">Select facing</option>
-                      {["East", "West", "North", "South", "North-East", "North-West", "South-East", "South-West"].map(f => <option key={f}>{f}</option>)}
-                    </select>
-                  </div>
+
+                {/* Dynamic per-type fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {dynamicFields.map(f => {
+                    const val = attributes[f.key] ?? "";
+                    const setVal = (v: any) => setAttributes(a => ({ ...a, [f.key]: v }));
+                    if (f.type === "boolean") {
+                      return (
+                        <label key={f.key} className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl border border-border bg-background cursor-pointer hover:bg-muted/40">
+                          <span className="text-sm font-medium">{f.label}{f.required && <span className="text-red-500"> *</span>}</span>
+                          <input type="checkbox" checked={!!val} onChange={e => setVal(e.target.checked)} className="w-4 h-4 accent-current" />
+                        </label>
+                      );
+                    }
+                    if (f.type === "select") {
+                      return (
+                        <div key={f.key}>
+                          <label className="block text-sm font-medium mb-2">{f.label}{f.required && <span className="text-red-500"> *</span>}</label>
+                          <select value={String(val)} onChange={e => setVal(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent">
+                            <option value="">Select…</option>
+                            {f.options!.map(o => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={f.key}>
+                        <label className="block text-sm font-medium mb-2">{f.label}{f.required && <span className="text-red-500"> *</span>}</label>
+                        <input
+                          type={f.type === "number" ? "number" : "text"}
+                          value={val}
+                          onChange={e => setVal(f.type === "number" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value)}
+                          placeholder={f.placeholder}
+                          className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent"
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -438,6 +449,24 @@ const PostProperty = () => {
                     {amenitiesList.map(a => (
                       <button key={a} onClick={() => toggleAmenity(a)} className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${form.amenities.includes(a) ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{a}</button>
                     ))}
+                    {form.amenities.filter(a => !amenitiesList.includes(a)).map(a => (
+                      <button key={a} onClick={() => toggleAmenity(a)} className="px-3 py-1.5 rounded-lg border border-accent bg-accent/10 text-accent text-xs font-medium flex items-center gap-1">
+                        {a}<X className="w-3 h-3" />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <input
+                      value={customAmenityInput}
+                      onChange={e => setCustomAmenityInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addCustomAmenity(); } }}
+                      placeholder="Add a custom amenity (e.g. EV Charging)"
+                      maxLength={40}
+                      className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent"
+                    />
+                    <button type="button" onClick={addCustomAmenity} className="px-3 py-2 rounded-xl border border-accent bg-accent/10 text-accent text-sm font-medium flex items-center gap-1">
+                      <Plus className="w-3.5 h-3.5" /> Add
+                    </button>
                   </div>
                 </div>
 
