@@ -602,6 +602,7 @@ export type Database = {
           price: number
           price_per_sqft: number | null
           price_unit: string | null
+          property_attributes: Json | null
           property_type: string
           rera_id: string | null
           reviewed_at: string | null
@@ -647,6 +648,7 @@ export type Database = {
           price: number
           price_per_sqft?: number | null
           price_unit?: string | null
+          property_attributes?: Json | null
           property_type: string
           rera_id?: string | null
           reviewed_at?: string | null
@@ -692,6 +694,7 @@ export type Database = {
           price?: number
           price_per_sqft?: number | null
           price_unit?: string | null
+          property_attributes?: Json | null
           property_type?: string
           rera_id?: string | null
           reviewed_at?: string | null
@@ -972,6 +975,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      update_request_audit: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string
+          id: string
+          listing_id: string
+          note: string | null
+          request_id: string
+          reviewer_id: string | null
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string
+          id?: string
+          listing_id: string
+          note?: string | null
+          request_id: string
+          reviewer_id?: string | null
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string
+          id?: string
+          listing_id?: string
+          note?: string | null
+          request_id?: string
+          reviewer_id?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
