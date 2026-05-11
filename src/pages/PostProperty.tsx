@@ -225,6 +225,12 @@ const PostProperty = () => {
       toast({ title: "Missing fields", description: "Please fill all required fields.", variant: "destructive" });
       return;
     }
+    for (const f of dynamicFields) {
+      if (f.required && (attributes[f.key] === undefined || attributes[f.key] === "" || attributes[f.key] === null)) {
+        toast({ title: `Missing: ${f.label}`, variant: "destructive" });
+        return;
+      }
+    }
     setSubmitting(true);
     try {
       const listingId = crypto.randomUUID();
@@ -246,17 +252,18 @@ const PostProperty = () => {
         city: form.city,
         locality: form.locality,
         address: form.address,
-        bedrooms: parseInt(form.bedrooms) || null,
-        bathrooms: parseInt(form.bathrooms) || null,
+        bedrooms: showResidentialBasics ? (parseInt(String(attributes.bedrooms ?? form.bedrooms)) || null) : null,
+        bathrooms: showResidentialBasics ? (parseInt(String(attributes.bathrooms ?? form.bathrooms)) || null) : null,
         area: parseFloat(form.area) || null,
         area_unit: "sq.ft",
-        furnishing: form.furnishing,
-        facing: form.facing || null,
-        parking: parseInt(form.parking) || 0,
+        furnishing: attributes.furnishing || form.furnishing,
+        facing: attributes.facing || form.facing || null,
+        parking: parseInt(String(attributes.parking ?? form.parking)) || 0,
         price: parseFloat(form.price),
         price_unit: form.listingType === "rent_lease" ? "monthly" : "total",
         price_per_sqft: form.area && form.price ? Math.round(parseFloat(form.price) / parseFloat(form.area)) : null,
         amenities: form.amenities,
+        property_attributes: attributes,
         images: imageUrls.length > 0 ? imageUrls : null,
         contact_name: form.contactName || null,
         contact_phone: form.phone || null,
