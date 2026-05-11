@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { CheckCircle, Upload, Clock, Info, X, ImagePlus, Loader2 } from "lucide-react";
+import { CheckCircle, Upload, Clock, Info, X, ImagePlus, Loader2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const LISTING_TYPES: Array<[string, string]> = [
@@ -23,6 +23,83 @@ const PROPERTY_TYPES_BY_LISTING: Record<string, string[]> = {
 
 const APPROVAL_AUTHORITIES = ["RERA", "LDA", "Gram Panchayat", "Nagar Nigam", "Free Hold", "Other"];
 
+type FieldDef = { key: string; label: string; type: "text" | "number" | "select" | "boolean"; options?: string[]; placeholder?: string; required?: boolean };
+
+const FIELDS_BY_PROPERTY_TYPE: Record<string, FieldDef[]> = {
+  "Agriculture Land": [
+    { key: "front_width", label: "Front Width (ft)", type: "number" },
+    { key: "back_width", label: "Back Width (ft)", type: "number" },
+    { key: "plot_length", label: "Plot Length (ft)", type: "number" },
+    { key: "total_land_area", label: "Total Land Area (acre)", type: "number", required: true },
+    { key: "water_availability", label: "Water Availability", type: "select", options: ["Borewell", "Canal", "River", "None"] },
+    { key: "soil_type", label: "Soil Type", type: "select", options: ["Black", "Red", "Alluvial", "Sandy", "Loamy", "Other"] },
+    { key: "road_access", label: "Road Access", type: "select", options: ["Tar Road", "Mud Road", "Highway", "None"] },
+    { key: "irrigation_facility", label: "Irrigation Facility", type: "boolean" },
+    { key: "electricity_connection", label: "Electricity Connection", type: "boolean" },
+    { key: "boundary_available", label: "Boundary Available", type: "boolean" },
+  ],
+  "Plot/Land": [
+    { key: "plot_width", label: "Plot Width (ft)", type: "number" },
+    { key: "plot_length", label: "Plot Length (ft)", type: "number" },
+    { key: "corner_plot", label: "Corner Plot", type: "boolean" },
+    { key: "boundary_wall", label: "Boundary Wall", type: "boolean" },
+    { key: "road_width", label: "Road Width (ft)", type: "number" },
+    { key: "facing", label: "Facing", type: "select", options: ["East","West","North","South","North-East","North-West","South-East","South-West"] },
+    { key: "construction_allowed", label: "Construction Allowed", type: "boolean" },
+    { key: "zone_type", label: "Zone Type", type: "select", options: ["Residential","Commercial","Industrial","Mixed-use","Agricultural"] },
+  ],
+  "Office": [
+    { key: "cabin_count", label: "Cabin Count", type: "number" },
+    { key: "washrooms", label: "Washrooms", type: "number" },
+    { key: "reception_area", label: "Reception Area", type: "boolean" },
+    { key: "pantry", label: "Pantry", type: "boolean" },
+    { key: "parking", label: "Parking Spots", type: "number" },
+    { key: "floor", label: "Floor", type: "number" },
+    { key: "total_floors", label: "Total Floors", type: "number" },
+    { key: "power_backup", label: "Power Backup", type: "boolean" },
+    { key: "furnishing", label: "Furnishing", type: "select", options: ["Unfurnished","Semi-Furnished","Fully Furnished"] },
+    { key: "conference_room", label: "Conference Room", type: "boolean" },
+  ],
+  "Shop": [
+    { key: "frontage", label: "Shop Frontage (ft)", type: "number" },
+    { key: "floor", label: "Floor", type: "number" },
+    { key: "washrooms", label: "Washrooms", type: "number" },
+    { key: "power_backup", label: "Power Backup", type: "boolean" },
+    { key: "parking", label: "Parking Spots", type: "number" },
+  ],
+  "Warehouse": [
+    { key: "shed_height", label: "Shed Height (ft)", type: "number" },
+    { key: "power_load", label: "Power Load (kVA)", type: "number" },
+    { key: "dock_availability", label: "Dock Availability", type: "boolean" },
+    { key: "crane_facility", label: "Crane Facility", type: "boolean" },
+    { key: "industrial_water_supply", label: "Industrial Water Supply", type: "boolean" },
+    { key: "office_space", label: "Office Space", type: "boolean" },
+    { key: "warehouse_area", label: "Warehouse Area (sq.ft)", type: "number" },
+    { key: "truck_access", label: "Truck Access", type: "boolean" },
+  ],
+};
+
+const RESIDENTIAL_FIELDS: FieldDef[] = [
+  { key: "bedrooms", label: "Bedrooms", type: "select", options: ["1","2","3","4","5+"], required: true },
+  { key: "bathrooms", label: "Bathrooms", type: "select", options: ["1","2","3","4+"], required: true },
+  { key: "balconies", label: "Balconies", type: "number" },
+  { key: "furnishing", label: "Furnishing", type: "select", options: ["Unfurnished","Semi-Furnished","Fully Furnished"] },
+  { key: "floor", label: "Floor Number", type: "number" },
+  { key: "total_floors", label: "Total Floors", type: "number" },
+  { key: "parking", label: "Parking Spots", type: "number" },
+  { key: "facing", label: "Facing", type: "select", options: ["East","West","North","South","North-East","North-West","South-East","South-West"] },
+  { key: "carpet_area", label: "Carpet Area (sq.ft)", type: "number" },
+  { key: "super_builtup_area", label: "Super Built-up Area (sq.ft)", type: "number" },
+];
+
+const RESIDENTIAL_TYPES = new Set(["Apartment","House","Villa","Builder Floor","PG"]);
+
+function getFieldsForType(propertyType: string): FieldDef[] {
+  if (FIELDS_BY_PROPERTY_TYPE[propertyType]) return FIELDS_BY_PROPERTY_TYPE[propertyType];
+  if (RESIDENTIAL_TYPES.has(propertyType)) return RESIDENTIAL_FIELDS;
+  return RESIDENTIAL_FIELDS;
+}
+
 const PostProperty = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -33,6 +110,8 @@ const PostProperty = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attributes, setAttributes] = useState<Record<string, any>>({});
+  const [customAmenityInput, setCustomAmenityInput] = useState("");
   const [form, setForm] = useState({
     listingType: "sell",
     propertyType: "Apartment",
@@ -59,10 +138,12 @@ const PostProperty = () => {
   const update = (k: string, v: string) =>
     setForm(f => {
       const next = { ...f, [k]: v };
-      // Reset propertyType when listing type changes so the user picks a valid one
       if (k === "listingType") {
         const types = PROPERTY_TYPES_BY_LISTING[v as keyof typeof PROPERTY_TYPES_BY_LISTING] || [];
         next.propertyType = types[0] || "Apartment";
+      }
+      if (k === "listingType" || k === "propertyType") {
+        setAttributes({});
       }
       return next;
     });
@@ -71,7 +152,23 @@ const PostProperty = () => {
     amenities: f.amenities.includes(a) ? f.amenities.filter(x => x !== a) : [...f.amenities, a],
   }));
 
+  const addCustomAmenity = () => {
+    const v = customAmenityInput.trim();
+    if (!v) return;
+    if (v.length > 40) { toast({ title: "Keep amenity under 40 chars", variant: "destructive" }); return; }
+    if (form.amenities.some(a => a.toLowerCase() === v.toLowerCase())) {
+      toast({ title: "Amenity already added" });
+      setCustomAmenityInput("");
+      return;
+    }
+    setForm(f => ({ ...f, amenities: [...f.amenities, v] }));
+    setCustomAmenityInput("");
+  };
+
   const amenitiesList = ["Swimming Pool", "Gym", "Security", "Parking", "Lift", "Power Backup", "Club House", "Garden", "Kids Play Area", "WiFi", "Modular Kitchen", "AC", "Laundry", "Visitor Parking"];
+
+  const dynamicFields = useMemo(() => getFieldsForType(form.propertyType), [form.propertyType]);
+  const showResidentialBasics = RESIDENTIAL_TYPES.has(form.propertyType);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -128,6 +225,12 @@ const PostProperty = () => {
       toast({ title: "Missing fields", description: "Please fill all required fields.", variant: "destructive" });
       return;
     }
+    for (const f of dynamicFields) {
+      if (f.required && (attributes[f.key] === undefined || attributes[f.key] === "" || attributes[f.key] === null)) {
+        toast({ title: `Missing: ${f.label}`, variant: "destructive" });
+        return;
+      }
+    }
     setSubmitting(true);
     try {
       const listingId = crypto.randomUUID();
@@ -149,17 +252,18 @@ const PostProperty = () => {
         city: form.city,
         locality: form.locality,
         address: form.address,
-        bedrooms: parseInt(form.bedrooms) || null,
-        bathrooms: parseInt(form.bathrooms) || null,
+        bedrooms: showResidentialBasics ? (parseInt(String(attributes.bedrooms ?? form.bedrooms)) || null) : null,
+        bathrooms: showResidentialBasics ? (parseInt(String(attributes.bathrooms ?? form.bathrooms)) || null) : null,
         area: parseFloat(form.area) || null,
         area_unit: "sq.ft",
-        furnishing: form.furnishing,
-        facing: form.facing || null,
-        parking: parseInt(form.parking) || 0,
+        furnishing: attributes.furnishing || form.furnishing,
+        facing: attributes.facing || form.facing || null,
+        parking: parseInt(String(attributes.parking ?? form.parking)) || 0,
         price: parseFloat(form.price),
         price_unit: form.listingType === "rent_lease" ? "monthly" : "total",
         price_per_sqft: form.area && form.price ? Math.round(parseFloat(form.price) / parseFloat(form.area)) : null,
         amenities: form.amenities,
+        property_attributes: attributes,
         images: imageUrls.length > 0 ? imageUrls : null,
         contact_name: form.contactName || null,
         contact_phone: form.phone || null,
@@ -274,39 +378,50 @@ const PostProperty = () => {
 
             {step === 2 && (
               <div className="space-y-5">
-                <h2 className="font-display font-bold text-xl mb-4">Property Details</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Bedrooms</label>
-                    <div className="flex gap-2">
-                      {["1", "2", "3", "4", "5+"].map(b => (
-                        <button key={b} onClick={() => update("bedrooms", b)} className={`flex-1 py-2 rounded-lg border text-sm font-medium ${form.bedrooms === b ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{b}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Bathrooms</label>
-                    <div className="flex gap-2">
-                      {["1", "2", "3", "4+"].map(b => (
-                        <button key={b} onClick={() => update("bathrooms", b)} className={`flex-1 py-2 rounded-lg border text-sm font-medium ${form.bathrooms === b ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{b}</button>
-                      ))}
-                    </div>
-                  </div>
+                <div>
+                  <h2 className="font-display font-bold text-xl">Property Details</h2>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Showing fields for <span className="font-medium text-foreground">{form.propertyType}</span>. Switch property type in step 1 to see different fields.
+                  </p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Furnishing</label>
-                    <select value={form.furnishing} onChange={e => update("furnishing", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none">
-                      {["Unfurnished", "Semi-Furnished", "Fully Furnished"].map(f => <option key={f}>{f}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Facing</label>
-                    <select value={form.facing} onChange={e => update("facing", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none">
-                      <option value="">Select facing</option>
-                      {["East", "West", "North", "South", "North-East", "North-West", "South-East", "South-West"].map(f => <option key={f}>{f}</option>)}
-                    </select>
-                  </div>
+
+                {/* Dynamic per-type fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {dynamicFields.map(f => {
+                    const val = attributes[f.key] ?? "";
+                    const setVal = (v: any) => setAttributes(a => ({ ...a, [f.key]: v }));
+                    if (f.type === "boolean") {
+                      return (
+                        <label key={f.key} className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl border border-border bg-background cursor-pointer hover:bg-muted/40">
+                          <span className="text-sm font-medium">{f.label}{f.required && <span className="text-red-500"> *</span>}</span>
+                          <input type="checkbox" checked={!!val} onChange={e => setVal(e.target.checked)} className="w-4 h-4 accent-current" />
+                        </label>
+                      );
+                    }
+                    if (f.type === "select") {
+                      return (
+                        <div key={f.key}>
+                          <label className="block text-sm font-medium mb-2">{f.label}{f.required && <span className="text-red-500"> *</span>}</label>
+                          <select value={String(val)} onChange={e => setVal(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent">
+                            <option value="">Select…</option>
+                            {f.options!.map(o => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={f.key}>
+                        <label className="block text-sm font-medium mb-2">{f.label}{f.required && <span className="text-red-500"> *</span>}</label>
+                        <input
+                          type={f.type === "number" ? "number" : "text"}
+                          value={val}
+                          onChange={e => setVal(f.type === "number" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value)}
+                          placeholder={f.placeholder}
+                          className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent"
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -334,6 +449,24 @@ const PostProperty = () => {
                     {amenitiesList.map(a => (
                       <button key={a} onClick={() => toggleAmenity(a)} className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${form.amenities.includes(a) ? "border-accent bg-accent/10 text-accent" : "border-border hover:bg-muted"}`}>{a}</button>
                     ))}
+                    {form.amenities.filter(a => !amenitiesList.includes(a)).map(a => (
+                      <button key={a} onClick={() => toggleAmenity(a)} className="px-3 py-1.5 rounded-lg border border-accent bg-accent/10 text-accent text-xs font-medium flex items-center gap-1">
+                        {a}<X className="w-3 h-3" />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <input
+                      value={customAmenityInput}
+                      onChange={e => setCustomAmenityInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addCustomAmenity(); } }}
+                      placeholder="Add a custom amenity (e.g. EV Charging)"
+                      maxLength={40}
+                      className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent"
+                    />
+                    <button type="button" onClick={addCustomAmenity} className="px-3 py-2 rounded-xl border border-accent bg-accent/10 text-accent text-sm font-medium flex items-center gap-1">
+                      <Plus className="w-3.5 h-3.5" /> Add
+                    </button>
                   </div>
                 </div>
 
