@@ -138,10 +138,12 @@ const PostProperty = () => {
   const update = (k: string, v: string) =>
     setForm(f => {
       const next = { ...f, [k]: v };
-      // Reset propertyType when listing type changes so the user picks a valid one
       if (k === "listingType") {
         const types = PROPERTY_TYPES_BY_LISTING[v as keyof typeof PROPERTY_TYPES_BY_LISTING] || [];
         next.propertyType = types[0] || "Apartment";
+      }
+      if (k === "listingType" || k === "propertyType") {
+        setAttributes({});
       }
       return next;
     });
@@ -150,7 +152,23 @@ const PostProperty = () => {
     amenities: f.amenities.includes(a) ? f.amenities.filter(x => x !== a) : [...f.amenities, a],
   }));
 
+  const addCustomAmenity = () => {
+    const v = customAmenityInput.trim();
+    if (!v) return;
+    if (v.length > 40) { toast({ title: "Keep amenity under 40 chars", variant: "destructive" }); return; }
+    if (form.amenities.some(a => a.toLowerCase() === v.toLowerCase())) {
+      toast({ title: "Amenity already added" });
+      setCustomAmenityInput("");
+      return;
+    }
+    setForm(f => ({ ...f, amenities: [...f.amenities, v] }));
+    setCustomAmenityInput("");
+  };
+
   const amenitiesList = ["Swimming Pool", "Gym", "Security", "Parking", "Lift", "Power Backup", "Club House", "Garden", "Kids Play Area", "WiFi", "Modular Kitchen", "AC", "Laundry", "Visitor Parking"];
+
+  const dynamicFields = useMemo(() => getFieldsForType(form.propertyType), [form.propertyType]);
+  const showResidentialBasics = RESIDENTIAL_TYPES.has(form.propertyType);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
