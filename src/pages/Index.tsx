@@ -135,10 +135,10 @@ const Index = () => {
   ];
 
   const quickCategories = [
-    { label: "Buy a Home", icon: "🏠", to: "/buy", color: "from-blue-500/10 to-blue-600/5" },
-    { label: "Rent a Home", icon: "🔑", to: "/rent", color: "from-emerald-500/10 to-emerald-600/5" },
+    { label: "Residentials", icon: "🏠", to: "/buy", color: "from-blue-500/10 to-blue-600/5" },
+    { label: "Rent/Lease", icon: "🔑", to: "/rent", color: "from-emerald-500/10 to-emerald-600/5" },
     { label: "New Projects", icon: "🏗️", to: "/new-projects", color: "from-orange-500/10 to-orange-600/5" },
-    { label: "Commercial", icon: "💼", to: "/commercial", color: "from-purple-500/10 to-purple-600/5" },
+    { label: "Commercials", icon: "💼", to: "/commercial", color: "from-purple-500/10 to-purple-600/5" },
     { label: "Plots/Land", icon: "🌍", to: "/buy?type=plot", color: "from-green-500/10 to-green-600/5" },
     { label: "PG / Co-Living", icon: "🛋️", to: "/pg", color: "from-pink-500/10 to-pink-600/5" },
     { label: "Home Loans", icon: "🏦", to: "/home-loans", color: "from-yellow-500/10 to-yellow-600/5" },
