@@ -136,8 +136,10 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
 
     // Fetch listings and active sponsorships in parallel
     let query = supabase.from("property_listings").select("*").eq("status", "approved");
-    const typeMap: Record<string, string> = { buy: "sell", rent: "rent", commercial: "commercial", pg: "pg" };
-    query = query.eq("listing_type", typeMap[type] || type);
+    if (type === "buy") query = query.in("listing_type", ["sell", "buy", "residential"]);
+    else if (type === "rent") query = query.in("listing_type", ["rent", "rent_lease"]);
+    else if (type === "pg") query = query.eq("property_type", "PG");
+    else query = query.eq("listing_type", "commercial");
 
     const city = searchParams.get("city");
     if (city) query = query.eq("city", city);
