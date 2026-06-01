@@ -97,7 +97,7 @@ const RESIDENTIAL_TYPES = new Set(["Apartment","House","Villa","Builder Floor","
 function getFieldsForType(propertyType: string): FieldDef[] {
   if (FIELDS_BY_PROPERTY_TYPE[propertyType]) return FIELDS_BY_PROPERTY_TYPE[propertyType];
   if (RESIDENTIAL_TYPES.has(propertyType)) return RESIDENTIAL_FIELDS;
-  return RESIDENTIAL_FIELDS;
+  return [];
 }
 
 const PostProperty = () => {
@@ -169,6 +169,7 @@ const PostProperty = () => {
 
   const dynamicFields = useMemo(() => getFieldsForType(form.propertyType), [form.propertyType]);
   const showResidentialBasics = RESIDENTIAL_TYPES.has(form.propertyType);
+  const exactPricePerSqft = form.area && form.price && Number(form.area) > 0 ? Math.round(Number(form.price) / Number(form.area)) : 0;
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -221,8 +222,12 @@ const PostProperty = () => {
 
   const handleSubmit = async () => {
     if (!user) { navigate("/auth"); return; }
-    if (!form.city || !form.locality || !form.price || !form.title) {
+    if (!form.city || !form.locality || !form.price || !form.title || !form.area) {
       toast({ title: "Missing fields", description: "Please fill all required fields.", variant: "destructive" });
+      return;
+    }
+    if (Number(form.price) <= 0 || Number(form.area) <= 0) {
+      toast({ title: "Invalid price or area", description: "Price and area must be greater than zero.", variant: "destructive" });
       return;
     }
     for (const f of dynamicFields) {
@@ -261,7 +266,7 @@ const PostProperty = () => {
         parking: parseInt(String(attributes.parking ?? form.parking)) || 0,
         price: parseFloat(form.price),
         price_unit: form.listingType === "rent_lease" ? "monthly" : "total",
-        price_per_sqft: form.area && form.price ? Math.round(parseFloat(form.price) / parseFloat(form.area)) : null,
+        price_per_sqft: exactPricePerSqft || null,
         amenities: form.amenities,
         property_attributes: attributes,
         images: imageUrls.length > 0 ? imageUrls : null,
