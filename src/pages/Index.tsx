@@ -125,7 +125,7 @@ const Index = () => {
   const allProperties = dbProperties.map(mapDbProp);
   const sponsoredProps = allProperties.filter(p => p.featured).slice(0, 4);
   const buyProps = sponsoredProps.length > 0 ? sponsoredProps : allProperties.filter(p => p.type === "buy" || p.type === "sell").slice(0, 4);
-  const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "pg").slice(0, 4);
+  const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "rent_lease" || p.type === "pg").slice(0, 4);
 
   const stats = [
     { value: "5L+", label: "Properties Listed" },
