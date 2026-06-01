@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Heart, MapPin, BedDouble, Bath, Maximize2, Star, Shield, Zap, Phone, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Property, formatPrice } from "@/data/properties";
+import { formatArea, getPricePerSqft, shouldShowBedsBaths } from "@/lib/propertyDisplay";
 
 interface PropertyCardProps {
   property: Property;
@@ -11,6 +12,8 @@ interface PropertyCardProps {
 const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
   const [wishlisted, setWishlisted] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const showBedsBaths = shouldShowBedsBaths(property.category);
+  const pricePerSqft = getPricePerSqft(property);
 
   if (view === "list") {
     return (
@@ -61,19 +64,19 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
               <span>{property.locality}, {property.city}</span>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              {property.bedrooms && (
+              {showBedsBaths && property.bedrooms && (
                 <span className="flex items-center gap-1"><BedDouble className="w-4 h-4" />{property.bedrooms} Beds</span>
               )}
-              {property.bathrooms && (
+              {showBedsBaths && property.bathrooms && (
                 <span className="flex items-center gap-1"><Bath className="w-4 h-4" />{property.bathrooms} Baths</span>
               )}
-              <span className="flex items-center gap-1"><Maximize2 className="w-4 h-4" />{property.area} {property.areaUnit}</span>
+              <span className="flex items-center gap-1"><Maximize2 className="w-4 h-4" />{formatArea(property.area, property.areaUnit)}</span>
             </div>
           </div>
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
             <div>
               <p className="price-tag text-xl">{formatPrice(property.price, property.priceUnit)}</p>
-              <p className="text-xs text-muted-foreground">₹{property.pricePerSqft}/sq.ft • {property.furnishing}</p>
+              <p className="text-xs text-muted-foreground">₹{pricePerSqft.toLocaleString("en-IN")}/sq.ft • {property.furnishing}</p>
             </div>
             <div className="flex gap-2">
               <button className="px-3 py-1.5 rounded-lg border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center gap-1">
@@ -164,18 +167,18 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
 
         {/* Stats */}
         <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3 pb-3 border-b border-border">
-          {property.bedrooms && (
+          {showBedsBaths && property.bedrooms && (
             <span className="flex items-center gap-1">
               <BedDouble className="w-3.5 h-3.5" />{property.bedrooms} Beds
             </span>
           )}
-          {property.bathrooms && (
+          {showBedsBaths && property.bathrooms && (
             <span className="flex items-center gap-1">
               <Bath className="w-3.5 h-3.5" />{property.bathrooms} Baths
             </span>
           )}
           <span className="flex items-center gap-1">
-            <Maximize2 className="w-3.5 h-3.5" />{property.area} {property.areaUnit}
+            <Maximize2 className="w-3.5 h-3.5" />{formatArea(property.area, property.areaUnit)}
           </span>
         </div>
 

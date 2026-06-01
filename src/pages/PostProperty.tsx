@@ -10,8 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 const LISTING_TYPES: Array<[string, string]> = [
   ["sell", "Sell"],
   ["rent_lease", "Rent / Lease"],
-  ["residential", "Residential"],
-  ["commercial", "Commercial"],
+  ["residential", "Residentials"],
+  ["commercial", "Commercials"],
 ];
 
 const PROPERTY_TYPES_BY_LISTING: Record<string, string[]> = {
@@ -97,7 +97,7 @@ const RESIDENTIAL_TYPES = new Set(["Apartment","House","Villa","Builder Floor","
 function getFieldsForType(propertyType: string): FieldDef[] {
   if (FIELDS_BY_PROPERTY_TYPE[propertyType]) return FIELDS_BY_PROPERTY_TYPE[propertyType];
   if (RESIDENTIAL_TYPES.has(propertyType)) return RESIDENTIAL_FIELDS;
-  return RESIDENTIAL_FIELDS;
+  return [];
 }
 
 const PostProperty = () => {
@@ -169,6 +169,7 @@ const PostProperty = () => {
 
   const dynamicFields = useMemo(() => getFieldsForType(form.propertyType), [form.propertyType]);
   const showResidentialBasics = RESIDENTIAL_TYPES.has(form.propertyType);
+  const exactPricePerSqft = form.area && form.price && Number(form.area) > 0 ? Math.round(Number(form.price) / Number(form.area)) : 0;
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -221,8 +222,12 @@ const PostProperty = () => {
 
   const handleSubmit = async () => {
     if (!user) { navigate("/auth"); return; }
-    if (!form.city || !form.locality || !form.price || !form.title) {
+    if (!form.city || !form.locality || !form.price || !form.title || !form.area) {
       toast({ title: "Missing fields", description: "Please fill all required fields.", variant: "destructive" });
+      return;
+    }
+    if (Number(form.price) <= 0 || Number(form.area) <= 0) {
+      toast({ title: "Invalid price or area", description: "Price and area must be greater than zero.", variant: "destructive" });
       return;
     }
     for (const f of dynamicFields) {
@@ -261,7 +266,7 @@ const PostProperty = () => {
         parking: parseInt(String(attributes.parking ?? form.parking)) || 0,
         price: parseFloat(form.price),
         price_unit: form.listingType === "rent_lease" ? "monthly" : "total",
-        price_per_sqft: form.area && form.price ? Math.round(parseFloat(form.price) / parseFloat(form.area)) : null,
+        price_per_sqft: exactPricePerSqft || null,
         amenities: form.amenities,
         property_attributes: attributes,
         images: imageUrls.length > 0 ? imageUrls : null,
@@ -426,13 +431,14 @@ const PostProperty = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Area (sq.ft) <span className="text-red-500">*</span></label>
-                    <input type="number" value={form.area} onChange={e => update("area", e.target.value)} placeholder="e.g. 1200" className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <input type="number" min="1" value={form.area} onChange={e => update("area", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       {form.listingType === "rent_lease" ? "Monthly Rent (₹)" : "Expected Price (₹)"} <span className="text-red-500">*</span>
                     </label>
-                    <input type="number" value={form.price} onChange={e => update("price", e.target.value)} placeholder={form.listingType === "rent_lease" ? "e.g. 25000" : "e.g. 5000000"} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <input type="number" min="1" value={form.price} onChange={e => update("price", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    {exactPricePerSqft > 0 && <p className="text-[11px] text-muted-foreground mt-1">₹{exactPricePerSqft.toLocaleString("en-IN")}/sq.ft will be shown.</p>}
                   </div>
                 </div>
                 <div>
@@ -460,7 +466,7 @@ const PostProperty = () => {
                       value={customAmenityInput}
                       onChange={e => setCustomAmenityInput(e.target.value)}
                       onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addCustomAmenity(); } }}
-                      placeholder="Add a custom amenity (e.g. EV Charging)"
+                      placeholder="Add a custom amenity"
                       maxLength={40}
                       className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent"
                     />
@@ -528,11 +534,11 @@ const PostProperty = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Your Name</label>
-                    <input value={form.contactName} onChange={e => update("contactName", e.target.value)} placeholder="Full name" className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <input value={form.contactName} onChange={e => update("contactName", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Phone Number</label>
-                    <input value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="+91 98765 43210" className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <input value={form.phone} onChange={e => update("phone", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                 </div>
                 <div>

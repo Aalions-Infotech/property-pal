@@ -4,6 +4,7 @@ import prop3 from "@/assets/property3.jpg";
 import prop4 from "@/assets/property4.jpg";
 import prop5 from "@/assets/property5.jpg";
 import prop6 from "@/assets/property6.jpg";
+import { formatPropertyPrice } from "@/lib/propertyDisplay";
 
 export interface Property {
   id: string;
@@ -376,15 +377,4 @@ export const localities = {
 
 // Legacy dummy data removed - all data now comes from database
 
-export const formatPrice = (price: number, unit: "total" | "monthly" = "total"): string => {
-  if (unit === "monthly") {
-    return `₹${(price / 1000).toFixed(0)}K/mo`;
-  }
-  if (price >= 10000000) {
-    return `₹${(price / 10000000).toFixed(2)} Cr`;
-  }
-  if (price >= 100000) {
-    return `₹${(price / 100000).toFixed(1)} L`;
-  }
-  return `₹${price.toLocaleString()}`;
-};
+export const formatPrice = (price: number, unit: "total" | "monthly" = "total"): string => formatPropertyPrice(price, unit);

@@ -14,13 +14,13 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   const [selectedCity, setSelectedCity] = useState("All India");
   const [cityOpen, setCityOpen] = useState(false);
   const [propertyTypeOpen, setPropertyTypeOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState("All Residential");
+  const [selectedType, setSelectedType] = useState("All Residentials");
 
   const tabs = [
-    { key: "buy", label: "Buy" },
-    { key: "rent", label: "Rent" },
+    { key: "buy", label: "Residentials" },
+    { key: "rent", label: "Rent/Lease" },
     { key: "new-launch", label: "New Launch", badge: true },
-    { key: "commercial", label: "Commercial" },
+    { key: "commercial", label: "Commercials" },
     { key: "plot", label: "Plots/Land" },
     { key: "pg", label: "PG/Co-Living" },
   ] as const;
@@ -87,7 +87,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
             </button>
             {propertyTypeOpen && (
               <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded-xl shadow-lg p-2 w-48 z-50">
-                {["All Residential", "Apartment", "Villa", "Plot/Land", "Builder Floor", "Studio", "Penthouse"].map(type => (
+                {["All Residentials", "Apartment", "Villa", "Plot/Land", "Builder Floor", "Studio", "Penthouse"].map(type => (
                   <button
                     key={type}
                     onClick={() => { setSelectedType(type); setPropertyTypeOpen(false); }}

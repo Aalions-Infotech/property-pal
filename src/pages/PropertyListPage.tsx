@@ -10,6 +10,7 @@ import SearchBar from "@/components/SearchBar";
 import { supabase } from "@/integrations/supabase/client";
 import PropertiesMapView from "@/components/PropertiesMapView";
 import { CITY_COORDS, getPropertyCoords, haversineKm, geocodeNominatim } from "@/lib/geo";
+import { formatArea, formatPropertyPrice, getPricePerSqft, shouldShowBedsBaths } from "@/lib/propertyDisplay";
 import { MapPin, BedDouble, Bath, Maximize2, Heart, Shield, Zap, Phone, Eye, Star } from "lucide-react";
 
 interface PropertyListPageProps {
@@ -18,15 +19,11 @@ interface PropertyListPageProps {
   subtitle: string;
 }
 
-const formatPrice = (price: number, unit?: string) => {
-  if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
-  if (price >= 100000) return `₹${(price / 100000).toFixed(2)} L`;
-  return `₹${price.toLocaleString("en-IN")}${unit === "monthly" ? "/mo" : ""}`;
-};
-
 const LivePropertyCard = ({ property, view = "grid" }: { property: any; view?: "grid" | "list" }) => {
   const [wishlisted, setWishlisted] = useState(false);
   const mainImage = property.images?.[0] || "/placeholder.svg";
+  const showBedsBaths = shouldShowBedsBaths(property.property_type);
+  const pricePerSqft = getPricePerSqft(property);
 
   if (view === "list") {
     return (
@@ -50,15 +47,15 @@ const LivePropertyCard = ({ property, view = "grid" }: { property: any; view?: "
               <MapPin className="w-3.5 h-3.5" />{property.locality}, {property.city}
             </div>
             <div className="flex items-center gap-3 sm:gap-4 text-sm text-muted-foreground flex-wrap">
-              {property.bedrooms && <span className="flex items-center gap-1"><BedDouble className="w-4 h-4" />{property.bedrooms} Beds</span>}
-              {property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-4 h-4" />{property.bathrooms} Baths</span>}
-              {property.area && <span className="flex items-center gap-1"><Maximize2 className="w-4 h-4" />{property.area} {property.area_unit}</span>}
+              {showBedsBaths && property.bedrooms && <span className="flex items-center gap-1"><BedDouble className="w-4 h-4" />{property.bedrooms} Beds</span>}
+              {showBedsBaths && property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-4 h-4" />{property.bathrooms} Baths</span>}
+              {property.area && <span className="flex items-center gap-1"><Maximize2 className="w-4 h-4" />{formatArea(property.area, property.area_unit || "sq.ft")}</span>}
             </div>
           </div>
           <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-border flex-wrap">
             <div>
-              <p className="text-xl font-display font-bold text-accent">{formatPrice(Number(property.price), property.price_unit)}</p>
-              {property.price_per_sqft && <p className="text-xs text-muted-foreground">₹{Number(property.price_per_sqft).toLocaleString("en-IN")}/sq.ft</p>}
+              <p className="text-xl font-display font-bold text-accent">{formatPropertyPrice(property.price, property.price_unit)}</p>
+              {pricePerSqft > 0 && <p className="text-xs text-muted-foreground">₹{pricePerSqft.toLocaleString("en-IN")}/sq.ft</p>}
             </div>
             <Link to={`/property/${property.id}`} className="px-3 py-1.5 rounded-lg btn-gold text-sm flex items-center gap-1">
               <Eye className="w-3.5 h-3.5" /> View
@@ -90,16 +87,16 @@ const LivePropertyCard = ({ property, view = "grid" }: { property: any; view?: "
         </div>
       </div>
       <div className="p-4">
-        <p className="text-xl font-display font-bold text-accent mb-1">{formatPrice(Number(property.price), property.price_unit)}</p>
-        {property.price_per_sqft && <span className="text-xs text-muted-foreground">₹{Number(property.price_per_sqft).toLocaleString("en-IN")}/sqft</span>}
+        <p className="text-xl font-display font-bold text-accent mb-1">{formatPropertyPrice(property.price, property.price_unit)}</p>
+        {pricePerSqft > 0 && <span className="text-xs text-muted-foreground">₹{pricePerSqft.toLocaleString("en-IN")}/sqft</span>}
         <Link to={`/property/${property.id}`} className="font-display font-semibold text-sm mb-1 hover:text-accent transition-colors line-clamp-2 block mt-1">{property.title}</Link>
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
           <MapPin className="w-3 h-3" />{property.locality}, {property.city}
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3 pb-3 border-b border-border">
-          {property.bedrooms && <span className="flex items-center gap-1"><BedDouble className="w-3.5 h-3.5" />{property.bedrooms} Beds</span>}
-          {property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" />{property.bathrooms} Baths</span>}
-          {property.area && <span className="flex items-center gap-1"><Maximize2 className="w-3.5 h-3.5" />{property.area} {property.area_unit}</span>}
+          {showBedsBaths && property.bedrooms && <span className="flex items-center gap-1"><BedDouble className="w-3.5 h-3.5" />{property.bedrooms} Beds</span>}
+          {showBedsBaths && property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" />{property.bathrooms} Baths</span>}
+          {property.area && <span className="flex items-center gap-1"><Maximize2 className="w-3.5 h-3.5" />{formatArea(property.area, property.area_unit || "sq.ft")}</span>}
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">{property.property_type}</span>
@@ -139,8 +136,10 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
 
     // Fetch listings and active sponsorships in parallel
     let query = supabase.from("property_listings").select("*").eq("status", "approved");
-    const typeMap: Record<string, string> = { buy: "sell", rent: "rent", commercial: "commercial", pg: "pg" };
-    query = query.eq("listing_type", typeMap[type] || type);
+    if (type === "buy") query = query.in("listing_type", ["sell", "buy", "residential"]);
+    else if (type === "rent") query = query.in("listing_type", ["rent", "rent_lease"]);
+    else if (type === "pg") query = query.eq("property_type", "PG");
+    else query = query.eq("listing_type", "commercial");
 
     const city = searchParams.get("city");
     if (city) query = query.eq("city", city);

@@ -16,6 +16,29 @@ import PropertyMap from "@/components/PropertyMap";
 import AiPricePrediction from "@/components/AiPricePrediction";
 import AiRecommendations from "@/components/AiRecommendations";
 import { getPropertyCoords } from "@/lib/geo";
+import { formatArea, getPricePerSqft, shouldShowBedsBaths } from "@/lib/propertyDisplay";
+
+const ATTRIBUTE_LABELS: Record<string, string> = {
+  total_land_area: "Total Land Area",
+  water_availability: "Water Availability",
+  soil_type: "Soil Type",
+  road_access: "Road Access",
+  irrigation_facility: "Irrigation Facility",
+  electricity_connection: "Electricity Connection",
+  boundary_available: "Boundary Available",
+  plot_width: "Plot Width",
+  plot_length: "Plot Length",
+  road_width: "Road Width",
+  zone_type: "Zone Type",
+  corner_plot: "Corner Plot",
+  boundary_wall: "Boundary Wall",
+  construction_allowed: "Construction Allowed",
+  cabin_count: "Cabins",
+  washrooms: "Washrooms",
+  shed_height: "Shed Height",
+  power_load: "Power Load",
+  truck_access: "Truck Access",
+};
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -81,7 +104,7 @@ const PropertyDetail = () => {
   const title = property.title;
   const price = Number(property.price);
   const priceUnit = isLive ? property.price_unit : property.priceUnit;
-  const pricePerSqft = isLive ? Number(property.price_per_sqft || 0) : property.pricePerSqft;
+  const pricePerSqft = getPricePerSqft(isLive ? property : { ...property, pricePerSqft: property.pricePerSqft });
   const area = Number(property.area);
   const areaUnit = isLive ? (property.area_unit || "sq.ft") : property.areaUnit;
   const bedrooms = property.bedrooms;
@@ -98,6 +121,8 @@ const PropertyDetail = () => {
   const featured = isLive ? property.is_featured : property.featured;
   const status = isLive ? (property.age_of_property === "New" ? "New Launch" : "Ready to Move") : property.status;
   const propertyType = isLive ? property.property_type : property.category;
+  const showBedsBaths = shouldShowBedsBaths(propertyType);
+  const propertyAttributes = isLive ? (property.property_attributes || {}) : {};
   const ageOfProperty = isLive ? property.age_of_property : property.ageOfProperty;
   const societyName = isLive ? property.society_name : property.societyName;
   const builderName = isLive ? property.builder_name : property.builderName;
@@ -192,14 +217,14 @@ const PropertyDetail = () => {
 
               {/* Quick Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                {bedrooms && (
+                {showBedsBaths && bedrooms && (
                   <div className="bg-card rounded-xl border border-border p-4 text-center">
                     <BedDouble className="w-5 h-5 text-accent mx-auto mb-1" />
                     <p className="font-display font-bold text-lg">{bedrooms}</p>
                     <p className="text-xs text-muted-foreground">Bedrooms</p>
                   </div>
                 )}
-                {bathrooms && (
+                {showBedsBaths && bathrooms && (
                   <div className="bg-card rounded-xl border border-border p-4 text-center">
                     <Bath className="w-5 h-5 text-accent mx-auto mb-1" />
                     <p className="font-display font-bold text-lg">{bathrooms}</p>
@@ -208,7 +233,7 @@ const PropertyDetail = () => {
                 )}
                 <div className="bg-card rounded-xl border border-border p-4 text-center">
                   <Maximize2 className="w-5 h-5 text-accent mx-auto mb-1" />
-                  <p className="font-display font-bold text-lg">{area}</p>
+                  <p className="font-display font-bold text-lg">{formatArea(area, areaUnit).replace(` ${areaUnit}`, "")}</p>
                   <p className="text-xs text-muted-foreground">{areaUnit}</p>
                 </div>
                 <div className="bg-card rounded-xl border border-border p-4 text-center">
@@ -241,10 +266,13 @@ const PropertyDetail = () => {
                       { label: "Furnishing", value: furnishing },
                       { label: "Facing", value: facing },
                       { label: "Age of Property", value: ageOfProperty },
-                      { label: "Floor", value: floor !== undefined ? `${floor} of ${totalFloors}` : "Ground" },
+                      ...((floor !== undefined && floor !== null) ? [{ label: "Floor", value: totalFloors ? `${floor} of ${totalFloors}` : String(floor) }] : []),
                       ...(societyName ? [{ label: "Society", value: societyName }] : []),
                       ...(builderName ? [{ label: "Builder", value: builderName }] : []),
                       ...(reraId ? [{ label: "RERA ID", value: reraId }] : []),
+                      ...Object.entries(propertyAttributes)
+                        .filter(([, value]) => value !== null && value !== undefined && value !== "")
+                        .map(([key, value]) => ({ label: ATTRIBUTE_LABELS[key] || key.replace(/_/g, " "), value: typeof value === "boolean" ? (value ? "Yes" : "No") : String(value) })),
                     ].filter(d => d.value).map(({ label, value }) => (
                       <div key={label} className="bg-muted/30 rounded-xl p-3">
                         <p className="text-xs text-muted-foreground mb-1">{label}</p>

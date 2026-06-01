@@ -110,7 +110,7 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Full Name *</label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input value={form.full_name} onChange={e => update("full_name", e.target.value)} placeholder="Your full name" required className={`${fieldClass} pl-9`} />
+            <input value={form.full_name} onChange={e => update("full_name", e.target.value)} required className={`${fieldClass} pl-9`} />
           </div>
         </div>
 
@@ -118,7 +118,7 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone Number *</label>
           <div className="relative">
             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input value={form.phone} onChange={e => update("phone", e.target.value)} placeholder="+91 98765 43210" required className={`${fieldClass} pl-9`} />
+            <input value={form.phone} onChange={e => update("phone", e.target.value)} required className={`${fieldClass} pl-9`} />
           </div>
         </div>
 

@@ -15,6 +15,7 @@ import Footer from "@/components/Footer";
 import LeadForm from "@/components/LeadForm";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { formatPrice, cities } from "@/data/properties";
+import { getPricePerSqft } from "@/lib/propertyDisplay";
 
 const PLAN_PRIORITY: Record<string, number> = {
   premium_showcase: 1,
@@ -118,13 +119,13 @@ const Index = () => {
     builderName: p.builder_name,
     reraId: p.rera_id,
     nearbyPlaces: [],
-    pricePerSqft: p.price_per_sqft || 0,
+    pricePerSqft: getPricePerSqft(p),
   });
 
   const allProperties = dbProperties.map(mapDbProp);
   const sponsoredProps = allProperties.filter(p => p.featured).slice(0, 4);
   const buyProps = sponsoredProps.length > 0 ? sponsoredProps : allProperties.filter(p => p.type === "buy" || p.type === "sell").slice(0, 4);
-  const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "pg").slice(0, 4);
+  const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "rent_lease" || p.type === "pg").slice(0, 4);
 
   const stats = [
     { value: "5L+", label: "Properties Listed" },
@@ -134,10 +135,10 @@ const Index = () => {
   ];
 
   const quickCategories = [
-    { label: "Buy a Home", icon: "🏠", to: "/buy", color: "from-blue-500/10 to-blue-600/5" },
-    { label: "Rent a Home", icon: "🔑", to: "/rent", color: "from-emerald-500/10 to-emerald-600/5" },
+    { label: "Residentials", icon: "🏠", to: "/buy", color: "from-blue-500/10 to-blue-600/5" },
+    { label: "Rent/Lease", icon: "🔑", to: "/rent", color: "from-emerald-500/10 to-emerald-600/5" },
     { label: "New Projects", icon: "🏗️", to: "/new-projects", color: "from-orange-500/10 to-orange-600/5" },
-    { label: "Commercial", icon: "💼", to: "/commercial", color: "from-purple-500/10 to-purple-600/5" },
+    { label: "Commercials", icon: "💼", to: "/commercial", color: "from-purple-500/10 to-purple-600/5" },
     { label: "Plots/Land", icon: "🌍", to: "/buy?type=plot", color: "from-green-500/10 to-green-600/5" },
     { label: "PG / Co-Living", icon: "🛋️", to: "/pg", color: "from-pink-500/10 to-pink-600/5" },
     { label: "Home Loans", icon: "🏦", to: "/home-loans", color: "from-yellow-500/10 to-yellow-600/5" },
