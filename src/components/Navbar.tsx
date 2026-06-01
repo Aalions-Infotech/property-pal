@@ -382,13 +382,13 @@ const Navbar = () => {
             </div>
             {[
               { to: "/", label: "Home", icon: Home },
-              { to: "/buy", label: "Buy Property", icon: Building2 },
-              { to: "/rent", label: "Rent Property", icon: MapPin },
-              { to: "/commercial", label: "Commercial", icon: Building2 },
+              { to: "/buy", label: "Residentials", icon: Building2 },
+              { to: "/rent", label: "Rent/Lease", icon: MapPin },
+              { to: "/commercial", label: "Commercials", icon: Building2 },
               { to: "/buy?type=agriculture-land", label: "Agriculture Land", icon: MapPin },
               { to: "/new-projects", label: "New Projects", icon: Star },
               { to: "/pg", label: "PG / Co-Living", icon: User },
-              { to: "/post-property", label: "Post Property (FREE)", icon: Building2 },
+              { to: "/post-property", label: "Post Property FREE", icon: Building2 },
               { to: "/agents", label: "Find Agents", icon: User },
               { to: "/price-trends", label: "Price Trends", icon: TrendingUp },
               { to: "/home-loans", label: "Home Loans & EMI", icon: Star },
