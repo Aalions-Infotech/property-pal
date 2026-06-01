@@ -17,10 +17,10 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   const [selectedType, setSelectedType] = useState("All Residential");
 
   const tabs = [
-    { key: "buy", label: "Buy" },
-    { key: "rent", label: "Rent" },
+    { key: "buy", label: "Residentials" },
+    { key: "rent", label: "Rent/Lease" },
     { key: "new-launch", label: "New Launch", badge: true },
-    { key: "commercial", label: "Commercial" },
+    { key: "commercial", label: "Commercials" },
     { key: "plot", label: "Plots/Land" },
     { key: "pg", label: "PG/Co-Living" },
   ] as const;
