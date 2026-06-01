@@ -10,8 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 const LISTING_TYPES: Array<[string, string]> = [
   ["sell", "Sell"],
   ["rent_lease", "Rent / Lease"],
-  ["residential", "Residential"],
-  ["commercial", "Commercial"],
+  ["residential", "Residentials"],
+  ["commercial", "Commercials"],
 ];
 
 const PROPERTY_TYPES_BY_LISTING: Record<string, string[]> = {
