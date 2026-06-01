@@ -14,7 +14,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   const [selectedCity, setSelectedCity] = useState("All India");
   const [cityOpen, setCityOpen] = useState(false);
   const [propertyTypeOpen, setPropertyTypeOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState("All Residential");
+  const [selectedType, setSelectedType] = useState("All Residentials");
 
   const tabs = [
     { key: "buy", label: "Residentials" },
