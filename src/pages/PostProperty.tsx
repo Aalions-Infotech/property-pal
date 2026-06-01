@@ -431,13 +431,14 @@ const PostProperty = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Area (sq.ft) <span className="text-red-500">*</span></label>
-                    <input type="number" value={form.area} onChange={e => update("area", e.target.value)} placeholder="e.g. 1200" className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <input type="number" min="1" value={form.area} onChange={e => update("area", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       {form.listingType === "rent_lease" ? "Monthly Rent (₹)" : "Expected Price (₹)"} <span className="text-red-500">*</span>
                     </label>
-                    <input type="number" value={form.price} onChange={e => update("price", e.target.value)} placeholder={form.listingType === "rent_lease" ? "e.g. 25000" : "e.g. 5000000"} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <input type="number" min="1" value={form.price} onChange={e => update("price", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    {exactPricePerSqft > 0 && <p className="text-[11px] text-muted-foreground mt-1">₹{exactPricePerSqft.toLocaleString("en-IN")}/sq.ft will be shown.</p>}
                   </div>
                 </div>
                 <div>
@@ -465,7 +466,7 @@ const PostProperty = () => {
                       value={customAmenityInput}
                       onChange={e => setCustomAmenityInput(e.target.value)}
                       onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addCustomAmenity(); } }}
-                      placeholder="Add a custom amenity (e.g. EV Charging)"
+                      placeholder="Add a custom amenity"
                       maxLength={40}
                       className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent"
                     />
