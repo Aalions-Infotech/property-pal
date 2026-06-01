@@ -12,6 +12,7 @@ const STATUS_TINTS: Record<string, string> = {
   approved: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
   rejected: "bg-red-500/10 text-red-600 border-red-500/20",
   submitted: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+  applied: "bg-primary/10 text-primary border-primary/20",
 };
 
 const fmtVal = (v: any) => {
