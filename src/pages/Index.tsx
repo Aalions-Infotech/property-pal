@@ -15,6 +15,7 @@ import Footer from "@/components/Footer";
 import LeadForm from "@/components/LeadForm";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { formatPrice, cities } from "@/data/properties";
+import { getPricePerSqft } from "@/lib/propertyDisplay";
 
 const PLAN_PRIORITY: Record<string, number> = {
   premium_showcase: 1,
@@ -118,7 +119,7 @@ const Index = () => {
     builderName: p.builder_name,
     reraId: p.rera_id,
     nearbyPlaces: [],
-    pricePerSqft: p.price_per_sqft || 0,
+    pricePerSqft: getPricePerSqft(p),
   });
 
   const allProperties = dbProperties.map(mapDbProp);
