@@ -87,7 +87,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
             </button>
             {propertyTypeOpen && (
               <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded-xl shadow-lg p-2 w-48 z-50">
-                {["All Residential", "Apartment", "Villa", "Plot/Land", "Builder Floor", "Studio", "Penthouse"].map(type => (
+                {["All Residentials", "Apartment", "Villa", "Plot/Land", "Builder Floor", "Studio", "Penthouse"].map(type => (
                   <button
                     key={type}
                     onClick={() => { setSelectedType(type); setPropertyTypeOpen(false); }}
