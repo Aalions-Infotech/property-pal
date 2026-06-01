@@ -1047,6 +1047,14 @@ export type Database = {
     }
     Functions: {
       admin_delete_user: { Args: { _target_user_id: string }; Returns: Json }
+      allowed_property_attribute_keys: {
+        Args: { _property_type: string }
+        Returns: string[]
+      }
+      filter_property_attributes: {
+        Args: { _attrs: Json; _property_type: string }
+        Returns: Json
+      }
       has_role:
         | {
             Args: {
@@ -1057,6 +1065,10 @@ export type Database = {
           }
         | { Args: { _role: string; _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_residential_property_type: {
+        Args: { _property_type: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "agent" | "user"
