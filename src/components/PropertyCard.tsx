@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Heart, MapPin, BedDouble, Bath, Maximize2, Star, Shield, Zap, Phone, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Property, formatPrice } from "@/data/properties";
-import { formatArea, getPricePerSqft, shouldShowBedsBaths } from "@/lib/propertyDisplay";
+import { formatArea, getPricePerSqft, shouldShowBedsBaths, formatPricePerSqft } from "@/lib/propertyDisplay";
 
 interface PropertyCardProps {
   property: Property;
@@ -75,8 +75,8 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
           </div>
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
             <div>
-              <p className="price-tag text-xl">{formatPrice(property.price, property.priceUnit)}</p>
-              <p className="text-xs text-muted-foreground">₹{pricePerSqft.toLocaleString("en-IN")}/sq.ft • {property.furnishing}</p>
+              <p className="price-tag text-xl break-words">{formatPrice(property.price, property.priceUnit)}</p>
+              <p className="text-xs text-muted-foreground">{formatPricePerSqft(property)} • {property.furnishing}</p>
             </div>
             <div className="flex gap-2">
               <button className="px-3 py-1.5 rounded-lg border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center gap-1">
@@ -149,10 +149,10 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
 
       {/* Content */}
       <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <p className="price-tag text-xl">{formatPrice(property.price, property.priceUnit)}</p>
+        <div className="flex items-start justify-between gap-2 mb-1 flex-wrap">
+          <p className="price-tag text-lg sm:text-xl break-words">{formatPrice(property.price, property.priceUnit)}</p>
           <span className="text-xs text-muted-foreground flex-shrink-0 mt-1">
-            ₹{property.pricePerSqft}/sqft
+            ₹{pricePerSqft.toLocaleString("en-IN")}/sqft
           </span>
         </div>
 
