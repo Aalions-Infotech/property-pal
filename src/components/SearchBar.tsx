@@ -60,15 +60,15 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
             )}
           </button>
         ))}
-        <div className="ml-auto hidden md:block">
+        <div className="ml-auto hidden md:block flex-shrink-0">
           <button
             onClick={() => navigate("/post-property")}
-            className={`px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all flex items-center gap-1 ${
+            className={`px-3 lg:px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
               variant === "hero" ? "text-gold hover:text-gold/80" : "text-accent hover:text-accent/80"
             }`}
           >
-            Post Property
-            <span className="badge-new ml-1">FREE</span>
+            <span className="whitespace-nowrap">Post Property</span>
+            <span className="badge-new shrink-0">FREE</span>
           </button>
         </div>
       </div>
