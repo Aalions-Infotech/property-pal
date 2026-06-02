@@ -190,7 +190,7 @@ const AdminUpdateRequests = ({ adminId }: AdminUpdateRequestsProps) => {
                 </div>
 
                 {isOpen && (
-                  <div className="mt-3 bg-muted/30 rounded-xl p-3 space-y-3">
+                  <div className="mt-3 bg-muted/30 rounded-xl p-3 sm:p-4 space-y-4 overflow-x-auto">
                     <p className="text-xs font-semibold text-muted-foreground">
                       Proposed changes — previous → new
                     </p>
@@ -202,13 +202,13 @@ const AdminUpdateRequests = ({ adminId }: AdminUpdateRequestsProps) => {
                           const oldV = listing ? (listing as any)[k] : undefined;
                           const newV = changes[k];
                           return (
-                            <div key={k} className="grid grid-cols-1 sm:grid-cols-[140px_1fr_auto_1fr] gap-2 text-xs items-start py-1.5 border-b border-border/40 last:border-0">
+                            <div key={k} className="grid grid-cols-1 md:grid-cols-[140px_1fr_auto_1fr] gap-2 text-xs items-start py-1.5 border-b border-border/40 last:border-0">
                               <span className="font-medium capitalize text-muted-foreground">{k.replace(/_/g, ' ')}</span>
-                              <span className="px-2 py-1 rounded bg-red-500/10 text-red-700 dark:text-red-400 line-through break-all">
+                              <span className="px-2 py-1 rounded bg-red-500/10 text-red-700 dark:text-red-400 line-through break-all min-w-0">
                                 {fmtVal(oldV)}
                               </span>
-                              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground self-center hidden sm:block" />
-                              <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium break-all">
+                              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground self-center hidden md:block" />
+                              <span className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium break-all min-w-0">
                                 {fmtVal(newV)}
                               </span>
                             </div>
@@ -219,23 +219,31 @@ const AdminUpdateRequests = ({ adminId }: AdminUpdateRequestsProps) => {
 
                     {audit.length > 0 && (
                       <div className="pt-3 border-t border-border/40">
-                        <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
-                          <History className="w-3.5 h-3.5" /> Audit trail ({audit.length})
+                        <p className="text-xs font-semibold text-muted-foreground mb-3 flex items-center gap-1">
+                          <History className="w-3.5 h-3.5" /> Audit timeline ({audit.length})
                         </p>
-                        <ul className="space-y-1.5">
-                          {audit.map(a => (
-                            <li key={a.id} className="text-xs flex flex-wrap items-center gap-2">
-                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium border ${STATUS_TINTS[a.action] || "border-border bg-muted"}`}>
-                                {a.action}
-                              </span>
-                              <span className="text-muted-foreground">
-                                by {profilesMap[a.reviewer_id]?.full_name || profilesMap[a.reviewer_id]?.email || a.reviewer_id?.slice(0, 8) || "system"}
-                              </span>
-                              <span className="text-muted-foreground">· {new Date(a.created_at).toLocaleString('en-IN')}</span>
-                              {a.note && <span className="text-foreground italic">— "{a.note}"</span>}
-                            </li>
-                          ))}
-                        </ul>
+                        <ol className="relative border-l-2 border-border/60 pl-4 sm:pl-5 space-y-3 ml-1">
+                          {audit.map(a => {
+                            const tint = STATUS_TINTS[a.action] || "border-border bg-muted text-foreground";
+                            return (
+                              <li key={a.id} className="relative">
+                                <span className={`absolute -left-[22px] sm:-left-[26px] top-1 w-3 h-3 rounded-full border-2 border-background ${tint.split(" ").find(c => c.startsWith("bg-")) || "bg-muted"}`} />
+                                <div className="flex flex-wrap items-center gap-2 text-xs">
+                                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium border ${tint}`}>{a.action}</span>
+                                  <span className="text-muted-foreground">
+                                    by {profilesMap[a.reviewer_id]?.full_name || profilesMap[a.reviewer_id]?.email || a.reviewer_id?.slice(0, 8) || "system"}
+                                  </span>
+                                  <span className="text-muted-foreground">· {new Date(a.created_at).toLocaleString('en-IN')}</span>
+                                </div>
+                                {a.note && (
+                                  <p className="mt-1 text-xs text-foreground italic bg-background/60 border border-border/60 rounded-md px-2 py-1 break-words">
+                                    "{a.note}"
+                                  </p>
+                                )}
+                              </li>
+                            );
+                          })}
+                        </ol>
                       </div>
                     )}
                   </div>

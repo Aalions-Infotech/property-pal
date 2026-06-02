@@ -427,4 +427,20 @@
   .animate-slide-up {
     animation: slide-up 0.5s ease-out forwards;
   }
+
+  /* Responsive safety: prevent rogue children from overflowing the viewport
+     on small screens (long titles, prices, descriptions, etc.). */
+  .safe-wrap {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 0;
+  }
+
+  @media (max-width: 640px) {
+    /* Tame oversized display headings on phones across the app. */
+    h1 { font-size: clamp(1.6rem, 7vw, 2.25rem); line-height: 1.15; }
+    h2 { font-size: clamp(1.25rem, 5.5vw, 1.75rem); line-height: 1.2; }
+    h3 { font-size: clamp(1.05rem, 4.5vw, 1.35rem); line-height: 1.25; }
+    .price-tag { word-break: break-word; }
+  }
 }
