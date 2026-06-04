@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, Mic, MapPin, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { cities, propertyTypes } from "@/data/properties";
+import { lucknowLocalities, propertyTypes } from "@/data/properties";
 
 interface SearchBarProps {
   variant?: "hero" | "page";
@@ -11,7 +11,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"buy" | "rent" | "commercial" | "plot" | "pg" | "new-launch">("buy");
   const [query, setQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState("All India");
+  const [selectedCity, setSelectedCity] = useState("All Lucknow");
   const [cityOpen, setCityOpen] = useState(false);
   const [propertyTypeOpen, setPropertyTypeOpen] = useState(false);
   const [selectedType, setSelectedType] = useState("All Residentials");
@@ -34,7 +34,8 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
                  "/new-projects";
     const params = new URLSearchParams();
     if (query) params.set("q", query);
-    if (selectedCity !== "All India") params.set("city", selectedCity);
+    if (selectedCity !== "All Lucknow") params.set("locality", selectedCity);
+    params.set("city", "Lucknow");
     navigate(`${path}?${params.toString()}`);
   };
 
