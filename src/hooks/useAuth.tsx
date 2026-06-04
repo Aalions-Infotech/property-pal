@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, createContext, useContext } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 type AppRole = "admin" | "moderator" | "agent" | "user";
 
@@ -12,7 +13,7 @@ interface AuthContextType {
   loading: boolean;
   role: string | null;
   isAdmin: boolean;
-  signOut: () => Promise<void>;
+  signOut: (opts?: { reason?: "expired" | "manual"; redirectTo?: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -64,14 +65,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(false);
   };
 
-  const handleSignOut = useCallback(async () => {
-    localStorage.removeItem("lastActivity");
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setRole(null);
-    window.location.href = "/auth";
-  }, []);
+  const handleSignOut = useCallback(
+    async (opts?: { reason?: "expired" | "manual"; redirectTo?: string }) => {
+      const reason = opts?.reason ?? "manual";
+      localStorage.removeItem("lastActivity");
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.error("Sign out error:", err);
+      }
+      setUser(null);
+      setSession(null);
+      setRole(null);
+
+      if (reason === "expired") {
+        toast({
+          title: "Session expired",
+          description: "You've been signed out due to inactivity. Please sign in again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Signed out",
+          description: "You have been signed out successfully.",
+        });
+      }
+
+      const target =
+        opts?.redirectTo ??
+        (reason === "expired" ? "/auth?reason=expired" : "/auth");
+      window.location.href = target;
+    },
+    []
+  );
 
   // Session timeout check
   useEffect(() => {
@@ -84,7 +110,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const checkExpiry = () => {
       const last = parseInt(localStorage.getItem("lastActivity") || "0", 10);
       if (last && Date.now() - last > SESSION_TIMEOUT_MS) {
-        handleSignOut();
+        handleSignOut({ reason: "expired" });
       }
     };
 
