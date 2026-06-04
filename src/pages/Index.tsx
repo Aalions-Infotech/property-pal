@@ -146,12 +146,12 @@ const Index = () => {
   ];
 
   const whyUs = [
-    { icon: Shield, title: "100% Verified Listings", desc: "Every property goes through a 10-step verification process." },
-    { icon: Zap, title: "Instant Connect", desc: "Contact owners and agents directly with zero brokerage." },
-    { icon: Award, title: "RERA Compliant", desc: "All new projects are verified for RERA registration." },
-    { icon: TrendingUp, title: "Market Insights", desc: "Real-time price trends and locality intelligence." },
-    { icon: Users, title: "500+ Local Agents", desc: "Connect with Lucknow's largest network of certified agents." },
-    { icon: CheckCircle, title: "End-to-End Support", desc: "From search to registration, we guide every step." },
+    { icon: Shield, title: "100% Verified Listings", desc: " Every property goes through a strict multi-step verification process to ensure authenticity and trust." },
+    { icon: Zap, title: "Instant Connect", desc: " Directly connect with property owners and agents without unnecessary delays or hidden charges." },
+    { icon: Award, title: "RERA Compliant", desc: " All properties are legally approved and verified for safe and secure investment." },
+    { icon: TrendingUp, title: "Market Insights", desc: " Get real-time updates on property prices, trends, and prime locations in Lucknow." },
+    { icon: Users, title: "Trusted Network", desc: " Work with a reliable network of verified agents and property experts." },
+    { icon: CheckCircle, title: "End-to-End Support", desc: " From property search to final registration, we assist you at every step." },
   ];
 
   const trendCities = priceTrends.length > 0 ? priceTrends.map(t => t.city) : [];
@@ -174,7 +174,7 @@ const Index = () => {
               <span className="text-gold">Place to Live</span>
             </h1>
             <p className="text-base sm:text-lg text-white/70 mb-8 px-2">
-              10,000+ verified properties across every locality in Lucknow. Buy, Rent, or Invest.
+             Find Your Perfect Property in Lucknow. Buy, Sell & Invest Securely
             </p>
           </div>
           <div className="max-w-4xl mx-auto">
@@ -225,9 +225,9 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <p className="section-label mb-1">BUY A HOME</p>
-              <h2 className="text-3xl font-display font-bold">Find, Buy & Own Your Dream Home</h2>
-              <p className="text-muted-foreground mt-1 text-sm">Explore apartments, villas, builder floors and more</p>
+              <p className="section-label mb-1">Buy A Property</p>
+              <h2 className="text-3xl font-display font-bold">Find the Right Property & Own It Today </h2>
+              <p className="text-muted-foreground mt-1 text-sm">Search, Buy & Own the Property You’ve Always Wanted</p>
             </div>
             <Link to="/buy" className="hidden md:flex items-center gap-1 text-accent font-medium text-sm hover:gap-2 transition-all">
               View All <ArrowRight className="w-4 h-4" />
@@ -330,9 +330,9 @@ const Index = () => {
       <section className="py-16 bg-gradient-navy text-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-10">
-            <p className="text-gold text-xs font-bold tracking-widest mb-2">WHY PROPESTATE</p>
-            <h2 className="text-3xl font-display font-bold text-white mb-3">Lucknow's Most Trusted Platform</h2>
-            <p className="text-white/60 text-sm max-w-xl mx-auto">We combine technology, data, and expertise to make your real estate journey seamless.</p>
+            <p className="text-gold text-xs font-bold tracking-widest mb-2"> Why Ekananda Estate</p>
+            <h2 className="text-3xl font-display font-bold text-white mb-3"> Your Property Journey, Our Responsibility</h2>
+            <p className="text-white/60 text-sm max-w-xl mx-auto">End-to-end assistance for a smooth experience.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {whyUs.map(({ icon: Icon, title, desc }) => (
@@ -405,7 +405,7 @@ const Index = () => {
             <div className="relative z-10">
               <p className="text-sm font-bold uppercase tracking-widest mb-3 text-foreground/70">FOR PROPERTY OWNERS</p>
               <h2 className="text-4xl font-display font-bold text-foreground mb-3">Post Your Property for <span className="underline decoration-wavy">FREE</span></h2>
-              <p className="text-foreground/70 mb-8 max-w-lg mx-auto">Reach 5 lakh+ active buyers and tenants. List your property in minutes with zero brokerage.</p>
+              <p className="text-foreground/70 mb-8 max-w-lg mx-auto">Reach genuine buyers and tenants. List your property in minutes with zero brokerage.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/post-property" className="btn-navy px-8 py-3 rounded-xl text-base inline-flex items-center gap-2 justify-center">
                   Post Property FREE <ArrowRight className="w-4 h-4" />

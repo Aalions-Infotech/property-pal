@@ -28,11 +28,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gold" />
-                <span>Hazratganj, Lucknow, Uttar Pradesh</span>
+                <span> Lucknow Amausi Sarojini Nagar</span>
               </div>
             </div>
             <div className="flex gap-3 mt-5">
-              {[Facebook, Twitter, Instagram, Youtube, Linkedin].map((Icon, i) => (
+              {[Facebook, Twitter, Instagram,  Linkedin].map((Icon, i) => (
                 <a key={i} href="#" className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold hover:text-foreground transition-all">
                   <Icon className="w-4 h-4" />
                 </a>
