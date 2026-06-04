@@ -205,7 +205,7 @@ const AgentDashboard = () => {
             <div className="min-w-0 flex-1">
               <p className="text-white/60 text-sm">Agent Dashboard</p>
               <h1 className="text-lg sm:text-xl font-display font-bold text-white truncate">{profile?.full_name || "Agent"}</h1>
-              <p className="text-white/40 text-[11px] sm:text-xs truncate">ID: {agentProfile?.agent_id || "N/A"} · {profile?.city || "India"}</p>
+              <p className="text-white/40 text-[11px] sm:text-xs truncate">ID: {agentProfile?.agent_id || "N/A"} · {profile?.city || "Lucknow"}</p>
             </div>
           </div>
         </div>

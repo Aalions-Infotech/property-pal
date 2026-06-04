@@ -38,7 +38,7 @@ const PropertiesMapView = ({ properties, height = "calc(100vh - 14rem)", center,
     .filter(x => x.coords) as { p: any; coords: [number, number] }[];
 
   const mapCenter: [number, number] =
-    center || (points[0]?.coords ?? [22.9734, 78.6569]); // India center
+    center || (points[0]?.coords ?? [26.8467, 80.9462]); // Lucknow center
 
   return (
     <div className="rounded-2xl overflow-hidden border border-border bg-card" style={{ height }}>

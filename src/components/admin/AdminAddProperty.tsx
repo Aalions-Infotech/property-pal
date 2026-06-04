@@ -166,7 +166,7 @@ const AdminAddProperty = ({ userId, onSuccess }: AdminAddPropertyProps) => {
       <div className="bg-card rounded-2xl border border-border p-6">
         <h3 className="font-display font-bold mb-4">Location</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div><label className={labelClass}>City *</label><input name="city" value={form.city} onChange={handleChange} placeholder="Mumbai" className={fieldClass} required /></div>
+          <div><label className={labelClass}>City *</label><input name="city" value={form.city} onChange={handleChange} placeholder="Lucknow" className={fieldClass} required /></div>
           <div><label className={labelClass}>Locality *</label><input name="locality" value={form.locality} onChange={handleChange} placeholder="Bandra West" className={fieldClass} required /></div>
           <div><label className={labelClass}>Address</label><input name="address" value={form.address} onChange={handleChange} placeholder="Full address" className={fieldClass} /></div>
         </div>

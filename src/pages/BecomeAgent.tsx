@@ -207,7 +207,7 @@ const BecomeAgent = () => {
           <div className="max-w-4xl mx-auto px-4 text-center">
             <p className="text-gold text-xs font-bold tracking-widest mb-3">BECOME AN EKANANDA ESTATE AGENT</p>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
-              Join India's Largest<br /><span className="text-gold">Real Estate Network</span>
+              Join Lucknow's Largest<br /><span className="text-gold">Real Estate Network</span>
             </h1>
             <p className="text-white/60 text-lg max-w-xl mx-auto">Get verified, list properties, track sales, and grow your real estate business with our enterprise tools.</p>
           </div>
@@ -273,7 +273,7 @@ const BecomeAgent = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1.5">City</label>
-                  <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Mumbai" className={fieldClass} />
+                  <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Lucknow" className={fieldClass} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1.5">Experience (Years)</label>

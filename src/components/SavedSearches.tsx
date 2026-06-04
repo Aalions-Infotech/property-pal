@@ -99,7 +99,7 @@ export default function SavedSearches() {
 
       {showForm && (
         <div className="bg-card rounded-2xl border border-border p-4 sm:p-5 space-y-3">
-          <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Search name (e.g. 3BHK Bangalore)" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm" />
+          <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Search name (e.g. 3BHK Gomti Nagar)" className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <select value={form.listing_type} onChange={e => setForm({ ...form, listing_type: e.target.value })} className="px-3 py-2 rounded-lg border border-border bg-background text-sm">
               <option value="buy">Buy</option><option value="rent">Rent</option><option value="commercial">Commercial</option><option value="pg">PG</option>

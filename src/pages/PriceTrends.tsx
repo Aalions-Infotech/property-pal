@@ -43,7 +43,7 @@ const PriceTrends = () => {
           <div className="max-w-7xl mx-auto px-4">
             <p className="text-gold text-xs font-bold tracking-widest mb-2">MARKET INTELLIGENCE</p>
             <h1 className="text-4xl font-display font-bold text-white mb-2">Property Price Trends</h1>
-            <p className="text-white/60 text-sm">Real-time price data across India's top real estate markets</p>
+            <p className="text-white/60 text-sm">Real-time price data across Lucknow's top real estate markets</p>
           </div>
         </div>
 

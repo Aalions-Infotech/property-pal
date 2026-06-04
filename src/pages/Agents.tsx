@@ -66,7 +66,7 @@ const Agents = () => {
           id: ap.user_id,
           name: profile?.full_name || fallbackName,
           bio: profile?.bio || ap.specialization || "Ekananda Estate Verified Agent",
-          city: profile?.city || (ap.areas_served?.[0] ?? "India"),
+          city: profile?.city || (ap.areas_served?.[0] ?? "Lucknow"),
           phone: profile?.phone || "",
           email: profile?.email || "",
           verified: Boolean(profile?.is_verified ?? true),
@@ -105,7 +105,7 @@ const Agents = () => {
           <div className="max-w-7xl mx-auto px-4">
             <p className="text-gold text-xs font-bold tracking-widest mb-2">PROFESSIONALS</p>
             <h1 className="text-4xl font-display font-bold text-white mb-2">Find Real Estate Agents</h1>
-            <p className="text-white/60 text-sm mb-4">Connect with verified professionals across India</p>
+            <p className="text-white/60 text-sm mb-4">Connect with verified professionals across Lucknow</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

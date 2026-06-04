@@ -15,7 +15,7 @@ const Footer = () => {
               <span className="font-display font-bold text-xl">{BRAND_NAME}</span>
             </div>
             <p className="text-sm text-white/60 mb-5 leading-relaxed max-w-xs">
-              India's most trusted real estate platform. Find your dream home, office, or investment property with confidence.
+              Lucknow's most trusted real estate platform. Find your dream home, office, or investment property across every locality in the City of Nawabs.
             </p>
             <div className="space-y-2 text-sm text-white/70">
               <div className="flex items-center gap-2">
@@ -28,7 +28,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gold" />
-                <span>Mumbai, Delhi, Bangalore</span>
+                <span>Hazratganj, Lucknow, Uttar Pradesh</span>
               </div>
             </div>
             <div className="flex gap-3 mt-5">
@@ -108,15 +108,15 @@ const Footer = () => {
 
         {/* City Links */}
         <div className="border-t border-white/10 pt-8 mb-8">
-          <h4 className="font-display font-semibold text-sm mb-4 text-gold">POPULAR CITIES</h4>
+          <h4 className="font-display font-semibold text-sm mb-4 text-gold">POPULAR LUCKNOW LOCALITIES</h4>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {["Delhi NCR", "Mumbai", "Bangalore", "Hyderabad", "Chennai", "Pune", "Kolkata", "Ahmedabad", "Noida", "Gurgaon", "Jaipur", "Lucknow", "Chandigarh"].map(city => (
+            {["Gomti Nagar", "Hazratganj", "Indira Nagar", "Aliganj", "Mahanagar", "Aminabad", "Alambagh", "Vibhuti Khand", "Jankipuram", "Sushant Golf City", "Sultanpur Road", "Faizabad Road", "Kanpur Road", "Chinhat", "Mall Avenue"].map(loc => (
               <Link
-                key={city}
-                to={`/buy?city=${encodeURIComponent(city)}`}
+                key={loc}
+                to={`/buy?city=Lucknow&locality=${encodeURIComponent(loc)}`}
                 className="text-xs text-white/50 hover:text-white transition-colors"
               >
-                Property in {city}
+                Property in {loc}
               </Link>
             ))}
           </div>
