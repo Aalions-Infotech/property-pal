@@ -253,7 +253,7 @@
   }
 
   .badge-new {
-    background: hsl(152 69% 40%);
+    background: hsl(152 69% 38%);
     color: white;
     font-size: 0.65rem;
     font-weight: 700;
@@ -261,6 +261,10 @@
     border-radius: 4px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+  }
+
+  .dark .badge-new {
+    background: hsl(152 69% 48%);
   }
 
   .badge-featured {
