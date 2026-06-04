@@ -27,7 +27,7 @@ const PLAN_PRIORITY: Record<string, number> = {
 };
 
 const Index = () => {
-  const [activeCityTab, setActiveCityTab] = useState("Mumbai");
+  const [activeCityTab, setActiveCityTab] = useState("Gomti Nagar");
   const [dbProperties, setDbProperties] = useState<any[]>([]);
   const [sponsorships, setSponsorships] = useState<any[]>([]);
   const [loadingProps, setLoadingProps] = useState(true);
@@ -128,9 +128,9 @@ const Index = () => {
   const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "rent_lease" || p.type === "pg").slice(0, 4);
 
   const stats = [
-    { value: "5L+", label: "Properties Listed" },
-    { value: "18K+", label: "Verified Agents" },
-    { value: "50+", label: "Cities Covered" },
+    { value: "10K+", label: "Properties in Lucknow" },
+    { value: "500+", label: "Verified Local Agents" },
+    { value: "50+", label: "Lucknow Localities" },
     { value: "4.8★", label: "Avg. Rating" },
   ];
 
@@ -150,7 +150,7 @@ const Index = () => {
     { icon: Zap, title: "Instant Connect", desc: "Contact owners and agents directly with zero brokerage." },
     { icon: Award, title: "RERA Compliant", desc: "All new projects are verified for RERA registration." },
     { icon: TrendingUp, title: "Market Insights", desc: "Real-time price trends and locality intelligence." },
-    { icon: Users, title: "18K+ Agents", desc: "Connect with India's largest network of certified agents." },
+    { icon: Users, title: "500+ Local Agents", desc: "Connect with Lucknow's largest network of certified agents." },
     { icon: CheckCircle, title: "End-to-End Support", desc: "From search to registration, we guide every step." },
   ];
 
@@ -168,13 +168,13 @@ const Index = () => {
         </div>
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-20 pb-10">
           <div className="max-w-3xl mx-auto text-center mb-10">
-            <p className="section-label mb-3">India's Most Trusted Real Estate Platform</p>
+            <p className="section-label mb-3">Lucknow's Most Trusted Real Estate Platform</p>
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-bold text-white mb-4 leading-tight">
               Find Your Perfect<br />
               <span className="text-gold">Place to Live</span>
             </h1>
             <p className="text-base sm:text-lg text-white/70 mb-8 px-2">
-              5 lakh+ verified properties across 50+ cities. Buy, Rent, or Invest.
+              10,000+ verified properties across every locality in Lucknow. Buy, Rent, or Invest.
             </p>
           </div>
           <div className="max-w-4xl mx-auto">
@@ -182,7 +182,7 @@ const Index = () => {
           </div>
           <div className="max-w-4xl mx-auto mt-4 hidden sm:flex flex-wrap gap-2">
             <span className="text-white/50 text-xs">Popular:</span>
-            {["2BHK in Mumbai", "Apartments in Bangalore", "Villas in Goa", "Office Space Delhi", "Plots Hyderabad"].map(s => (
+            {["2BHK in Gomti Nagar", "Flats in Hazratganj", "Villas in Sushant Golf City", "Office in Vibhuti Khand", "Plots on Sultanpur Road"].map(s => (
               <button key={s} className="glass px-3 py-1 rounded-full text-xs text-white/80 hover:text-white transition-all">{s}</button>
             ))}
           </div>
