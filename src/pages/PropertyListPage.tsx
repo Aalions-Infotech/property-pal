@@ -200,7 +200,7 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
       setRadiusLabel(radiusInput.trim());
       return;
     }
-    const c = await geocodeNominatim(`${radiusInput}, India`);
+    const c = await geocodeNominatim(`${radiusInput}, Lucknow, India`);
     if (c) {
       setRadiusCenter(c);
       setRadiusLabel(radiusInput.trim());

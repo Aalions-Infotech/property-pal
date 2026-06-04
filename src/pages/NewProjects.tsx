@@ -64,7 +64,7 @@ const NewProjects = () => {
         <div className="bg-gradient-navy py-10">
           <div className="max-w-7xl mx-auto px-4">
             <p className="text-gold text-xs font-bold tracking-widest mb-2">NEW LAUNCH</p>
-            <h1 className="text-4xl font-display font-bold text-white mb-2">New Projects in India</h1>
+            <h1 className="text-4xl font-display font-bold text-white mb-2">New Projects in Lucknow</h1>
             <p className="text-white/60 text-sm">Discover RERA-verified new launch projects from top builders</p>
           </div>
         </div>

@@ -95,7 +95,7 @@ const AuthPage = () => {
         </Link>
         <div className="relative z-10">
           <h1 className="text-4xl font-display font-bold text-white mb-4 leading-tight">
-            India's Most Trusted<br /><span className="text-gold">Real Estate Platform</span>
+            Lucknow's Most Trusted<br /><span className="text-gold">Real Estate Platform</span>
           </h1>
           <p className="text-white/60 text-lg mb-8">List properties, track approvals, and manage sponsorships — all in one place.</p>
           <div className="grid grid-cols-2 gap-4">
@@ -122,7 +122,7 @@ const AuthPage = () => {
               {mode === "login" ? "Welcome back" : mode === "signup" ? "Create account" : "Reset password"}
             </h2>
             <p className="text-muted-foreground text-sm">
-              {mode === "login" ? `Sign in to your ${BRAND_NAME} account` : mode === "signup" ? "Join India's biggest real estate platform" : "Enter your email and we'll send a reset link"}
+              {mode === "login" ? `Sign in to your ${BRAND_NAME} account` : mode === "signup" ? "Join Lucknow's biggest real estate platform" : "Enter your email and we'll send a reset link"}
             </p>
           </div>
 

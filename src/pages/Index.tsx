@@ -287,7 +287,7 @@ const Index = () => {
             <div>
               <p className="section-label mb-1">MARKET INTELLIGENCE</p>
               <h2 className="text-3xl font-display font-bold">Property Price Trends</h2>
-              <p className="text-muted-foreground mt-1 text-sm">Track price movements across top Indian cities</p>
+              <p className="text-muted-foreground mt-1 text-sm">Track price movements across top Lucknow localities</p>
             </div>
             <Link to="/price-trends" className="hidden md:flex items-center gap-1 text-accent font-medium text-sm hover:gap-2 transition-all">
               Full Report <ArrowRight className="w-4 h-4" />
@@ -331,7 +331,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-10">
             <p className="text-gold text-xs font-bold tracking-widest mb-2">WHY PROPESTATE</p>
-            <h2 className="text-3xl font-display font-bold text-white mb-3">India's Most Trusted Platform</h2>
+            <h2 className="text-3xl font-display font-bold text-white mb-3">Lucknow's Most Trusted Platform</h2>
             <p className="text-white/60 text-sm max-w-xl mx-auto">We combine technology, data, and expertise to make your real estate journey seamless.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
