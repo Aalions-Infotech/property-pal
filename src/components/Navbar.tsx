@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { 
   ChevronDown, Menu, X, Sun, Moon, 
   Heart, User, LogIn, Building2, Home, 
-  MapPin, TrendingUp, BookOpen, Star, Shield, LayoutDashboard
+  MapPin, TrendingUp, BookOpen, Star, Shield, LayoutDashboard, LogOut
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,7 +24,9 @@ const Navbar = () => {
   const [ownersDropdown, setOwnersDropdown] = useState(false);
   const [insightsDropdown, setInsightsDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [userDropdown, setUserDropdown] = useState(false);
   const cityRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -36,6 +38,9 @@ const Navbar = () => {
     const handleClick = (e: MouseEvent) => {
       if (cityRef.current && !cityRef.current.contains(e.target as Node)) {
         setCityDropdown(false);
+      }
+      if (userRef.current && !userRef.current.contains(e.target as Node)) {
+        setUserDropdown(false);
       }
     };
     document.addEventListener("mousedown", handleClick);
@@ -318,17 +323,59 @@ const Navbar = () => {
 
             {/* Auth Actions */}
             {user ? (
-              <div className="flex items-center gap-1 sm:gap-2">
-                {isAdmin && (
-                  <Link to="/admin" className={`rounded-full transition-all hidden md:flex items-center gap-1 text-xs font-medium px-3 py-2 ${!scrolled && location.pathname === "/" ? "text-white hover:bg-white/10" : "text-foreground hover:bg-muted"}`}>
-                    <Shield className="w-4 h-4" />
-                    <span className="hidden lg:inline">Admin</span>
-                  </Link>
+              <div className="relative" ref={userRef}>
+                <button
+                  onClick={() => setUserDropdown((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={userDropdown}
+                  className={`flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all ${
+                    !scrolled && location.pathname === "/" ? "text-white border-white/30 hover:bg-white/10" : ""
+                  }`}
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden md:inline max-w-[120px] truncate">
+                    {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+                {userDropdown && (
+                  <div className="absolute right-0 top-full mt-2 bg-card border border-border rounded-xl shadow-lg p-2 w-56 z-50 animate-slide-up">
+                    <div className="px-3 py-2 border-b border-border mb-1">
+                      <p className="text-xs text-muted-foreground">Signed in as</p>
+                      <p className="text-sm font-medium truncate">{user.email}</p>
+                      {role && <p className="text-xs text-gold capitalize mt-0.5">{role}</p>}
+                    </div>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setUserDropdown(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4" /> Dashboard
+                    </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setUserDropdown(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                      >
+                        <Shield className="w-4 h-4" /> Admin Panel
+                      </Link>
+                    )}
+                    <Link
+                      to="/wishlist"
+                      onClick={() => setUserDropdown(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
+                    >
+                      <Heart className="w-4 h-4" /> Wishlist
+                    </Link>
+                    <button
+                      onClick={() => { setUserDropdown(false); signOut(); }}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-destructive/10 text-destructive transition-colors w-full text-left mt-1 border-t border-border pt-2"
+                    >
+                      <LogOut className="w-4 h-4" /> Sign Out
+                    </button>
+                  </div>
                 )}
-                <Link to="/dashboard" className={`flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all`}>
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span className="hidden md:inline">Dashboard</span>
-                </Link>
               </div>
             ) : (
               <Link

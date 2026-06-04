@@ -14,6 +14,18 @@ const AuthPage = () => {
   const { user, role, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
 
+  // Show session-expired notice when redirected from a timed-out session
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reason") === "expired") {
+      toast({
+        title: "Session expired",
+        description: "Please sign in again to continue.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
+
   // Redirect authenticated users based on role (respecting ?redirect param)
   useEffect(() => {
     if (!authLoading && user && role) {
