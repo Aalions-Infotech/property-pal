@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
-import { cities } from "@/data/properties";
+import { lucknowLocalities } from "@/data/properties";
 import { BRAND_NAME } from "@/constants/brand";
 import logoImg from "@/assets/ekananda-logo.webp";
 
@@ -17,7 +17,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [selectedCity, setSelectedCity] = useState("All India");
+  const [selectedCity, setSelectedCity] = useState("All Lucknow");
   const [cityDropdown, setCityDropdown] = useState(false);
   const [buyersDropdown, setBuyersDropdown] = useState(false);
   const [tenantsDropdown, setTenantsDropdown] = useState(false);
@@ -91,21 +91,21 @@ const Navbar = () => {
             </button>
             {cityDropdown && (
               <div className="absolute top-full mt-2 left-0 bg-card border border-border rounded-xl shadow-lg p-3 w-64 z-50">
-                <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">SELECT CITY</p>
+                <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">SELECT LOCALITY (LUCKNOW)</p>
                 <div className="grid grid-cols-2 gap-1 max-h-60 overflow-y-auto scrollbar-hide">
                   <button
-                    onClick={() => { setSelectedCity("All India"); setCityDropdown(false); }}
+                    onClick={() => { setSelectedCity("All Lucknow"); setCityDropdown(false); }}
                     className="text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted transition-colors font-medium text-accent"
                   >
-                    All India
+                    All Lucknow
                   </button>
-                  {cities.map(city => (
+                  {lucknowLocalities.map(loc => (
                     <button
-                      key={city}
-                      onClick={() => { setSelectedCity(city); setCityDropdown(false); }}
+                      key={loc}
+                      onClick={() => { setSelectedCity(loc); setCityDropdown(false); }}
                       className="text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted transition-colors"
                     >
-                      {city}
+                      {loc}
                     </button>
                   ))}
                 </div>
@@ -408,15 +408,15 @@ const Navbar = () => {
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
             {/* Mobile City Selector */}
             <div className="sm:hidden pb-2 mb-2 border-b border-border">
-              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">CITY</p>
+              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">LOCALITY (LUCKNOW)</p>
               <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
                 <button
-                  onClick={() => { setSelectedCity("All India"); }}
-                  className={`text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted ${selectedCity === "All India" ? "font-semibold text-accent" : ""}`}
+                  onClick={() => { setSelectedCity("All Lucknow"); }}
+                  className={`text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted ${selectedCity === "All Lucknow" ? "font-semibold text-accent" : ""}`}
                 >
-                  All India
+                  All Lucknow
                 </button>
-                {cities.map(c => (
+                {lucknowLocalities.map(c => (
                   <button
                     key={c}
                     onClick={() => setSelectedCity(c)}
