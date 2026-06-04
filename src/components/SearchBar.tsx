@@ -63,8 +63,11 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
         <div className="ml-auto hidden md:block flex-shrink-0">
           <button
             onClick={() => navigate("/post-property")}
-            className={`px-3 lg:px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-              variant === "hero" ? "text-gold hover:text-gold/80" : "text-accent hover:text-accent/80"
+            aria-label="Post your property listing for free"
+            className={`px-3 lg:px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all inline-flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background ring-gold ${
+              variant === "hero"
+                ? "text-gold hover:text-gold/90 hover:bg-white/10"
+                : "bg-gold/10 text-foreground hover:bg-gold/20 dark:bg-transparent dark:text-gold dark:hover:bg-white/5"
             }`}
           >
             <span className="whitespace-nowrap">Post Property</span>
