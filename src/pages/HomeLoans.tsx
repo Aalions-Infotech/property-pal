@@ -28,17 +28,10 @@ const HomeLoans = () => {
   const totalInterest = totalPayable - loanAmount;
 
   // Stamp duty rates by state
+  // Lucknow-only project: stamp duty rates for Uttar Pradesh.
   const stampRates: Record<string, { duty: number; reg: number; label: string }> = {
-    maharashtra: { duty: 6, reg: 1, label: "Maharashtra" },
-    delhi: { duty: 6, reg: 1, label: "Delhi" },
-    karnataka: { duty: 5.6, reg: 1, label: "Karnataka" },
-    tamilnadu: { duty: 7, reg: 1, label: "Tamil Nadu" },
-    telangana: { duty: 6, reg: 0.5, label: "Telangana" },
-    gujarat: { duty: 4.9, reg: 1, label: "Gujarat" },
-    rajasthan: { duty: 6, reg: 1, label: "Rajasthan" },
-    up: { duty: 7, reg: 1, label: "Uttar Pradesh" },
-    westbengal: { duty: 7, reg: 1, label: "West Bengal" },
-    kerala: { duty: 8, reg: 2, label: "Kerala" },
+    up: { duty: 7, reg: 1, label: "Uttar Pradesh (Lucknow)" },
+    up_female: { duty: 6, reg: 1, label: "UP - Female Buyer (Lucknow)" },
   };
 
   const selectedStamp = stampRates[stampState];
