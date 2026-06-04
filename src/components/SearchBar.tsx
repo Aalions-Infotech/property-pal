@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, Mic, MapPin, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { lucknowLocalities, propertyTypes } from "@/data/properties";
+import { propertyTypes } from "@/data/properties";
 
 interface SearchBarProps {
   variant?: "hero" | "page";
