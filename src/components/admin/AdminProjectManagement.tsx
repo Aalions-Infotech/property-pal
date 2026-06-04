@@ -153,7 +153,7 @@ const AdminProjectManagement = ({ adminId }: AdminProjectManagementProps) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Project Name *</label><input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Godrej Meridian" className={fieldClass} /></div>
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Builder *</label><input value={form.builder} onChange={e => setForm(f => ({ ...f, builder: e.target.value }))} placeholder="Godrej Properties" className={fieldClass} /></div>
-            <div><label className="text-xs font-medium text-muted-foreground mb-1 block">City *</label><input value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} placeholder="Mumbai" className={fieldClass} /></div>
+            <div><label className="text-xs font-medium text-muted-foreground mb-1 block">City *</label><input value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} placeholder="Lucknow" className={fieldClass} /></div>
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Locality *</label><input value={form.locality} onChange={e => setForm(f => ({ ...f, locality: e.target.value }))} placeholder="Bandra West" className={fieldClass} /></div>
             <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Type</label>
               <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className={fieldClass}>

@@ -205,7 +205,7 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
       setRadiusCenter(c);
       setRadiusLabel(radiusInput.trim());
     } else {
-      alert("Could not find that location. Try a city name like 'Mumbai' or 'Bangalore'.");
+      alert("Could not find that location. Try a Lucknow locality like 'Gomti Nagar' or 'Hazratganj'.");
     }
   };
 
@@ -236,7 +236,7 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
             type="text"
             value={radiusInput}
             onChange={e => setRadiusInput(e.target.value)}
-            placeholder="Center (e.g. Mumbai, Bandra)"
+            placeholder="Center (e.g. Lucknow, Gomti Nagar)"
             className="flex-1 min-w-[140px] px-3 py-1.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
           />
           <select

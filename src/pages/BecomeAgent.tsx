@@ -273,7 +273,7 @@ const BecomeAgent = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1.5">City</label>
-                  <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Mumbai" className={fieldClass} />
+                  <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Lucknow" className={fieldClass} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1.5">Experience (Years)</label>

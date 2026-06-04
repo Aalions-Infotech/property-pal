@@ -351,7 +351,7 @@ const PostProperty = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">City <span className="text-red-500">*</span></label>
-                    <input value={form.city} onChange={e => update("city", e.target.value)} placeholder="e.g. Mumbai" className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <input value={form.city} onChange={e => update("city", e.target.value)} placeholder="e.g. Lucknow" className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Locality <span className="text-red-500">*</span></label>

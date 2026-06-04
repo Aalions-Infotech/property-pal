@@ -586,7 +586,7 @@ const UserDashboard = () => {
                       {[
                         { label: "Full Name", key: "full_name", placeholder: "Your full name" },
                         { label: "Phone Number", key: "phone", placeholder: "+91 98765 43210" },
-                        { label: "City", key: "city", placeholder: "e.g. Mumbai" },
+                        { label: "City", key: "city", placeholder: "e.g. Lucknow" },
                       ].map(f => (
                         <div key={f.key}>
                           <label className="block text-sm font-medium mb-1.5">{f.label}</label>
