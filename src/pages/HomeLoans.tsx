@@ -14,7 +14,7 @@ const HomeLoans = () => {
 
   // Stamp Duty Calculator
   const [propertyValue, setPropertyValue] = useState(5000000);
-  const [stampState, setStampState] = useState("maharashtra");
+  const [stampState, setStampState] = useState("up");
 
   // Affordability
   const [monthlyIncome, setMonthlyIncome] = useState(150000);
