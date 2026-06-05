@@ -12,6 +12,7 @@ import PropertiesMapView from "@/components/PropertiesMapView";
 import { CITY_COORDS, getPropertyCoords, haversineKm, geocodeNominatim } from "@/lib/geo";
 import { formatArea, formatPropertyPrice, getPricePerSqft, shouldShowBedsBaths } from "@/lib/propertyDisplay";
 import { MapPin, BedDouble, Bath, Maximize2, Heart, Shield, Zap, Phone, Eye, Star } from "lucide-react";
+import { lookupPincode } from "@/lib/lucknowPincodes";
 
 interface PropertyListPageProps {
   type: "buy" | "rent" | "commercial" | "pg";
@@ -125,6 +126,21 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
     fetchListings();
   }, [type, searchParams, filters, sortBy]);
 
+  // When a Lucknow PIN is present in the URL, auto-center the radius search
+  // on its centroid so the map view + distance chip reflect the PIN area.
+  useEffect(() => {
+    const pin = searchParams.get("pincode");
+    if (pin) {
+      const hit = lookupPincode(pin);
+      if (hit) {
+        setRadiusCenter(hit.coords);
+        setRadiusLabel(`PIN ${hit.pincode} · ${hit.area}`);
+        if (!radiusKm) setRadiusKm(5);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const PLAN_PRIORITY: Record<string, number> = {
     premium_showcase: 1, premium: 1,
     standard_spotlight: 2, standard: 2,
@@ -143,6 +159,16 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
 
     const city = searchParams.get("city");
     if (city) query = query.eq("city", city);
+
+    // Locality filters: from URL (?localities=A,B or ?locality=A) and sidebar
+    const urlLocalities = searchParams.get("localities");
+    const urlLocality = searchParams.get("locality");
+    const localitySet = new Set<string>();
+    if (urlLocalities) urlLocalities.split(",").map(s => s.trim()).filter(Boolean).forEach(l => localitySet.add(l));
+    if (urlLocality) localitySet.add(urlLocality);
+    (filters.localities || []).forEach(l => localitySet.add(l));
+    if (localitySet.size) query = query.in("locality", Array.from(localitySet));
+
     if (filters.minPrice) query = query.gte("price", filters.minPrice);
     if (filters.maxPrice) query = query.lte("price", filters.maxPrice);
     if (filters.bedrooms?.length) query = query.in("bedrooms", filters.bedrooms.map(Number));
