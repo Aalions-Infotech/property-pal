@@ -352,6 +352,34 @@ const PostProperty = () => {
             {step === 1 && (
               <div className="space-y-5">
                 <h2 className="font-display font-bold text-xl mb-4">Property Information</h2>
+                {memberships.length > 0 && (
+                  <div className="p-3 rounded-xl border border-border bg-muted/40">
+                    <label className="block text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5" /> POST ON BEHALF OF
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <select
+                        value={attribution.orgId}
+                        onChange={(e) => setAttribution({ orgId: e.target.value, branchId: "" })}
+                        className="px-3 py-2 rounded-xl border border-border bg-background text-sm"
+                      >
+                        <option value="">Personal listing</option>
+                        {memberships.map((m) => (
+                          <option key={m.org_id} value={m.org_id}>{m.organization.name}</option>
+                        ))}
+                      </select>
+                      <select
+                        value={attribution.branchId}
+                        onChange={(e) => setAttribution((a) => ({ ...a, branchId: e.target.value }))}
+                        disabled={!attribution.orgId || branches.length === 0}
+                        className="px-3 py-2 rounded-xl border border-border bg-background text-sm disabled:opacity-50"
+                      >
+                        <option value="">No branch</option>
+                        {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium mb-2">I want to</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
