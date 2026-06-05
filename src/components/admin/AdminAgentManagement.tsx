@@ -322,7 +322,6 @@ const AdminAgentManagement = ({ users, userRoles, onRefresh, adminId }: AdminAge
           status: "approved",
           reviewed_by: adminId,
           reviewed_at: new Date().toISOString(),
-          generated_password: null,
         })
         .eq("id", app.id);
       if (applicationError) throw applicationError;
