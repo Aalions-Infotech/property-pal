@@ -53,7 +53,6 @@ export type Database = {
           email: string
           experience_years: number | null
           full_name: string
-          generated_password: string | null
           id: string
           languages: string | null
           phone: string | null
@@ -74,7 +73,6 @@ export type Database = {
           email: string
           experience_years?: number | null
           full_name: string
-          generated_password?: string | null
           id?: string
           languages?: string | null
           phone?: string | null
@@ -95,7 +93,6 @@ export type Database = {
           email?: string
           experience_years?: number | null
           full_name?: string
-          generated_password?: string | null
           id?: string
           languages?: string | null
           phone?: string | null
@@ -350,7 +347,6 @@ export type Database = {
           full_name: string
           id: string
           notes: string | null
-          otp_code: string | null
           otp_verified: boolean | null
           phone: string
           property_id: string | null
@@ -367,7 +363,6 @@ export type Database = {
           full_name: string
           id?: string
           notes?: string | null
-          otp_code?: string | null
           otp_verified?: boolean | null
           phone: string
           property_id?: string | null
@@ -384,7 +379,6 @@ export type Database = {
           full_name?: string
           id?: string
           notes?: string | null
-          otp_code?: string | null
           otp_verified?: boolean | null
           phone?: string
           property_id?: string | null
