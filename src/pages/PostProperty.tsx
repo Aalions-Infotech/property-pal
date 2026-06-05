@@ -6,6 +6,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CheckCircle, Upload, Clock, Info, X, ImagePlus, Loader2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useOrg } from "@/context/OrgContext";
+import { Building2 } from "lucide-react";
+import { useEffect } from "react";
 
 const LISTING_TYPES: Array<[string, string]> = [
   ["sell", "Sell"],
@@ -171,6 +174,21 @@ const PostProperty = () => {
   const showResidentialBasics = RESIDENTIAL_TYPES.has(form.propertyType);
   const exactPricePerSqft = form.area && form.price && Number(form.area) > 0 ? Math.round(Number(form.price) / Number(form.area)) : 0;
 
+  // Org / branch attribution (optional)
+  const { memberships, currentOrg } = useOrg();
+  const [attribution, setAttribution] = useState<{ orgId: string; branchId: string }>({ orgId: "", branchId: "" });
+  const [branches, setBranches] = useState<Array<{ id: string; name: string }>>([]);
+  useEffect(() => {
+    if (currentOrg && !attribution.orgId) setAttribution({ orgId: currentOrg.org_id, branchId: "" });
+  }, [currentOrg, attribution.orgId]);
+  useEffect(() => {
+    (async () => {
+      if (!attribution.orgId) { setBranches([]); return; }
+      const { data } = await (supabase as any).from("org_branches").select("id, name").eq("org_id", attribution.orgId).eq("is_active", true);
+      setBranches((data || []) as any);
+    })();
+  }, [attribution.orgId]);
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const validFiles = files.filter(f => {
@@ -250,6 +268,8 @@ const PostProperty = () => {
       const { error } = await supabase.from("property_listings").insert({
         id: listingId,
         user_id: user.id,
+        org_id: attribution.orgId || null,
+        branch_id: attribution.branchId || null,
         title: form.title,
         description: form.description,
         listing_type: form.listingType,
