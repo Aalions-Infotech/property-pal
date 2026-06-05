@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SlidersHorizontal, ChevronDown, ChevronUp, X } from "lucide-react";
+import { LOCALITY_RECOMMENDATIONS, LUCKNOW_PINCODES } from "@/lib/lucknowPincodes";
 
 interface FilterSidebarProps {
   type: "buy" | "rent" | "commercial" | "pg";
@@ -17,6 +18,7 @@ export interface FilterState {
   status?: string[];
   minArea?: number;
   maxArea?: number;
+  localities?: string[];
 }
 
 const FilterSidebar = ({ type, onFilterChange }: FilterSidebarProps) => {
@@ -30,6 +32,7 @@ const FilterSidebar = ({ type, onFilterChange }: FilterSidebarProps) => {
     status: true,
     amenities: false,
     area: false,
+    localities: true,
   });
 
   const toggleSection = (section: keyof typeof sections) => {
@@ -114,6 +117,54 @@ const FilterSidebar = ({ type, onFilterChange }: FilterSidebarProps) => {
               {range.label}
             </button>
           ))}
+        </div>
+      </FilterSection>
+
+      {/* Lucknow locality recommendations */}
+      <FilterSection title="Recommended Localities" sectionKey="localities">
+        <div className="space-y-3">
+          {LOCALITY_RECOMMENDATIONS.map(group => (
+            <div key={group.label}>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">{group.label}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {group.localities.map(loc => {
+                  const active = (filters.localities || []).includes(loc);
+                  return (
+                    <button
+                      key={loc}
+                      onClick={() => toggleArrayFilter("localities", loc)}
+                      className={`filter-chip ${active ? "active" : ""}`}
+                    >
+                      {loc}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+          <div>
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Popular PIN Codes</p>
+            <div className="flex flex-wrap gap-1.5">
+              {LUCKNOW_PINCODES.slice(0, 8).map(p => {
+                const active = (p.localities).some(l => (filters.localities || []).includes(l));
+                return (
+                  <button
+                    key={p.pincode}
+                    onClick={() => {
+                      const current = new Set(filters.localities || []);
+                      const allActive = p.localities.every(l => current.has(l));
+                      p.localities.forEach(l => allActive ? current.delete(l) : current.add(l));
+                      updateFilter("localities", current.size ? Array.from(current) : undefined);
+                    }}
+                    className={`filter-chip ${active ? "active" : ""}`}
+                    title={p.area}
+                  >
+                    {p.pincode}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </FilterSection>
 
