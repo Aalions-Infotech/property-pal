@@ -6,6 +6,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CheckCircle, Upload, Clock, Info, X, ImagePlus, Loader2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useOrg } from "@/context/OrgContext";
+import { Building2 } from "lucide-react";
+import { useEffect } from "react";
 
 const LISTING_TYPES: Array<[string, string]> = [
   ["sell", "Sell"],
@@ -171,6 +174,21 @@ const PostProperty = () => {
   const showResidentialBasics = RESIDENTIAL_TYPES.has(form.propertyType);
   const exactPricePerSqft = form.area && form.price && Number(form.area) > 0 ? Math.round(Number(form.price) / Number(form.area)) : 0;
 
+  // Org / branch attribution (optional)
+  const { memberships, currentOrg } = useOrg();
+  const [attribution, setAttribution] = useState<{ orgId: string; branchId: string }>({ orgId: "", branchId: "" });
+  const [branches, setBranches] = useState<Array<{ id: string; name: string }>>([]);
+  useEffect(() => {
+    if (currentOrg && !attribution.orgId) setAttribution({ orgId: currentOrg.org_id, branchId: "" });
+  }, [currentOrg, attribution.orgId]);
+  useEffect(() => {
+    (async () => {
+      if (!attribution.orgId) { setBranches([]); return; }
+      const { data } = await (supabase as any).from("org_branches").select("id, name").eq("org_id", attribution.orgId).eq("is_active", true);
+      setBranches((data || []) as any);
+    })();
+  }, [attribution.orgId]);
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const validFiles = files.filter(f => {
@@ -250,6 +268,8 @@ const PostProperty = () => {
       const { error } = await supabase.from("property_listings").insert({
         id: listingId,
         user_id: user.id,
+        org_id: attribution.orgId || null,
+        branch_id: attribution.branchId || null,
         title: form.title,
         description: form.description,
         listing_type: form.listingType,
@@ -332,6 +352,34 @@ const PostProperty = () => {
             {step === 1 && (
               <div className="space-y-5">
                 <h2 className="font-display font-bold text-xl mb-4">Property Information</h2>
+                {memberships.length > 0 && (
+                  <div className="p-3 rounded-xl border border-border bg-muted/40">
+                    <label className="block text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5" /> POST ON BEHALF OF
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <select
+                        value={attribution.orgId}
+                        onChange={(e) => setAttribution({ orgId: e.target.value, branchId: "" })}
+                        className="px-3 py-2 rounded-xl border border-border bg-background text-sm"
+                      >
+                        <option value="">Personal listing</option>
+                        {memberships.map((m) => (
+                          <option key={m.org_id} value={m.org_id}>{m.organization.name}</option>
+                        ))}
+                      </select>
+                      <select
+                        value={attribution.branchId}
+                        onChange={(e) => setAttribution((a) => ({ ...a, branchId: e.target.value }))}
+                        disabled={!attribution.orgId || branches.length === 0}
+                        className="px-3 py-2 rounded-xl border border-border bg-background text-sm disabled:opacity-50"
+                      >
+                        <option value="">No branch</option>
+                        {branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium mb-2">I want to</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">

@@ -23,6 +23,7 @@ export type Database = {
           entity_id: string | null
           entity_type: string | null
           id: string
+          org_id: string | null
         }
         Insert: {
           action: string
@@ -32,6 +33,7 @@ export type Database = {
           entity_id?: string | null
           entity_type?: string | null
           id?: string
+          org_id?: string | null
         }
         Update: {
           action?: string
@@ -41,8 +43,17 @@ export type Database = {
           entity_id?: string | null
           entity_type?: string | null
           id?: string
+          org_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "admin_activity_log_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       agent_applications: {
         Row: {
@@ -110,6 +121,7 @@ export type Database = {
       agent_clients: {
         Row: {
           agent_id: string
+          branch_id: string | null
           client_email: string | null
           client_name: string
           client_phone: string | null
@@ -118,12 +130,14 @@ export type Database = {
           deal_value: number | null
           id: string
           notes: string | null
+          org_id: string | null
           property_id: string | null
           status: string
           updated_at: string
         }
         Insert: {
           agent_id: string
+          branch_id?: string | null
           client_email?: string | null
           client_name: string
           client_phone?: string | null
@@ -132,12 +146,14 @@ export type Database = {
           deal_value?: number | null
           id?: string
           notes?: string | null
+          org_id?: string | null
           property_id?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
           agent_id?: string
+          branch_id?: string | null
           client_email?: string | null
           client_name?: string
           client_phone?: string | null
@@ -146,11 +162,27 @@ export type Database = {
           deal_value?: number | null
           id?: string
           notes?: string | null
+          org_id?: string | null
           property_id?: string | null
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "agent_clients_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "org_branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_clients_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       agent_profiles: {
         Row: {
@@ -341,12 +373,14 @@ export type Database = {
       leads: {
         Row: {
           agent_id: string | null
+          branch_id: string | null
           budget: string | null
           created_at: string
           email: string | null
           full_name: string
           id: string
           notes: string | null
+          org_id: string | null
           otp_verified: boolean | null
           phone: string
           property_id: string | null
@@ -357,12 +391,14 @@ export type Database = {
         }
         Insert: {
           agent_id?: string | null
+          branch_id?: string | null
           budget?: string | null
           created_at?: string
           email?: string | null
           full_name: string
           id?: string
           notes?: string | null
+          org_id?: string | null
           otp_verified?: boolean | null
           phone: string
           property_id?: string | null
@@ -373,12 +409,14 @@ export type Database = {
         }
         Update: {
           agent_id?: string | null
+          branch_id?: string | null
           budget?: string | null
           created_at?: string
           email?: string | null
           full_name?: string
           id?: string
           notes?: string | null
+          org_id?: string | null
           otp_verified?: boolean | null
           phone?: string
           property_id?: string | null
@@ -388,6 +426,20 @@ export type Database = {
           visit_date?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "leads_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "org_branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "leads_property_id_fkey"
             columns: ["property_id"]
@@ -511,6 +563,227 @@ export type Database = {
         }
         Relationships: []
       }
+      org_branches: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          locality: string | null
+          name: string
+          org_id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          locality?: string | null
+          name: string
+          org_id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          locality?: string | null
+          name?: string
+          org_id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_branches_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          branch_id: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          org_id: string
+          role: Database["public"]["Enums"]["org_member_role"]
+          status: string
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          branch_id?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          org_id: string
+          role?: Database["public"]["Enums"]["org_member_role"]
+          status?: string
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          branch_id?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          org_id?: string
+          role?: Database["public"]["Enums"]["org_member_role"]
+          status?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_invites_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "org_branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "org_invites_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_members: {
+        Row: {
+          branch_id: string | null
+          created_at: string
+          id: string
+          invited_by: string | null
+          is_active: boolean
+          joined_at: string
+          org_id: string
+          role: Database["public"]["Enums"]["org_member_role"]
+          user_id: string
+        }
+        Insert: {
+          branch_id?: string | null
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          is_active?: boolean
+          joined_at?: string
+          org_id: string
+          role?: Database["public"]["Enums"]["org_member_role"]
+          user_id: string
+        }
+        Update: {
+          branch_id?: string | null
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          is_active?: boolean
+          joined_at?: string
+          org_id?: string
+          role?: Database["public"]["Enums"]["org_member_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_members_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "org_branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "org_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          address: string | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          gst_number: string | null
+          id: string
+          is_active: boolean
+          is_verified: boolean
+          logo_url: string | null
+          name: string
+          owner_id: string
+          rera_id: string | null
+          slug: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          gst_number?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          rera_id?: string | null
+          slug?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string | null
+          gst_number?: string | null
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          rera_id?: string | null
+          slug?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -573,6 +846,7 @@ export type Database = {
           area_unit: string | null
           bathrooms: number | null
           bedrooms: number | null
+          branch_id: string | null
           builder_name: string | null
           city: string
           contact_email: string | null
@@ -592,6 +866,7 @@ export type Database = {
           listing_type: string
           locality: string
           longitude: number | null
+          org_id: string | null
           parking: number | null
           price: number
           price_per_sqft: number | null
@@ -619,6 +894,7 @@ export type Database = {
           area_unit?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
+          branch_id?: string | null
           builder_name?: string | null
           city: string
           contact_email?: string | null
@@ -638,6 +914,7 @@ export type Database = {
           listing_type: string
           locality: string
           longitude?: number | null
+          org_id?: string | null
           parking?: number | null
           price: number
           price_per_sqft?: number | null
@@ -665,6 +942,7 @@ export type Database = {
           area_unit?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
+          branch_id?: string | null
           builder_name?: string | null
           city?: string
           contact_email?: string | null
@@ -684,6 +962,7 @@ export type Database = {
           listing_type?: string
           locality?: string
           longitude?: number | null
+          org_id?: string | null
           parking?: number | null
           price?: number
           price_per_sqft?: number | null
@@ -701,7 +980,22 @@ export type Database = {
           user_id?: string
           whatsapp_number?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "property_listings_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "org_branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_listings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       property_reviews: {
         Row: {
@@ -917,6 +1211,7 @@ export type Database = {
           expires_at: string | null
           id: string
           listing_id: string
+          org_id: string | null
           payment_id: string | null
           payment_method: string | null
           payment_status: Database["public"]["Enums"]["payment_status"] | null
@@ -934,6 +1229,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           listing_id: string
+          org_id?: string | null
           payment_id?: string | null
           payment_method?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
@@ -951,6 +1247,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           listing_id?: string
+          org_id?: string | null
           payment_id?: string | null
           payment_method?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
@@ -966,6 +1263,13 @@ export type Database = {
             columns: ["listing_id"]
             isOneToOne: false
             referencedRelation: "property_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sponsorships_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -1040,14 +1344,24 @@ export type Database = {
       }
     }
     Functions: {
+      accept_org_invite: { Args: { _token: string }; Returns: Json }
       admin_delete_user: { Args: { _target_user_id: string }; Returns: Json }
       allowed_property_attribute_keys: {
         Args: { _property_type: string }
         Returns: string[]
       }
+      current_user_org_ids: { Args: never; Returns: string[] }
       filter_property_attributes: {
         Args: { _attrs: Json; _property_type: string }
         Returns: Json
+      }
+      has_org_role: {
+        Args: {
+          _org_id: string
+          _roles: Database["public"]["Enums"]["org_member_role"][]
+          _user_id: string
+        }
+        Returns: boolean
       }
       has_role:
         | {
@@ -1059,14 +1373,23 @@ export type Database = {
           }
         | { Args: { _role: string; _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_org_member: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_residential_property_type: {
         Args: { _property_type: string }
         Returns: boolean
+      }
+      org_role_of: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: Database["public"]["Enums"]["org_member_role"]
       }
     }
     Enums: {
       app_role: "admin" | "moderator" | "agent" | "user"
       listing_status: "pending" | "approved" | "rejected" | "suspended"
+      org_member_role: "owner" | "admin" | "manager" | "agent"
       payment_status: "pending" | "completed" | "failed" | "refunded"
       sponsorship_status: "pending" | "active" | "expired" | "cancelled"
     }
@@ -1198,6 +1521,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "moderator", "agent", "user"],
       listing_status: ["pending", "approved", "rejected", "suspended"],
+      org_member_role: ["owner", "admin", "manager", "agent"],
       payment_status: ["pending", "completed", "failed", "refunded"],
       sponsorship_status: ["pending", "active", "expired", "cancelled"],
     },

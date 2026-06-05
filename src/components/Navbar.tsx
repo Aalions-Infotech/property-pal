@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { lucknowLocalities } from "@/data/properties";
 import { BRAND_NAME } from "@/constants/brand";
 import logoImg from "@/assets/ekananda-logo.webp";
+import OrgSwitcher from "@/components/OrgSwitcher";
 
 const Navbar = () => {
   const { theme, toggleTheme, enforced } = useTheme();
@@ -112,6 +113,9 @@ const Navbar = () => {
               </div>
             )}
           </div>
+
+          {/* Org Switcher (only renders when the user belongs to ≥1 agency) */}
+          {user && <OrgSwitcher onHome={!scrolled && location.pathname === "/"} />}
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1 flex-1">
@@ -455,6 +459,9 @@ const Navbar = () => {
               <>
                 <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors">
                   <LayoutDashboard className="w-4 h-4 text-muted-foreground" /> Dashboard
+                </Link>
+                <Link to="/org/members" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors">
+                  <Building2 className="w-4 h-4 text-muted-foreground" /> My Agency
                 </Link>
                 {isAdmin && (
                   <Link to="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition-colors">
