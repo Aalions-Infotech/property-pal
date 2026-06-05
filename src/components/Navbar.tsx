@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { lucknowLocalities } from "@/data/properties";
 import { BRAND_NAME } from "@/constants/brand";
 import logoImg from "@/assets/ekananda-logo.webp";
+import OrgSwitcher from "@/components/OrgSwitcher";
 
 const Navbar = () => {
   const { theme, toggleTheme, enforced } = useTheme();
@@ -112,6 +113,9 @@ const Navbar = () => {
               </div>
             )}
           </div>
+
+          {/* Org Switcher (only renders when the user belongs to ≥1 agency) */}
+          {user && <OrgSwitcher onHome={!scrolled && location.pathname === "/"} />}
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1 flex-1">
