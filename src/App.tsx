@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { CompareProvider } from "@/context/CompareContext";
 import { AuthProvider } from "@/hooks/useAuth";
+import { OrgProvider } from "@/context/OrgContext";
 import CompareBar from "@/components/CompareBar";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -28,6 +29,10 @@ import AgentProfile from "./pages/AgentProfile";
 import ProjectDetail from "./pages/ProjectDetail";
 import ResetPassword from "./pages/ResetPassword";
 import SupportChat from "./components/SupportChat";
+import OrgCreate from "./pages/OrgCreate";
+import OrgSettings from "./pages/OrgSettings";
+import OrgMembers from "./pages/OrgMembers";
+import OrgInviteAccept from "./pages/OrgInviteAccept";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +40,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <AuthProvider>
-        <CompareProvider>
+        <OrgProvider>
+          <CompareProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
@@ -63,6 +69,10 @@ const App = () => (
                 <Route path="/agent/:id" element={<AgentProfile />} />
                 <Route path="/project/:id" element={<ProjectDetail />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/org/create" element={<OrgCreate />} />
+                <Route path="/org/settings" element={<OrgSettings />} />
+                <Route path="/org/members" element={<OrgMembers />} />
+                <Route path="/org/invite/:token" element={<OrgInviteAccept />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
@@ -70,7 +80,8 @@ const App = () => (
               <SupportChat />
             </BrowserRouter>
           </TooltipProvider>
-        </CompareProvider>
+          </CompareProvider>
+        </OrgProvider>
       </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
