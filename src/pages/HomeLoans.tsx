@@ -28,10 +28,13 @@ const HomeLoans = () => {
   const totalInterest = totalPayable - loanAmount;
 
   // Stamp duty rates by state
-  // Lucknow-only project: stamp duty rates for Uttar Pradesh.
+  // Lucknow-only project: stamp duty rates for Uttar Pradesh (effective 2024-25).
+  // Female buyers get a 1% concession up to ₹1 Cr consideration (cap ₹10,000 rebate baked into 6% rate).
+  // Joint (male + female) ownership is charged at 6.5%. Registration fee is 1% of consideration.
   const stampRates: Record<string, { duty: number; reg: number; label: string }> = {
-    up: { duty: 7, reg: 1, label: "Uttar Pradesh (Lucknow)" },
-    up_female: { duty: 6, reg: 1, label: "UP - Female Buyer (Lucknow)" },
+    up:        { duty: 7,   reg: 1, label: "Lucknow (UP) – Male Buyer" },
+    up_female: { duty: 6,   reg: 1, label: "Lucknow (UP) – Female Buyer" },
+    up_joint:  { duty: 6.5, reg: 1, label: "Lucknow (UP) – Joint (Male + Female)" },
   };
 
   const selectedStamp = stampRates[stampState];
