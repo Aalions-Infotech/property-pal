@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, Mic, MapPin, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { propertyTypes } from "@/data/properties";
+import { isLucknowPincode, lookupPincode } from "@/lib/lucknowPincodes";
 
 interface SearchBarProps {
   variant?: "hero" | "page";
@@ -33,7 +34,17 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
                  activeTab === "pg" ? "/pg" :
                  "/new-projects";
     const params = new URLSearchParams();
-    if (query) params.set("q", query);
+    const q = query.trim();
+    // Lucknow PIN code shortcut → expand to localities + map center
+    if (isLucknowPincode(q)) {
+      const hit = lookupPincode(q);
+      if (hit) {
+        params.set("pincode", hit.pincode);
+        params.set("localities", hit.localities.join(","));
+      }
+    } else if (q) {
+      params.set("q", q);
+    }
     if (selectedCity !== "All Lucknow") params.set("locality", selectedCity);
     params.set("city", "Lucknow");
     navigate(`${path}?${params.toString()}`);
@@ -111,7 +122,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder="Search city, locality, project, landmark..."
+              placeholder="Search Lucknow locality, project, landmark or PIN (e.g. 226010)…"
               className="flex-1 min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60 py-3 sm:py-4"
             />
             <button className="p-1.5 rounded-lg hover:bg-muted transition-colors hidden sm:block">
