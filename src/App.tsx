@@ -33,6 +33,8 @@ import OrgCreate from "./pages/OrgCreate";
 import OrgSettings from "./pages/OrgSettings";
 import OrgMembers from "./pages/OrgMembers";
 import OrgInviteAccept from "./pages/OrgInviteAccept";
+import AgentCRM from "./pages/AgentCRM";
+import BuyerShortlists from "./pages/BuyerShortlists";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +75,8 @@ const App = () => (
                 <Route path="/org/settings" element={<OrgSettings />} />
                 <Route path="/org/members" element={<OrgMembers />} />
                 <Route path="/org/invite/:token" element={<OrgInviteAccept />} />
+                <Route path="/agent-dashboard/crm" element={<AgentCRM />} />
+                <Route path="/shortlists" element={<BuyerShortlists />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
