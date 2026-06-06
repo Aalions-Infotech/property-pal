@@ -180,6 +180,9 @@ const AgentDashboard = () => {
             <Link to="/post-property" className="btn-gold px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
               <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Post Property</span><span className="sm:hidden">Post</span>
             </Link>
+            <Link to="/agent-dashboard/crm" className="px-3 sm:px-4 py-2 rounded-xl border border-border text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2 hover:bg-muted">
+              <Briefcase className="w-4 h-4" /> <span className="hidden sm:inline">Pipeline</span>
+            </Link>
             <div className="w-8 h-8 rounded-full bg-gradient-navy flex items-center justify-center overflow-hidden">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
