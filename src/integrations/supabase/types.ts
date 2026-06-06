@@ -343,6 +343,65 @@ export type Database = {
         }
         Relationships: []
       }
+      buyer_shortlist_items: {
+        Row: {
+          added_at: string
+          id: string
+          notes: string | null
+          property_id: string
+          shortlist_id: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          notes?: string | null
+          property_id: string
+          shortlist_id: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          notes?: string | null
+          property_id?: string
+          shortlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_shortlist_items_shortlist_id_fkey"
+            columns: ["shortlist_id"]
+            isOneToOne: false
+            referencedRelation: "buyer_shortlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      buyer_shortlists: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -370,13 +429,55 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_tasks: {
+        Row: {
+          agent_id: string
+          completed_at: string | null
+          created_at: string
+          due_at: string | null
+          id: string
+          lead_id: string
+          notes: string | null
+          org_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          completed_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          lead_id: string
+          notes?: string | null
+          org_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          completed_at?: string | null
+          created_at?: string
+          due_at?: string | null
+          id?: string
+          lead_id?: string
+          notes?: string | null
+          org_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           agent_id: string | null
           branch_id: string | null
           budget: string | null
+          commission: number | null
           created_at: string
+          deal_value: number | null
           email: string | null
+          expected_close_date: string | null
           full_name: string
           id: string
           notes: string | null
@@ -384,6 +485,8 @@ export type Database = {
           otp_verified: boolean | null
           phone: string
           property_id: string | null
+          stage: string
+          stage_updated_at: string | null
           status: string
           updated_at: string
           user_id: string | null
@@ -393,8 +496,11 @@ export type Database = {
           agent_id?: string | null
           branch_id?: string | null
           budget?: string | null
+          commission?: number | null
           created_at?: string
+          deal_value?: number | null
           email?: string | null
+          expected_close_date?: string | null
           full_name: string
           id?: string
           notes?: string | null
@@ -402,6 +508,8 @@ export type Database = {
           otp_verified?: boolean | null
           phone: string
           property_id?: string | null
+          stage?: string
+          stage_updated_at?: string | null
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -411,8 +519,11 @@ export type Database = {
           agent_id?: string | null
           branch_id?: string | null
           budget?: string | null
+          commission?: number | null
           created_at?: string
+          deal_value?: number | null
           email?: string | null
+          expected_close_date?: string | null
           full_name?: string
           id?: string
           notes?: string | null
@@ -420,6 +531,8 @@ export type Database = {
           otp_verified?: boolean | null
           phone?: string
           property_id?: string | null
+          stage?: string
+          stage_updated_at?: string | null
           status?: string
           updated_at?: string
           user_id?: string | null
