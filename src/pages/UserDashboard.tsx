@@ -201,6 +201,9 @@ const UserDashboard = () => {
             <Link to="/post-property" className="btn-gold px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
               <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Post Property</span><span className="sm:hidden">Post</span>
             </Link>
+            <Link to="/shortlists" className="px-3 sm:px-4 py-2 rounded-xl border border-border text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2 hover:bg-muted">
+              <Star className="w-4 h-4" /> <span className="hidden sm:inline">Shortlists</span>
+            </Link>
             {(role === "admin" || role === "moderator") && (
               <Link to="/admin" className="px-3 sm:px-4 py-2 rounded-xl border border-border text-xs sm:text-sm font-medium hover:bg-muted transition-colors flex items-center gap-1 sm:gap-2">
                 <Star className="w-4 h-4" /> <span className="hidden sm:inline">Admin Panel</span>
