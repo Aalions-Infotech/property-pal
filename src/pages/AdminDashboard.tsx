@@ -475,6 +475,9 @@ const AdminDashboard = () => {
         </nav>
 
         <div className="p-2 border-t border-border space-y-0.5">
+          <button onClick={() => { navigate("/org/create"); setMobileSidebarOpen(false); }} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
+            <Building2 className="w-4 h-4" /> {!sidebarCollapsed && "Create Agency"}
+          </button>
           <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
             <Globe className="w-4 h-4" /> {!sidebarCollapsed && "View Site"}
           </Link>
@@ -521,7 +524,7 @@ const AdminDashboard = () => {
           {/* OVERVIEW */}
           {tab === "overview" && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {stats.map(s => (
                   <button key={s.label} onClick={() => setTab(s.to)} className={`bg-gradient-to-br ${s.color} rounded-2xl border border-border p-5 text-left hover:shadow-md transition-all`}>
                     <div className="flex items-center justify-between mb-3">
@@ -868,7 +871,7 @@ const AdminDashboard = () => {
                           {adminProfile && ` · By: ${adminProfile.email}`}
                         </p>
                         {log.details && Object.keys(log.details).length > 0 && (
-                          <p className="text-xs text-muted-foreground mt-1 font-mono bg-muted/30 px-2 py-1 rounded">{JSON.stringify(log.details)}</p>
+                          <p className="text-xs text-muted-foreground mt-1 font-mono bg-muted/30 px-2 py-1 rounded break-all">{JSON.stringify(log.details)}</p>
                         )}
                       </div>
                       <span className="text-xs text-muted-foreground flex-shrink-0">{new Date(log.created_at).toLocaleString('en-IN')}</span>
