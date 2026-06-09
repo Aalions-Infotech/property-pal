@@ -151,7 +151,7 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
             </button>
           ))}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {["all", "verified", "banned", "unverified"].map(s => (
             <button key={s} onClick={() => setFilterStatus(s)} className={`px-3 py-2 rounded-xl text-xs font-medium capitalize ${filterStatus === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
               {s}
@@ -160,9 +160,9 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
         </div>
       </div>
 
-      <p className="text-sm text-muted-foreground">{filteredUsers.length} users</p>
-      <div className="flex justify-end -mt-2">
-        <button onClick={() => setCreateModal(true)} className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium flex items-center gap-1.5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <p className="text-sm text-muted-foreground">{filteredUsers.length} users</p>
+        <button onClick={() => setCreateModal(true)} className="w-full sm:w-auto justify-center px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium flex items-center gap-1.5">
           <Plus className="w-3.5 h-3.5" /> Create Admin / User
         </button>
       </div>
@@ -176,8 +176,8 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
           const isExpanded = expandedUser === u.user_id;
 
           return (
-            <div key={u.id} className={`bg-card rounded-2xl border p-5 transition-all ${u.is_banned ? "border-red-500/30 bg-red-500/5" : "border-border"}`}>
-              <div className="flex items-center gap-4">
+            <div key={u.id} className={`bg-card rounded-2xl border p-4 sm:p-5 transition-all ${u.is_banned ? "border-red-500/30 bg-red-500/5" : "border-border"}`}>
+              <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${u.is_banned ? "bg-red-500/20" : "bg-gradient-navy"}`}>
                   {u.avatar_url ? (
                     <img src={u.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover" />
@@ -191,7 +191,7 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
                     {u.is_verified && <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">✓ Verified</span>}
                     {u.is_banned && <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-red-500/10 text-red-500 border border-red-500/20">🚫 Banned</span>}
                   </div>
-                  <p className="text-xs text-muted-foreground">{u.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                   <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
                     <span>{userListings.length} listings</span>
                     <span>{userSponsors.length} sponsorships</span>
@@ -199,7 +199,7 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
                     <span>Joined {new Date(u.created_at).toLocaleDateString("en-IN")}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+                <div className="flex items-center gap-2 flex-shrink-0 flex-wrap lg:justify-end w-full lg:w-auto">
                   <button onClick={() => verifyUser(u.user_id, !u.is_verified)} className={`p-1.5 rounded-lg text-xs ${u.is_verified ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"} hover:opacity-80`} title={u.is_verified ? "Remove verification" : "Verify user"}>
                     {u.is_verified ? <UserCheck className="w-4 h-4" /> : <UserX className="w-4 h-4" />}
                   </button>
@@ -233,7 +233,7 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
 
               {/* Expanded Details */}
               {isExpanded && (
-                <div className="mt-4 ml-14 grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-muted/30 rounded-xl border border-border">
+                <div className="mt-4 lg:ml-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-muted/30 rounded-xl border border-border">
                   <div><span className="text-xs text-muted-foreground">Phone</span><p className="text-sm font-medium">{u.phone || "N/A"}</p></div>
                   <div><span className="text-xs text-muted-foreground">City</span><p className="text-sm font-medium">{u.city || "N/A"}</p></div>
                   <div><span className="text-xs text-muted-foreground">Role</span><p className="text-sm font-medium capitalize">{ur?.role || "user"}</p></div>
