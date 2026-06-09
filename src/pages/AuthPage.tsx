@@ -66,7 +66,7 @@ const AuthPage = () => {
           options: { data: { full_name: form.fullName }, emailRedirectTo: window.location.origin },
         });
         if (signupError) throw signupError;
-        toast({ title: "Account created!", description: "Please check your email to verify your account." });
+        toast({ title: "Account created!", description: "You're signed in and ready to go." });
       } else {
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(form.email, {
           redirectTo: `${window.location.origin}/reset-password`,
