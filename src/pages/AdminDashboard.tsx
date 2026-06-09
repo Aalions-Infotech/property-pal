@@ -424,14 +424,14 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex overflow-x-hidden">
       {/* Mobile Sidebar Overlay */}
       {mobileSidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setMobileSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? "w-16" : "w-64"} flex-shrink-0 bg-card border-r border-border flex flex-col fixed h-full z-40 transition-all duration-200 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+      <div className={`${sidebarCollapsed ? "w-16" : "w-[min(17rem,86vw)] md:w-64"} flex-shrink-0 bg-card border-r border-border flex flex-col fixed h-full z-40 transition-all duration-200 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
@@ -475,6 +475,9 @@ const AdminDashboard = () => {
         </nav>
 
         <div className="p-2 border-t border-border space-y-0.5">
+          <button onClick={() => { navigate("/org/create"); setMobileSidebarOpen(false); }} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
+            <Building2 className="w-4 h-4" /> {!sidebarCollapsed && "Create Agency"}
+          </button>
           <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
             <Globe className="w-4 h-4" /> {!sidebarCollapsed && "View Site"}
           </Link>
@@ -485,19 +488,22 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className={`flex-1 ${sidebarCollapsed ? "md:ml-16" : "md:ml-64"} min-h-screen flex flex-col transition-all duration-200`}>
+      <div className={`flex-1 min-w-0 ${sidebarCollapsed ? "md:ml-16" : "md:ml-64"} min-h-screen flex flex-col transition-all duration-200`}>
         {/* Top Bar */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border px-4 md:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border px-3 sm:px-4 md:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <button onClick={() => setMobileSidebarOpen(true)} className="p-2 rounded-lg hover:bg-muted text-muted-foreground md:hidden">
               <Menu className="w-5 h-5" />
             </button>
-            <div>
-              <h1 className="font-display font-bold text-lg md:text-xl">{navItems.find(n => n.id === tab)?.label}</h1>
+            <div className="min-w-0">
+              <h1 className="font-display font-bold text-base sm:text-lg md:text-xl truncate">{navItems.find(n => n.id === tab)?.label}</h1>
               <p className="text-xs text-muted-foreground hidden sm:block">Super Admin · {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
+            <button onClick={() => navigate("/org/create")} className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90" title="Create agency">
+              <Building2 className="w-4 h-4" /> <span className="hidden sm:inline">Create Agency</span>
+            </button>
             {realtimeAlerts.length > 0 && (
               <button onClick={() => setTab("realtime")} className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium border border-destructive/20 hover:bg-destructive/20">
                 <span className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
@@ -518,7 +524,7 @@ const AdminDashboard = () => {
           {/* OVERVIEW */}
           {tab === "overview" && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {stats.map(s => (
                   <button key={s.label} onClick={() => setTab(s.to)} className={`bg-gradient-to-br ${s.color} rounded-2xl border border-border p-5 text-left hover:shadow-md transition-all`}>
                     <div className="flex items-center justify-between mb-3">
@@ -865,7 +871,7 @@ const AdminDashboard = () => {
                           {adminProfile && ` · By: ${adminProfile.email}`}
                         </p>
                         {log.details && Object.keys(log.details).length > 0 && (
-                          <p className="text-xs text-muted-foreground mt-1 font-mono bg-muted/30 px-2 py-1 rounded">{JSON.stringify(log.details)}</p>
+                          <p className="text-xs text-muted-foreground mt-1 font-mono bg-muted/30 px-2 py-1 rounded break-all">{JSON.stringify(log.details)}</p>
                         )}
                       </div>
                       <span className="text-xs text-muted-foreground flex-shrink-0">{new Date(log.created_at).toLocaleString('en-IN')}</span>
@@ -1101,6 +1107,13 @@ const AdminDashboard = () => {
               <div className="bg-card rounded-2xl border border-border p-6">
                 <h3 className="font-display font-bold mb-4 flex items-center gap-2"><Sliders className="w-5 h-5" /> Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <button onClick={() => navigate("/org/create")} className="flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-muted/50 transition-all text-left">
+                    <Building2 className="w-5 h-5 text-accent" />
+                    <div>
+                      <p className="text-sm font-medium">Create Agency</p>
+                      <p className="text-xs text-muted-foreground">Set up a new agency, branch, and team workspace</p>
+                    </div>
+                  </button>
                   <button onClick={exportListingsCSV} className="flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-muted/50 transition-all text-left">
                     <Download className="w-5 h-5 text-accent" />
                     <div>
