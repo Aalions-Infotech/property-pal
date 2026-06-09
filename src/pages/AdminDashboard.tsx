@@ -1104,6 +1104,13 @@ const AdminDashboard = () => {
               <div className="bg-card rounded-2xl border border-border p-6">
                 <h3 className="font-display font-bold mb-4 flex items-center gap-2"><Sliders className="w-5 h-5" /> Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <button onClick={() => navigate("/org/create")} className="flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-muted/50 transition-all text-left">
+                    <Building2 className="w-5 h-5 text-accent" />
+                    <div>
+                      <p className="text-sm font-medium">Create Agency</p>
+                      <p className="text-xs text-muted-foreground">Set up a new agency, branch, and team workspace</p>
+                    </div>
+                  </button>
                   <button onClick={exportListingsCSV} className="flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-muted/50 transition-all text-left">
                     <Download className="w-5 h-5 text-accent" />
                     <div>
