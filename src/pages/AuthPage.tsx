@@ -23,6 +23,11 @@ const AuthPage = () => {
         description: "Please sign in again to continue.",
         variant: "destructive",
       });
+    } else if (params.get("reason") === "refresh") {
+      toast({
+        title: "Signed out for security",
+        description: "Dashboard refresh signs users out. Please sign in again.",
+      });
     }
   }, [toast]);
 
