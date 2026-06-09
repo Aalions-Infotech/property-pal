@@ -134,6 +134,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // ordinary back-button navigation, causing widespread session loss bugs.)
 
   useEffect(() => {
+    // Hard refresh on a dashboard URL => sign out (per product requirement).
+    // Only triggers on a true browser reload, not on in-app navigation.
+    try {
+      const nav = (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined);
+      const isReload = nav?.type === "reload";
+      const path = window.location.pathname;
+      const isDashboard = /^\/(dashboard|admin|agent-dashboard)(\/|$)/.test(path);
+      if (isReload && isDashboard) {
+        localStorage.removeItem("lastActivity");
+        void supabase.auth.signOut().finally(() => {
+          window.location.replace("/auth");
+        });
+        return;
+      }
+    } catch {
+      // ignore
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, nextSession) => {
         setLoading(true);
