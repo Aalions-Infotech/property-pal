@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Search, UserCheck, UserX, Ban, Shield, Send, Eye, RotateCcw, ChevronDown, Trash2 } from "lucide-react";
+import { User, Search, UserCheck, UserX, Ban, Shield, Send, Eye, RotateCcw, ChevronDown, Trash2, Plus } from "lucide-react";
 
 interface Props {
   users: any[];
@@ -25,6 +25,27 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
   const [deleteModal, setDeleteModal] = useState<{ userId: string; name: string } | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [createModal, setCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState({ email: "", password: "", full_name: "", role: "admin" });
+  const [creating, setCreating] = useState(false);
+
+  const createUser = async () => {
+    if (!createForm.email || createForm.password.length < 8) {
+      toast({ title: "Email and password (min 8 chars) required", variant: "destructive" });
+      return;
+    }
+    setCreating(true);
+    const { data, error } = await supabase.functions.invoke("admin-create-user", { body: createForm });
+    setCreating(false);
+    if (error || (data as any)?.error) {
+      toast({ title: "Create failed", description: (data as any)?.error || error?.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `${createForm.role} account created for ${createForm.email}` });
+    setCreateModal(false);
+    setCreateForm({ email: "", password: "", full_name: "", role: "admin" });
+    onRefresh();
+  };
 
   const logAction = async (action: string, entityType: string, entityId: string, details?: any) => {
     await supabase.from("admin_activity_log").insert({
@@ -140,6 +161,11 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
       </div>
 
       <p className="text-sm text-muted-foreground">{filteredUsers.length} users</p>
+      <div className="flex justify-end -mt-2">
+        <button onClick={() => setCreateModal(true)} className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium flex items-center gap-1.5">
+          <Plus className="w-3.5 h-3.5" /> Create Admin / User
+        </button>
+      </div>
 
       {/* User List */}
       <div className="space-y-3">
