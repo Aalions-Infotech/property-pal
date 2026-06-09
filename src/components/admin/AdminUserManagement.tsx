@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Search, UserCheck, UserX, Ban, Shield, Send, Eye, RotateCcw, ChevronDown, Trash2 } from "lucide-react";
+import { User, Search, UserCheck, UserX, Ban, Shield, Send, Eye, RotateCcw, ChevronDown, Trash2, Plus } from "lucide-react";
 
 interface Props {
   users: any[];
@@ -25,6 +25,27 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
   const [deleteModal, setDeleteModal] = useState<{ userId: string; name: string } | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [createModal, setCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState({ email: "", password: "", full_name: "", role: "admin" });
+  const [creating, setCreating] = useState(false);
+
+  const createUser = async () => {
+    if (!createForm.email || createForm.password.length < 8) {
+      toast({ title: "Email and password (min 8 chars) required", variant: "destructive" });
+      return;
+    }
+    setCreating(true);
+    const { data, error } = await supabase.functions.invoke("admin-create-user", { body: createForm });
+    setCreating(false);
+    if (error || (data as any)?.error) {
+      toast({ title: "Create failed", description: (data as any)?.error || error?.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `${createForm.role} account created for ${createForm.email}` });
+    setCreateModal(false);
+    setCreateForm({ email: "", password: "", full_name: "", role: "admin" });
+    onRefresh();
+  };
 
   const logAction = async (action: string, entityType: string, entityId: string, details?: any) => {
     await supabase.from("admin_activity_log").insert({
@@ -140,6 +161,11 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
       </div>
 
       <p className="text-sm text-muted-foreground">{filteredUsers.length} users</p>
+      <div className="flex justify-end -mt-2">
+        <button onClick={() => setCreateModal(true)} className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-medium flex items-center gap-1.5">
+          <Plus className="w-3.5 h-3.5" /> Create Admin / User
+        </button>
+      </div>
 
       {/* User List */}
       <div className="space-y-3">
@@ -290,6 +316,33 @@ const AdminUserManagement = ({ users, userRoles, listings, sponsorships, adminId
                 {deleting ? "Deleting..." : "Permanently Delete"}
               </button>
               <button onClick={() => { setDeleteModal(null); setDeleteConfirmText(""); }} className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create User Modal */}
+      {createModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setCreateModal(false)}>
+          <div className="bg-card rounded-2xl border border-border p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h3 className="font-display font-bold mb-3 flex items-center gap-2"><Shield className="w-5 h-5 text-primary" /> Create New Account</h3>
+            <p className="text-xs text-muted-foreground mb-4">Account is created pre-verified — no email confirmation needed. The user can sign in immediately.</p>
+            <div className="space-y-3">
+              <input value={createForm.full_name} onChange={e => setCreateForm(f => ({ ...f, full_name: e.target.value }))} placeholder="Full name" className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+              <input type="email" value={createForm.email} onChange={e => setCreateForm(f => ({ ...f, email: e.target.value }))} placeholder="Email" className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+              <input type="text" value={createForm.password} onChange={e => setCreateForm(f => ({ ...f, password: e.target.value }))} placeholder="Password (min 8 chars)" className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+              <select value={createForm.role} onChange={e => setCreateForm(f => ({ ...f, role: e.target.value }))} className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent">
+                <option value="admin">Admin (Super Admin)</option>
+                <option value="moderator">Moderator</option>
+                <option value="agent">Agent</option>
+                <option value="user">User</option>
+              </select>
+              <div className="flex gap-2">
+                <button onClick={createUser} disabled={creating} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50">
+                  {creating ? "Creating..." : "Create Account"}
+                </button>
+                <button onClick={() => setCreateModal(false)} className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted">Cancel</button>
+              </div>
             </div>
           </div>
         </div>
