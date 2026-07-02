@@ -49,6 +49,7 @@ const PropertyDetail = () => {
   const [liveListing, setLiveListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showLeadForm, setShowLeadForm] = useState(false);
+  const [similar, setSimilar] = useState<any[]>([]);
 
   // Try to find from static data first, then from DB
   const staticProperty = properties.find(p => p.id === id);
@@ -70,6 +71,16 @@ const PropertyDetail = () => {
       .single();
     setLiveListing(data);
     setLoading(false);
+    if (data?.city) {
+      const { data: sim } = await supabase
+        .from("property_listings")
+        .select("*")
+        .eq("status", "approved")
+        .eq("city", data.city)
+        .neq("id", id!)
+        .limit(3);
+      setSimilar(sim || []);
+    }
   };
 
   if (loading) {
@@ -131,7 +142,7 @@ const PropertyDetail = () => {
   const totalFloors = isLive ? property.total_floors : property.totalFloors;
   const nearbyPlaces = isLive ? [] : (property.nearbyPlaces || []);
 
-  const similar = properties.filter(p => p.id !== id && p.city === city).slice(0, 3);
+  // similar is fetched from DB above; fallback to empty array
 
   return (
     <div className="min-h-screen bg-background">
