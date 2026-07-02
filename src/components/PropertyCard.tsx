@@ -20,12 +20,14 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
       <div className="bg-card rounded-2xl border border-border shadow-card property-card-hover overflow-hidden flex">
         {/* Image */}
         <div className="relative w-64 flex-shrink-0">
-          <img
-            src={property.image}
-            alt={property.title}
-            className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
-            onLoad={() => setImgLoaded(true)}
-          />
+          <Link to={`/property/${property.id}`} className="block w-full h-full" aria-label={`View ${property.title}`}>
+            <img
+              src={property.image}
+              alt={property.title}
+              className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+              onLoad={() => setImgLoaded(true)}
+            />
+          </Link>
           {!imgLoaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
           <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
             {property.featured && <span className="badge-featured">Featured</span>}
@@ -96,12 +98,14 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
     <div className="bg-card rounded-2xl border border-border shadow-card property-card-hover overflow-hidden group">
       {/* Image */}
       <div className="relative h-52 overflow-hidden">
-        <img
-          src={property.image}
-          alt={property.title}
-          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
-          onLoad={() => setImgLoaded(true)}
-        />
+        <Link to={`/property/${property.id}`} className="block w-full h-full" aria-label={`View ${property.title}`}>
+          <img
+            src={property.image}
+            alt={property.title}
+            className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+            onLoad={() => setImgLoaded(true)}
+          />
+        </Link>
         {!imgLoaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
         
         {/* Overlay badges */}
