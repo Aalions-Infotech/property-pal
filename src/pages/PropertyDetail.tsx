@@ -49,6 +49,7 @@ const PropertyDetail = () => {
   const [liveListing, setLiveListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showLeadForm, setShowLeadForm] = useState(false);
+  const [similar, setSimilar] = useState<any[]>([]);
 
   // Try to find from static data first, then from DB
   const staticProperty = properties.find(p => p.id === id);
@@ -70,6 +71,16 @@ const PropertyDetail = () => {
       .single();
     setLiveListing(data);
     setLoading(false);
+    if (data?.city) {
+      const { data: sim } = await supabase
+        .from("property_listings")
+        .select("*")
+        .eq("status", "approved")
+        .eq("city", data.city)
+        .neq("id", id!)
+        .limit(3);
+      setSimilar(sim || []);
+    }
   };
 
   if (loading) {
@@ -131,7 +142,7 @@ const PropertyDetail = () => {
   const totalFloors = isLive ? property.total_floors : property.totalFloors;
   const nearbyPlaces = isLive ? [] : (property.nearbyPlaces || []);
 
-  const similar = properties.filter(p => p.id !== id && p.city === city).slice(0, 3);
+  // similar is fetched from DB above; fallback to empty array
 
   return (
     <div className="min-h-screen bg-background">
@@ -401,7 +412,36 @@ const PropertyDetail = () => {
             <div className="mt-12">
               <h2 className="text-2xl font-display font-bold mb-6">Similar Properties</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {similar.map(p => <PropertyCard key={p.id} property={p} />)}
+                {similar.map((p: any) => (
+                  <PropertyCard key={p.id} property={{
+                    id: p.id,
+                    title: p.title,
+                    type: p.listing_type,
+                    category: p.property_type,
+                    price: Number(p.price) || 0,
+                    priceUnit: p.price_unit === "monthly" ? "monthly" : "total",
+                    area: Number(p.area) || 0,
+                    areaUnit: p.area_unit || "sq.ft",
+                    bedrooms: p.bedrooms, bathrooms: p.bathrooms,
+                    city: p.city, locality: p.locality, address: p.address || "",
+                    image: (p.images && p.images[0]) || "/placeholder.svg",
+                    images: p.images || ["/placeholder.svg"],
+                    amenities: p.amenities || [],
+                    furnishing: p.furnishing || "Unfurnished",
+                    status: "Ready to Move",
+                    postedBy: "Owner",
+                    postedDate: "",
+                    verified: !!p.is_verified,
+                    featured: !!p.is_featured,
+                    isNew: !!p.is_new,
+                    description: p.description || "",
+                    facing: p.facing || "",
+                    parking: p.parking || 0,
+                    ageOfProperty: p.age_of_property || "",
+                    nearbyPlaces: [],
+                    pricePerSqft: Number(p.price_per_sqft) || 0,
+                  } as any} />
+                ))}
               </div>
             </div>
           )}

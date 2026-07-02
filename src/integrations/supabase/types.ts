@@ -485,6 +485,7 @@ export type Database = {
           otp_verified: boolean | null
           phone: string
           property_id: string | null
+          property_type: string | null
           stage: string
           stage_updated_at: string | null
           status: string
@@ -508,6 +509,7 @@ export type Database = {
           otp_verified?: boolean | null
           phone: string
           property_id?: string | null
+          property_type?: string | null
           stage?: string
           stage_updated_at?: string | null
           status?: string
@@ -531,6 +533,7 @@ export type Database = {
           otp_verified?: boolean | null
           phone?: string
           property_id?: string | null
+          property_type?: string | null
           stage?: string
           stage_updated_at?: string | null
           status?: string

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Phone, Mail, IndianRupee, Calendar, Loader2, CheckCircle } from "lucide-react";
+import { User, Phone, Mail, IndianRupee, Calendar, Loader2, CheckCircle, Building2 } from "lucide-react";
 
 interface LeadFormProps {
   propertyId?: string;
@@ -21,6 +21,7 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
     email: "",
     budget: "",
     visit_date: "",
+    property_type: "",
   });
 
   const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
@@ -28,7 +29,11 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.full_name || !form.phone) {
-      toast({ title: "Please fill required fields", variant: "destructive" });
+      toast({ title: "Please fill your name and phone", variant: "destructive" });
+      return;
+    }
+    if (!/^[0-9+\-\s]{7,15}$/.test(form.phone.trim())) {
+      toast({ title: "Please enter a valid phone number", variant: "destructive" });
       return;
     }
 
@@ -40,11 +45,12 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
         email: form.email || null,
         budget: form.budget || null,
         visit_date: form.visit_date || null,
+        property_type: form.property_type || null,
         otp_verified: false,
         property_id: propertyId || null,
         agent_id: agentId || null,
         status: "new",
-      });
+      } as any);
       if (error) throw error;
 
       // Send admin email notification
@@ -127,6 +133,28 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input value={form.email} onChange={e => update("email", e.target.value)} placeholder="your@email.com" type="email" className={`${fieldClass} pl-9`} />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Property Type</label>
+          <div className="relative">
+            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <select value={form.property_type} onChange={e => update("property_type", e.target.value)} className={`${fieldClass} pl-9`}>
+              <option value="">Select property type</option>
+              <option value="Investment Property">Investment Property</option>
+              <option value="Residential Apartment">Residential — Apartment</option>
+              <option value="Residential Villa">Residential — Villa / Bungalow</option>
+              <option value="Builder Floor">Residential — Builder Floor</option>
+              <option value="Studio / Penthouse">Studio / Penthouse</option>
+              <option value="Plot / Land">Plot / Land</option>
+              <option value="Agriculture Land">Agriculture Land</option>
+              <option value="Commercial Office">Commercial — Office</option>
+              <option value="Commercial Shop">Commercial — Shop / Retail</option>
+              <option value="Warehouse / Industrial">Warehouse / Industrial</option>
+              <option value="PG / Co-Living">PG / Co-Living</option>
+              <option value="Rental Property">Rental Property</option>
+            </select>
           </div>
         </div>
 

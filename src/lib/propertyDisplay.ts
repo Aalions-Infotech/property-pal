@@ -32,6 +32,7 @@ const AREA_TO_SQFT: Record<string, number> = {
   "acres": 43560,
   "hectare": 107639,
   "bigha": 27000,
+  "biswa": 1350,
   "gunta": 1089,
 };
 

@@ -196,6 +196,14 @@ const Index = () => {
               ))}
             </div>
           </div>
+          <div className="max-w-2xl mx-auto mt-6 flex justify-center">
+            <button
+              onClick={() => setShowLeadPopup(true)}
+              className="btn-gold px-8 py-3 rounded-xl text-base inline-flex items-center gap-2 font-semibold shadow-lg hover:scale-105 transition-transform"
+            >
+              Get Property Details <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
           <ChevronRight className="w-6 h-6 text-white/50 rotate-90" />
@@ -410,9 +418,9 @@ const Index = () => {
                 <Link to="/post-property" className="btn-navy px-8 py-3 rounded-xl text-base inline-flex items-center gap-2 justify-center">
                   Post Property FREE <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link to="/agents" className="px-8 py-3 rounded-xl border-2 border-foreground/30 text-foreground font-semibold text-base inline-flex items-center gap-2 justify-center hover:bg-foreground/10 transition-all">
-                  Find an Agent
-                </Link>
+                <button onClick={() => setShowLeadPopup(true)} className="px-8 py-3 rounded-xl border-2 border-foreground/30 text-foreground font-semibold text-base inline-flex items-center gap-2 justify-center hover:bg-foreground/10 transition-all">
+                  Get Property Details
+                </button>
               </div>
             </div>
           </div>
