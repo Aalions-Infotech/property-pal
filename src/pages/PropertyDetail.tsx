@@ -412,7 +412,36 @@ const PropertyDetail = () => {
             <div className="mt-12">
               <h2 className="text-2xl font-display font-bold mb-6">Similar Properties</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {similar.map(p => <PropertyCard key={p.id} property={p} />)}
+                {similar.map((p: any) => (
+                  <PropertyCard key={p.id} property={{
+                    id: p.id,
+                    title: p.title,
+                    type: p.listing_type,
+                    category: p.property_type,
+                    price: Number(p.price) || 0,
+                    priceUnit: p.price_unit === "monthly" ? "monthly" : "total",
+                    area: Number(p.area) || 0,
+                    areaUnit: p.area_unit || "sq.ft",
+                    bedrooms: p.bedrooms, bathrooms: p.bathrooms,
+                    city: p.city, locality: p.locality, address: p.address || "",
+                    image: (p.images && p.images[0]) || "/placeholder.svg",
+                    images: p.images || ["/placeholder.svg"],
+                    amenities: p.amenities || [],
+                    furnishing: p.furnishing || "Unfurnished",
+                    status: "Ready to Move",
+                    postedBy: "Owner",
+                    postedDate: "",
+                    verified: !!p.is_verified,
+                    featured: !!p.is_featured,
+                    isNew: !!p.is_new,
+                    description: p.description || "",
+                    facing: p.facing || "",
+                    parking: p.parking || 0,
+                    ageOfProperty: p.age_of_property || "",
+                    nearbyPlaces: [],
+                    pricePerSqft: Number(p.price_per_sqft) || 0,
+                  } as any} />
+                ))}
               </div>
             </div>
           )}
