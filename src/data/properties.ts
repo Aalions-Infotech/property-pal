@@ -45,7 +45,11 @@ export interface Property {
   longitude?: number;
 }
 
-export const properties: Property[] = [
+// Demo listings removed — all property data now flows from the database.
+// The array is kept for legacy references (compare bar, similar lookup fallback).
+export const properties: Property[] = [];
+
+const _unusedDemo: Property[] = [
   {
     id: "P001",
     title: "Luxurious 3BHK Apartment with City View",
