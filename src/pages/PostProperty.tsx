@@ -479,8 +479,18 @@ const PostProperty = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Area (sq.ft) <span className="text-red-500">*</span></label>
-                    <input type="number" min="1" value={form.area} onChange={e => update("area", e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                    <label className="block text-sm font-medium mb-2">Area <span className="text-red-500">*</span></label>
+                    <div className="flex gap-2">
+                      <input type="number" min="1" value={form.area} onChange={e => update("area", e.target.value)} className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent" />
+                      <select value={form.areaUnit} onChange={e => update("areaUnit", e.target.value)} className="px-2 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-accent">
+                        <option value="sq.ft">sq.ft</option>
+                        <option value="sq.m">sq.m</option>
+                        <option value="sq.yd">sq.yard</option>
+                        <option value="biswa">Biswa</option>
+                        <option value="bigha">Bigha</option>
+                        <option value="acre">Acre</option>
+                      </select>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">
