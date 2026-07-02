@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Phone, Mail, IndianRupee, Calendar, Loader2, CheckCircle } from "lucide-react";
+import { User, Phone, Mail, IndianRupee, Calendar, Loader2, CheckCircle, Building2 } from "lucide-react";
 
 interface LeadFormProps {
   propertyId?: string;
@@ -21,6 +21,7 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
     email: "",
     budget: "",
     visit_date: "",
+    property_type: "",
   });
 
   const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
@@ -28,7 +29,11 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.full_name || !form.phone) {
-      toast({ title: "Please fill required fields", variant: "destructive" });
+      toast({ title: "Please fill your name and phone", variant: "destructive" });
+      return;
+    }
+    if (!/^[0-9+\-\s]{7,15}$/.test(form.phone.trim())) {
+      toast({ title: "Please enter a valid phone number", variant: "destructive" });
       return;
     }
 
@@ -40,11 +45,12 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
         email: form.email || null,
         budget: form.budget || null,
         visit_date: form.visit_date || null,
+        property_type: form.property_type || null,
         otp_verified: false,
         property_id: propertyId || null,
         agent_id: agentId || null,
         status: "new",
-      });
+      } as any);
       if (error) throw error;
 
       // Send admin email notification
