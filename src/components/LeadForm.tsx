@@ -137,6 +137,28 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
         </div>
 
         <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Property Type</label>
+          <div className="relative">
+            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <select value={form.property_type} onChange={e => update("property_type", e.target.value)} className={`${fieldClass} pl-9`}>
+              <option value="">Select property type</option>
+              <option value="Investment Property">Investment Property</option>
+              <option value="Residential Apartment">Residential — Apartment</option>
+              <option value="Residential Villa">Residential — Villa / Bungalow</option>
+              <option value="Builder Floor">Residential — Builder Floor</option>
+              <option value="Studio / Penthouse">Studio / Penthouse</option>
+              <option value="Plot / Land">Plot / Land</option>
+              <option value="Agriculture Land">Agriculture Land</option>
+              <option value="Commercial Office">Commercial — Office</option>
+              <option value="Commercial Shop">Commercial — Shop / Retail</option>
+              <option value="Warehouse / Industrial">Warehouse / Industrial</option>
+              <option value="PG / Co-Living">PG / Co-Living</option>
+              <option value="Rental Property">Rental Property</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Budget</label>
           <div className="relative">
             <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
