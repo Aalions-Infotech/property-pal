@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { User, Phone, Mail, IndianRupee, Calendar, Loader2, CheckCircle, Building2 } from "lucide-react";
@@ -12,6 +13,7 @@ interface LeadFormProps {
 
 const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", onSuccess }: LeadFormProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -89,6 +91,8 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
       setSubmitted(true);
       toast({ title: "🎉 Enquiry submitted successfully!" });
       onSuccess?.();
+      // Redirect to Thank You page after a short delay so toast is visible
+      setTimeout(() => navigate("/thank-you"), 400);
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -152,7 +156,6 @@ const LeadForm = ({ propertyId, agentId, title = "Schedule a Visit / Enquiry", o
               <option value="Commercial Office">Commercial — Office</option>
               <option value="Commercial Shop">Commercial — Shop / Retail</option>
               <option value="Warehouse / Industrial">Warehouse / Industrial</option>
-              <option value="PG / Co-Living">PG / Co-Living</option>
               <option value="Rental Property">Rental Property</option>
             </select>
           </div>
