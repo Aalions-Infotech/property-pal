@@ -100,6 +100,13 @@ const SupportChat = () => {
     "What is RERA?",
   ];
 
+  // Hide the floating support chat on dashboard / admin / agent CRM routes
+  // so it never overlaps enquiry forms, tables, or side panels.
+  const hiddenPrefixes = ["/admin", "/dashboard", "/agent-dashboard", "/shortlists", "/org", "/post-property"];
+  if (hiddenPrefixes.some(p => location.pathname === p || location.pathname.startsWith(p + "/"))) {
+    return null;
+  }
+
   return (
     <>
       {/* WhatsApp Float */}
