@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { X, Save, MapPin, DollarSign, Building2, Star, Eye, Sliders } from "lucide-react";
+import { X, Save, MapPin, DollarSign, Building2, Star, Eye, Sliders, Image as ImageIcon, Upload, Trash2 } from "lucide-react";
 
 interface AdminListingEditorProps {
   listing: any;
@@ -13,6 +13,8 @@ interface AdminListingEditorProps {
 const AdminListingEditor = ({ listing, onSave, onClose, adminId }: AdminListingEditorProps) => {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [images, setImages] = useState<string[]>(Array.isArray(listing.images) ? listing.images : []);
   const [form, setForm] = useState({
     title: listing.title || "",
     description: listing.description || "",
@@ -47,6 +49,46 @@ const AdminListingEditor = ({ listing, onSave, onClose, adminId }: AdminListingE
     admin_note: listing.admin_note || "",
   });
 
+  const handleAddImages = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    if (images.length + files.length > 20) {
+      toast({ title: "Maximum 20 photos allowed", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const newUrls: string[] = [];
+      for (const file of Array.from(files)) {
+        if (!["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(file.type)) {
+          toast({ title: `${file.name} is not a supported image`, variant: "destructive" });
+          continue;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          toast({ title: `${file.name} exceeds 5MB`, variant: "destructive" });
+          continue;
+        }
+        const ext = file.name.split(".").pop();
+        const path = `${listing.user_id}/${listing.id}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("property-images")
+          .upload(path, file, { contentType: file.type, upsert: false });
+        if (upErr) {
+          toast({ title: `Upload failed: ${file.name}`, description: upErr.message, variant: "destructive" });
+          continue;
+        }
+        const { data: urlData } = supabase.storage.from("property-images").getPublicUrl(path);
+        newUrls.push(urlData.publicUrl);
+      }
+      if (newUrls.length > 0) setImages(prev => [...prev, ...newUrls]);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (idx: number) => {
+    setImages(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     setForm(f => ({
@@ -71,6 +113,7 @@ const AdminListingEditor = ({ listing, onSave, onClose, adminId }: AdminListingE
         price: Number(form.price),
         area: form.area ? Number(form.area) : null,
         area_unit: form.area_unit,
+        images: images.length > 0 ? images : null,
         bedrooms: form.bedrooms ? Number(form.bedrooms) : null,
         bathrooms: form.bathrooms ? Number(form.bathrooms) : null,
         floor: form.floor ? Number(form.floor) : null,
@@ -213,6 +256,17 @@ const AdminListingEditor = ({ listing, onSave, onClose, adminId }: AdminListingE
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div><label className={labelClass}>Price (₹)</label><input name="price" type="number" value={form.price} onChange={handleChange} className={fieldClass} /></div>
               <div><label className={labelClass}>Area</label><input name="area" type="number" value={form.area} onChange={handleChange} className={fieldClass} /></div>
+              <div>
+                <label className={labelClass}>Area Unit</label>
+                <select name="area_unit" value={form.area_unit} onChange={handleChange} className={fieldClass}>
+                  <option value="sq.ft">sq.ft</option>
+                  <option value="sq.m">sq.m</option>
+                  <option value="sq.yd">sq.yard</option>
+                  <option value="biswa">Biswa</option>
+                  <option value="bigha">Bigha</option>
+                  <option value="acre">Acre</option>
+                </select>
+              </div>
               <div><label className={labelClass}>Bedrooms</label><input name="bedrooms" type="number" value={form.bedrooms} onChange={handleChange} className={fieldClass} /></div>
               <div><label className={labelClass}>Bathrooms</label><input name="bathrooms" type="number" value={form.bathrooms} onChange={handleChange} className={fieldClass} /></div>
               <div><label className={labelClass}>Floor</label><input name="floor" type="number" value={form.floor} onChange={handleChange} className={fieldClass} /></div>
@@ -227,6 +281,42 @@ const AdminListingEditor = ({ listing, onSave, onClose, adminId }: AdminListingE
                 </select>
               </div>
             </div>
+          </div>
+
+          {/* Images */}
+          <div className="border border-border rounded-2xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-display font-bold text-sm flex items-center gap-2">
+                <ImageIcon className="w-4 h-4" /> Property Photos ({images.length}/20)
+              </h3>
+              <label className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border text-xs font-medium cursor-pointer hover:bg-muted ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
+                <Upload className="w-3.5 h-3.5" />
+                {uploading ? "Uploading..." : "Add Photos"}
+                <input type="file" accept="image/*" multiple className="hidden" onChange={e => handleAddImages(e.target.files)} />
+              </label>
+            </div>
+            {images.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No photos uploaded. Click "Add Photos" to upload.</p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {images.map((url, idx) => (
+                  <div key={url + idx} className="relative aspect-square rounded-xl overflow-hidden border border-border group">
+                    <img src={url} alt={`Property ${idx + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      className="absolute top-1.5 right-1.5 p-1.5 rounded-lg bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Remove"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                    {idx === 0 && (
+                      <span className="absolute bottom-1.5 left-1.5 text-[10px] font-semibold bg-primary text-primary-foreground px-2 py-0.5 rounded">Cover</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Additional */}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { MessageCircle, X, Send, Bot, ChevronDown, Loader2 } from "lucide-react";
 
 // Simple session ID generator
@@ -10,6 +11,7 @@ const WHATSAPP_NUMBER = "919369556641"; // Replace with actual number
 const WHATSAPP_MESSAGE = "Hello! I need help with a property on PropEstate.";
 
 const SupportChat = () => {
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "👋 Hi! I'm Ekananda Estate AI Assistant. I can help you with property searches, pricing, home loans, and more. How can I help you today?" }
@@ -97,6 +99,13 @@ const SupportChat = () => {
     "How to list my property?",
     "What is RERA?",
   ];
+
+  // Hide the floating support chat on dashboard / admin / agent CRM routes
+  // so it never overlaps enquiry forms, tables, or side panels.
+  const hiddenPrefixes = ["/admin", "/dashboard", "/agent-dashboard", "/shortlists", "/org", "/post-property"];
+  if (hiddenPrefixes.some(p => location.pathname === p || location.pathname.startsWith(p + "/"))) {
+    return null;
+  }
 
   return (
     <>
