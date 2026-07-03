@@ -128,7 +128,7 @@ const Footer = () => {
             {BRAND_COPYRIGHT}
           </p>
           <div className="flex gap-4 text-xs text-white/40">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of Use</a>
             <a href="#" className="hover:text-white transition-colors">Disclaimer</a>
             <a href="#" className="hover:text-white transition-colors">Sitemap</a>
