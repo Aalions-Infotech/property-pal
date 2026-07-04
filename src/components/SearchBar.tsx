@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, Mic, MapPin, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { propertyTypes } from "@/data/properties";
@@ -16,6 +16,17 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   const [cityOpen, setCityOpen] = useState(false);
   const [propertyTypeOpen, setPropertyTypeOpen] = useState(false);
   const [selectedType, setSelectedType] = useState("All Residentials");
+  const typeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (typeRef.current && !typeRef.current.contains(e.target as Node)) {
+        setPropertyTypeOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
 
   const tabs = [
     { key: "buy", label: "Residentials" },
@@ -47,6 +58,9 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
     }
     if (selectedCity !== "All Lucknow") params.set("locality", selectedCity);
     params.set("city", "Lucknow");
+    if (selectedType && selectedType !== "All Residentials") {
+      params.set("propertyType", selectedType);
+    }
     navigate(`${path}?${params.toString()}`);
   };
 
@@ -92,20 +106,22 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
       <div className="bg-card rounded-b-2xl rounded-tr-2xl shadow-lg border border-border overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center">
           {/* Property Type Selector */}
-          <div className="relative flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border">
+          <div ref={typeRef} className="relative flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border">
             <button
-              onClick={() => setPropertyTypeOpen(!propertyTypeOpen)}
+              type="button"
+              onClick={() => setPropertyTypeOpen(v => !v)}
               className="w-full sm:w-auto flex items-center gap-2 px-4 py-3 sm:py-4 text-sm font-medium hover:bg-muted transition-colors"
             >
               <span className="truncate max-w-28">{selectedType}</span>
               <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             </button>
             {propertyTypeOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded-xl shadow-lg p-2 w-48 z-50">
+              <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded-xl shadow-lg p-2 w-48 z-50 max-h-72 overflow-y-auto">
                 {["All Residentials", "Apartment", "Villa", "Plot/Land", "Builder Floor", "Studio", "Penthouse"].map(type => (
                   <button
                     key={type}
-                    onClick={() => { setSelectedType(type); setPropertyTypeOpen(false); }}
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setSelectedType(type); setPropertyTypeOpen(false); }}
                     className="w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
                   >
                     {type}
