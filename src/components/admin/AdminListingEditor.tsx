@@ -265,6 +265,8 @@ const AdminListingEditor = ({ listing, onSave, onClose, adminId }: AdminListingE
                   <option value="biswa">Biswa</option>
                   <option value="bigha">Bigha</option>
                   <option value="acre">Acre</option>
+                  <option value="hectare">Hectare</option>
+                  <option value="acre">Acre</option>
                 </select>
               </div>
               <div><label className={labelClass}>Bedrooms</label><input name="bedrooms" type="number" value={form.bedrooms} onChange={handleChange} className={fieldClass} /></div>
