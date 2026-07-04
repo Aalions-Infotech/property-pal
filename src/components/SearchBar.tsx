@@ -23,7 +23,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
     { key: "new-launch", label: "New Launch", badge: true },
     { key: "commercial", label: "Commercials" },
     { key: "plot", label: "Plots/Land" },
-    { key: "pg", label: "PG/Co-Living" },
+    { key: "investment", label: "Investment Property" },
   ] as const;
 
   const handleSearch = () => {
