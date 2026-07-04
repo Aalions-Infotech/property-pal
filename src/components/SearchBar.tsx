@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { Search, Mic, MapPin, ChevronDown, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
+import { Search, Mic, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { propertyTypes } from "@/data/properties";
 import { isLucknowPincode, lookupPincode } from "@/lib/lucknowPincodes";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface SearchBarProps {
   variant?: "hero" | "page";
@@ -14,19 +15,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("All Lucknow");
   const [cityOpen, setCityOpen] = useState(false);
-  const [propertyTypeOpen, setPropertyTypeOpen] = useState(false);
   const [selectedType, setSelectedType] = useState("All Residentials");
-  const typeRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      if (typeRef.current && !typeRef.current.contains(e.target as Node)) {
-        setPropertyTypeOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, []);
 
   const tabs = [
     { key: "buy", label: "Residentials" },
