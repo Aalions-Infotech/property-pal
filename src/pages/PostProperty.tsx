@@ -489,6 +489,7 @@ const PostProperty = () => {
                         <option value="biswa">Biswa</option>
                         <option value="bigha">Bigha</option>
                         <option value="acre">Acre</option>
+                        <option value="hectare">Hectare</option>
                       </select>
                     </div>
                   </div>

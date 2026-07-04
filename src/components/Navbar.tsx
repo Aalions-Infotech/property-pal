@@ -178,10 +178,10 @@ const Navbar = () => {
                   className="absolute top-full left-0 bg-card border border-border rounded-2xl shadow-lg p-5 w-72 z-50 animate-slide-up"
                 >
                   <p className="text-xs font-bold text-gold mb-3">RENT A HOME</p>
-                  {["Rent Apartments", "Rent Villas", "PG / Co-Living", "Rent Commercial"].map(item => (
+                  {["Rent Apartments", "Rent Villas", "Investment Property", "Rent Commercial"].map(item => (
                     <Link
                       key={item}
-                      to={item.includes("PG") ? "/pg" : "/rent"}
+                      to={item.includes("Investment") ? "/buy?type=investment" : "/rent"}
                       className="block text-sm py-1.5 text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {item}
@@ -438,7 +438,7 @@ const Navbar = () => {
               { to: "/commercial", label: "Commercials", icon: Building2 },
               { to: "/buy?type=agriculture-land", label: "Agriculture Land", icon: MapPin },
               { to: "/new-projects", label: "New Projects", icon: Star },
-              { to: "/pg", label: "PG / Co-Living", icon: User },
+              { to: "/buy?type=investment", label: "Investment Property", icon: User },
               { to: "/post-property", label: "Post Property FREE", icon: Building2 },
               { to: "/agents", label: "Find Agents", icon: User },
               { to: "/price-trends", label: "Price Trends", icon: TrendingUp },

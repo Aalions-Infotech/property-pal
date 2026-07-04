@@ -177,7 +177,7 @@ const AdminAddProperty = ({ userId, onSuccess }: AdminAddPropertyProps) => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div><label className={labelClass}>Price (₹) *</label><input name="price" type="number" value={form.price} onChange={handleChange} placeholder="1500000" className={fieldClass} required /></div>
           <div><label className={labelClass}>Area</label><input name="area" type="number" value={form.area} onChange={handleChange} placeholder="1200" className={fieldClass} /></div>
-          <div><label className={labelClass}>Area Unit</label><select name="area_unit" value={form.area_unit} onChange={handleChange} className={fieldClass}><option value="sq.ft">sq.ft</option><option value="sq.m">sq.m</option><option value="sq.yard">sq.yard</option></select></div>
+          <div><label className={labelClass}>Area Unit</label><select name="area_unit" value={form.area_unit} onChange={handleChange} className={fieldClass}><option value="sq.ft">sq.ft</option><option value="sq.m">sq.m</option><option value="sq.yd">sq.yard</option><option value="biswa">Biswa</option><option value="bigha">Bigha</option><option value="acre">Acre</option><option value="hectare">Hectare</option></select></div>
           <div><label className={labelClass}>Furnishing</label><select name="furnishing" value={form.furnishing} onChange={handleChange} className={fieldClass}><option value="Unfurnished">Unfurnished</option><option value="Semi-Furnished">Semi-Furnished</option><option value="Fully Furnished">Fully Furnished</option></select></div>
         </div>
       </div>
