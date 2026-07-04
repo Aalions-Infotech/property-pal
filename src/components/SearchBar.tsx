@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { Search, Mic, MapPin, ChevronDown, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
+import { Search, Mic, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { propertyTypes } from "@/data/properties";
 import { isLucknowPincode, lookupPincode } from "@/lib/lucknowPincodes";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface SearchBarProps {
   variant?: "hero" | "page";
@@ -14,19 +15,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("All Lucknow");
   const [cityOpen, setCityOpen] = useState(false);
-  const [propertyTypeOpen, setPropertyTypeOpen] = useState(false);
   const [selectedType, setSelectedType] = useState("All Residentials");
-  const typeRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      if (typeRef.current && !typeRef.current.contains(e.target as Node)) {
-        setPropertyTypeOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, []);
 
   const tabs = [
     { key: "buy", label: "Residentials" },
@@ -106,29 +95,17 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
       <div className="bg-card rounded-b-2xl rounded-tr-2xl shadow-lg border border-border overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center">
           {/* Property Type Selector */}
-          <div ref={typeRef} className="relative flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border">
-            <button
-              type="button"
-              onClick={() => setPropertyTypeOpen(v => !v)}
-              className="w-full sm:w-auto flex items-center gap-2 px-4 py-3 sm:py-4 text-sm font-medium hover:bg-muted transition-colors"
-            >
-              <span className="truncate max-w-28">{selectedType}</span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            </button>
-            {propertyTypeOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded-xl shadow-lg p-2 w-48 z-50 max-h-72 overflow-y-auto">
+          <div className="flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border">
+            <Select value={selectedType} onValueChange={setSelectedType}>
+              <SelectTrigger className="w-full sm:w-44 border-0 rounded-none h-auto px-4 py-3 sm:py-4 text-sm font-medium bg-transparent hover:bg-muted focus:ring-0 focus:ring-offset-0 shadow-none">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="z-50 bg-card">
                 {["All Residentials", "Apartment", "Villa", "Plot/Land", "Builder Floor", "Studio", "Penthouse"].map(type => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setSelectedType(type); setPropertyTypeOpen(false); }}
-                    className="w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-muted transition-colors"
-                  >
-                    {type}
-                  </button>
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
-              </div>
-            )}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Search Input */}
