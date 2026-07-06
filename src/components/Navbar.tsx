@@ -69,7 +69,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 min-w-0">
             <img src={logoImg} alt={BRAND_NAME} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover flex-shrink-0" />
-            <span className={`font-display font-800 text-sm sm:text-lg lg:text-xl tracking-tight truncate ${
+            <span className={`font-display font-800 text-[13px] sm:text-lg lg:text-xl tracking-tight truncate ${
               !scrolled && location.pathname === "/" ? "text-white" : "text-foreground"
             }`}>
               {BRAND_NAME}
@@ -384,7 +384,11 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/auth"
-                className="flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all"
+                className={`flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-2 rounded-full sm:rounded-xl sm:border sm:border-border/50 text-sm font-medium transition-all ${
+                  !scrolled && location.pathname === "/"
+                    ? "text-white hover:bg-white/10 sm:border-white/30"
+                    : "text-foreground hover:bg-muted"
+                }`}
               >
                 <LogIn className="w-4 h-4" />
                 <span className="hidden md:inline">Login</span>
@@ -411,12 +415,19 @@ const Navbar = () => {
         <div className="lg:hidden bg-card border-t border-border shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
             {/* Mobile City Selector */}
-            <div className="sm:hidden pb-2 mb-2 border-b border-border">
-              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">LOCALITY (LUCKNOW)</p>
-              <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
+            <div className="sm:hidden pb-3 mb-2 border-b border-border">
+              <div className="flex items-center gap-1.5 mb-2 px-1">
+                <MapPin className="w-3.5 h-3.5 text-gold" />
+                <p className="text-[11px] font-semibold tracking-wider text-muted-foreground">LOCALITY (LUCKNOW)</p>
+              </div>
+              <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto">
                 <button
                   onClick={() => { setSelectedCity("All Lucknow"); }}
-                  className={`text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted ${selectedCity === "All Lucknow" ? "font-semibold text-accent" : ""}`}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    selectedCity === "All Lucknow"
+                      ? "bg-accent text-accent-foreground border-accent"
+                      : "bg-muted/50 text-foreground border-border hover:bg-muted"
+                  }`}
                 >
                   All Lucknow
                 </button>
@@ -424,7 +435,11 @@ const Navbar = () => {
                   <button
                     key={c}
                     onClick={() => setSelectedCity(c)}
-                    className={`text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted ${selectedCity === c ? "font-semibold text-accent" : ""}`}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      selectedCity === c
+                        ? "bg-accent text-accent-foreground border-accent"
+                        : "bg-muted/50 text-foreground border-border hover:bg-muted"
+                    }`}
                   >
                     {c}
                   </button>
