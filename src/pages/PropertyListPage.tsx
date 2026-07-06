@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LeadForm from "@/components/LeadForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import FilterSidebar, { FilterState } from "@/components/FilterSidebar";
 import SearchBar from "@/components/SearchBar";
 import { supabase } from "@/integrations/supabase/client";
@@ -255,49 +256,56 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Radius search bar */}
-        <div className="mb-4 flex flex-wrap items-center gap-2 bg-card border border-border rounded-xl p-3">
-          <MapIcon className="w-4 h-4 text-accent flex-shrink-0" />
-          <span className="text-xs font-medium text-muted-foreground">Radius search:</span>
-          <input
-            type="text"
-            value={radiusInput}
-            onChange={e => setRadiusInput(e.target.value)}
-            placeholder="Center (e.g. Lucknow, Gomti Nagar)"
-            className="flex-1 min-w-[140px] px-3 py-1.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-          />
-          <select
-            value={radiusKm}
-            onChange={e => setRadiusKm(Number(e.target.value))}
-            className="px-2 py-1.5 rounded-lg border border-border bg-background text-sm"
-          >
-            <option value={0}>Distance…</option>
-            {[1, 3, 5, 10, 20, 50].map(k => <option key={k} value={k}>{k} km</option>)}
-          </select>
-          <button onClick={applyRadius} disabled={!radiusKm || !radiusInput} className="px-3 py-1.5 rounded-lg bg-accent text-accent-foreground text-sm font-medium disabled:opacity-50">Apply</button>
-          {radiusCenter && (
-            <button onClick={clearRadius} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-muted text-xs">
-              <X className="w-3 h-3" /> {radiusLabel} · {radiusKm}km
-            </button>
-          )}
+        <div className="mb-4 bg-card border border-border rounded-xl p-3">
+          <div className="flex items-center gap-2 mb-2 sm:mb-0 sm:hidden">
+            <MapIcon className="w-4 h-4 text-accent flex-shrink-0" />
+            <span className="text-xs font-semibold text-muted-foreground">Radius search</span>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+              <MapIcon className="w-4 h-4 text-accent" />
+              <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">Radius:</span>
+            </div>
+            <input
+              type="text"
+              value={radiusInput}
+              onChange={e => setRadiusInput(e.target.value)}
+              placeholder="Center (e.g. Gomti Nagar)"
+              className="w-full sm:flex-1 sm:min-w-[140px] px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+            />
+            <div className="flex gap-2">
+              <select
+                value={radiusKm}
+                onChange={e => setRadiusKm(Number(e.target.value))}
+                className="flex-1 sm:flex-none px-2 py-2 rounded-lg border border-border bg-background text-sm"
+              >
+                <option value={0}>Distance…</option>
+                {[1, 3, 5, 10, 20, 50].map(k => <option key={k} value={k}>{k} km</option>)}
+              </select>
+              <button onClick={applyRadius} disabled={!radiusKm || !radiusInput} className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-accent text-accent-foreground text-sm font-semibold disabled:opacity-50">Apply</button>
+            </div>
+            {radiusCenter && (
+              <button onClick={clearRadius} className="flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg bg-muted text-xs w-full sm:w-auto">
+                <X className="w-3 h-3" /> {radiusLabel} · {radiusKm}km
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowMobileFilters(true)} className="lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted">
-              <SlidersHorizontal className="w-4 h-4" /> Filters
-            </button>
             <p className="text-sm text-muted-foreground">
               <span className="font-semibold text-foreground">{loading ? "..." : visibleListings.length}</span> properties found
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="px-3 py-2 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="flex-1 sm:flex-none px-3 py-2 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent">
               <option value="relevance">Sort: Featured First</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
               <option value="area-desc">Area: Largest First</option>
             </select>
-            <div className="flex border border-border rounded-xl overflow-hidden">
+            <div className="flex border border-border rounded-xl overflow-hidden flex-shrink-0">
               <button onClick={() => setView("grid")} className={`p-2 ${view === "grid" ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`}>
                 <Grid3X3 className="w-4 h-4" />
               </button>
@@ -311,7 +319,7 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
           </div>
         </div>
 
-        <div className="flex gap-6">
+        <div className="flex gap-6 pb-24 lg:pb-0">
           <aside className="hidden lg:block w-72 flex-shrink-0">
             <FilterSidebar type={type} onFilterChange={setFilters} />
           </aside>
@@ -358,23 +366,49 @@ const PropertyListPage = ({ type, title, subtitle }: PropertyListPageProps) => {
         </div>
       </div>
 
-      {showMobileFilters && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowMobileFilters(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-80 bg-card overflow-y-auto p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display font-semibold">Filters</h3>
-              <button onClick={() => setShowMobileFilters(false)} className="text-muted-foreground hover:text-foreground">✕</button>
-            </div>
-            <FilterSidebar type={type} onFilterChange={(f) => { setFilters(f); setShowMobileFilters(false); }} />
+      {/* Mobile bottom filter drawer (shadcn Sheet from bottom) */}
+      <Sheet open={showMobileFilters} onOpenChange={setShowMobileFilters}>
+        <SheetContent side="bottom" className="lg:hidden h-[85vh] p-0 rounded-t-2xl overflow-hidden flex flex-col">
+          <SheetHeader className="px-4 py-3 border-b border-border flex-shrink-0">
+            <SheetTitle className="text-left flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4" /> Filters
+            </SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto p-4">
+            <FilterSidebar type={type} onFilterChange={(f) => setFilters(f)} />
           </div>
-        </div>
-      )}
+          <div className="p-3 border-t border-border flex-shrink-0">
+            <button
+              onClick={() => setShowMobileFilters(false)}
+              className="w-full py-3 rounded-xl btn-navy text-sm font-semibold"
+            >
+              Show {visibleListings.length} properties
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-      {/* Floating Enquire Now Button */}
+      {/* Mobile sticky action bar: Filters + Enquire */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-card/95 backdrop-blur border-t border-border p-3 flex gap-2 shadow-lg">
+        <button
+          onClick={() => setShowMobileFilters(true)}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border text-sm font-semibold hover:bg-muted"
+        >
+          <SlidersHorizontal className="w-4 h-4" /> Filters
+        </button>
+        <button
+          onClick={() => setShowLeadForm(true)}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow"
+        >
+          <MessageSquare className="w-4 h-4" />
+          Enquire
+        </button>
+      </div>
+
+      {/* Desktop floating Enquire */}
       <button
         onClick={() => setShowLeadForm(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-semibold shadow-lg hover:bg-primary/90 transition-all hover:scale-105"
+        className="hidden lg:flex fixed bottom-6 right-6 z-40 items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-semibold shadow-lg hover:bg-primary/90 transition-all hover:scale-105"
       >
         <MessageSquare className="w-5 h-5" />
         Enquire Now

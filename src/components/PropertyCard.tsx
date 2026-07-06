@@ -97,7 +97,7 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
   return (
     <div className="bg-card rounded-2xl border border-border shadow-card property-card-hover overflow-hidden group">
       {/* Image */}
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-44 sm:h-52 overflow-hidden">
         <Link to={`/property/${property.id}`} className="block w-full h-full" aria-label={`View ${property.title}`}>
           <img
             src={property.image}
@@ -152,7 +152,7 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <div className="flex items-start justify-between gap-2 mb-1 flex-wrap">
           <p className="price-tag text-lg sm:text-xl break-words">{formatPrice(property.price, property.priceUnit)}</p>
           <span className="text-xs text-muted-foreground flex-shrink-0 mt-1">
@@ -187,13 +187,13 @@ const PropertyCard = ({ property, view = "grid" }: PropertyCardProps) => {
         </div>
 
         {/* Furnishing + Action */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">{property.furnishing}</span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs text-muted-foreground truncate">{property.furnishing}</span>
           <div className="flex gap-2">
-            <button className="px-2.5 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted transition-colors flex items-center gap-1">
-              <Phone className="w-3 h-3" />
+            <button aria-label="Contact" className="w-9 h-9 rounded-lg border border-border text-xs font-medium hover:bg-muted transition-colors flex items-center justify-center flex-shrink-0">
+              <Phone className="w-3.5 h-3.5" />
             </button>
-            <Link to={`/property/${property.id}`} className="px-3 py-1.5 rounded-lg btn-gold text-xs flex items-center gap-1">
+            <Link to={`/property/${property.id}`} className="px-3 h-9 rounded-lg btn-gold text-xs font-semibold flex items-center gap-1 whitespace-nowrap">
               View Details
             </Link>
           </div>

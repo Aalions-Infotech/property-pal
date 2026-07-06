@@ -161,19 +161,19 @@ const Index = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-[88vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[calc(100vh-4rem)] sm:min-h-[88vh] flex items-center overflow-hidden py-10 sm:py-16">
         <div className="absolute inset-0">
           <img src={heroImg} alt="Real Estate" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-hero" />
         </div>
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-20 pb-10">
-          <div className="max-w-3xl mx-auto text-center mb-10">
-            <p className="section-label mb-3">Lucknow's Most Trusted Real Estate Platform</p>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-bold text-white mb-4 leading-tight">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-20 sm:pt-24 pb-6">
+          <div className="max-w-3xl mx-auto text-center mb-6 sm:mb-10">
+            <p className="section-label mb-3 text-[10px] sm:text-xs">Lucknow's Most Trusted Real Estate Platform</p>
+            <h1 className="text-[26px] leading-[1.15] sm:text-5xl md:text-6xl font-display font-bold text-white mb-3 sm:mb-4">
               Find Your Perfect<br />
               <span className="text-gold">Place to Live</span>
             </h1>
-            <p className="text-base sm:text-lg text-white/70 mb-8 px-2">
+            <p className="text-sm sm:text-lg text-white/70 mb-6 sm:mb-8 px-2">
              Find Your Perfect Property in Lucknow. Buy, Sell & Invest Securely
             </p>
           </div>
@@ -186,26 +186,26 @@ const Index = () => {
               <button key={s} className="glass px-3 py-1 rounded-full text-xs text-white/80 hover:text-white transition-all">{s}</button>
             ))}
           </div>
-          <div className="max-w-2xl mx-auto mt-8 sm:mt-12 glass rounded-2xl p-3 sm:p-4">
+          <div className="max-w-2xl mx-auto mt-6 sm:mt-12 glass rounded-2xl p-3 sm:p-4">
             <div className="grid grid-cols-2 sm:grid-cols-4">
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center py-2 sm:hero-stat">
-                  <p className="text-xl sm:text-2xl font-display font-bold text-white">{stat.value}</p>
+                  <p className="text-lg sm:text-2xl font-display font-bold text-white">{stat.value}</p>
                   <p className="text-[10px] sm:text-xs text-white/60 mt-0.5">{stat.label}</p>
                 </div>
               ))}
             </div>
           </div>
-          <div className="max-w-2xl mx-auto mt-6 flex justify-center">
+          <div className="max-w-2xl mx-auto mt-5 sm:mt-6 flex justify-center px-2">
             <button
               onClick={() => setShowLeadPopup(true)}
-              className="btn-gold px-8 py-3 rounded-xl text-base inline-flex items-center gap-2 font-semibold shadow-lg hover:scale-105 transition-transform"
+              className="btn-gold w-full sm:w-auto px-6 sm:px-8 py-3 rounded-xl text-sm sm:text-base inline-flex items-center justify-center gap-2 font-semibold shadow-lg hover:scale-105 transition-transform"
             >
               Get Property Details <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
           <ChevronRight className="w-6 h-6 text-white/50 rotate-90" />
         </div>
       </section>
