@@ -97,7 +97,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
           {/* Property Type Selector */}
           <div className="flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border">
             <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="w-full sm:w-44 border-0 rounded-none h-auto px-4 py-3 sm:py-4 text-sm font-medium bg-transparent hover:bg-muted focus:ring-0 focus:ring-offset-0 shadow-none">
+              <SelectTrigger className="w-full sm:w-44 border-0 rounded-none h-12 sm:h-auto px-4 sm:py-4 text-sm font-medium bg-transparent hover:bg-muted focus:ring-0 focus:ring-offset-0 shadow-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-50 bg-card">
@@ -115,7 +115,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder="Search Lucknow locality, project, landmark or PIN (e.g. 226010)…"
+              placeholder="Search locality, project, landmark or PIN…"
               className="flex-1 min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60 py-3 sm:py-4"
             />
             <button className="p-1.5 rounded-lg hover:bg-muted transition-colors hidden sm:block">
@@ -129,7 +129,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="px-6 py-3 sm:py-4 btn-navy text-sm font-medium flex-shrink-0 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-3.5 sm:py-4 btn-navy text-sm font-semibold flex-shrink-0 flex items-center justify-center gap-2 min-h-[48px]"
           >
             <Search className="w-4 h-4" />
             Search
