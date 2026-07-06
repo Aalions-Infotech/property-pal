@@ -415,12 +415,19 @@ const Navbar = () => {
         <div className="lg:hidden bg-card border-t border-border shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
             {/* Mobile City Selector */}
-            <div className="sm:hidden pb-2 mb-2 border-b border-border">
-              <p className="text-xs font-semibold text-muted-foreground mb-2 px-1">LOCALITY (LUCKNOW)</p>
-              <div className="grid grid-cols-2 gap-1 max-h-40 overflow-y-auto">
+            <div className="sm:hidden pb-3 mb-2 border-b border-border">
+              <div className="flex items-center gap-1.5 mb-2 px-1">
+                <MapPin className="w-3.5 h-3.5 text-gold" />
+                <p className="text-[11px] font-semibold tracking-wider text-muted-foreground">LOCALITY (LUCKNOW)</p>
+              </div>
+              <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto">
                 <button
                   onClick={() => { setSelectedCity("All Lucknow"); }}
-                  className={`text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted ${selectedCity === "All Lucknow" ? "font-semibold text-accent" : ""}`}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    selectedCity === "All Lucknow"
+                      ? "bg-accent text-accent-foreground border-accent"
+                      : "bg-muted/50 text-foreground border-border hover:bg-muted"
+                  }`}
                 >
                   All Lucknow
                 </button>
@@ -428,7 +435,11 @@ const Navbar = () => {
                   <button
                     key={c}
                     onClick={() => setSelectedCity(c)}
-                    className={`text-left px-2 py-1.5 rounded-lg text-sm hover:bg-muted ${selectedCity === c ? "font-semibold text-accent" : ""}`}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      selectedCity === c
+                        ? "bg-accent text-accent-foreground border-accent"
+                        : "bg-muted/50 text-foreground border-border hover:bg-muted"
+                    }`}
                   >
                     {c}
                   </button>
