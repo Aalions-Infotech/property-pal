@@ -69,7 +69,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 min-w-0">
             <img src={logoImg} alt={BRAND_NAME} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover flex-shrink-0" />
-            <span className={`font-display font-800 text-sm sm:text-lg lg:text-xl tracking-tight truncate ${
+            <span className={`font-display font-800 text-[13px] sm:text-lg lg:text-xl tracking-tight truncate ${
               !scrolled && location.pathname === "/" ? "text-white" : "text-foreground"
             }`}>
               {BRAND_NAME}
