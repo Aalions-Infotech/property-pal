@@ -384,7 +384,11 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/auth"
-                className="flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl border border-border/50 text-sm font-medium hover:bg-muted transition-all"
+                className={`flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-2 rounded-full sm:rounded-xl sm:border sm:border-border/50 text-sm font-medium transition-all ${
+                  !scrolled && location.pathname === "/"
+                    ? "text-white hover:bg-white/10 sm:border-white/30"
+                    : "text-foreground hover:bg-muted"
+                }`}
               >
                 <LogIn className="w-4 h-4" />
                 <span className="hidden md:inline">Login</span>
