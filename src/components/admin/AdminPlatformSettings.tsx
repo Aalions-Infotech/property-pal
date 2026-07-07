@@ -110,6 +110,36 @@ export default function AdminPlatformSettings() {
           </button>
         </div>
       </div>
+
+      <div className="bg-card rounded-2xl border border-border p-5 sm:p-6">
+        <h3 className="font-display font-bold mb-1 flex items-center gap-2"><BarChart3 className="w-5 h-5" /> Homepage Hero Stats</h3>
+        <p className="text-xs text-muted-foreground mb-4">Edit the 4 stat cards shown on the home page hero (e.g. "10K+ Properties in Lucknow"). Value is the number, label is the caption.</p>
+        <div className="space-y-3">
+          {heroStats.map((s, i) => (
+            <div key={i} className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3">
+              <input
+                value={s.value}
+                placeholder="10K+"
+                onChange={e => setHeroStats(prev => prev.map((it, idx) => idx === i ? { ...it, value: e.target.value } : it))}
+                className="px-3 py-2 rounded-lg border border-border bg-background text-sm font-semibold"
+              />
+              <input
+                value={s.label}
+                placeholder="Properties in Lucknow"
+                onChange={e => setHeroStats(prev => prev.map((it, idx) => idx === i ? { ...it, label: e.target.value } : it))}
+                className="px-3 py-2 rounded-lg border border-border bg-background text-sm"
+              />
+            </div>
+          ))}
+          <button
+            disabled={saving}
+            onClick={() => saveKey("hero_stats", { items: heroStats })}
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" /> Save Hero Stats
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
