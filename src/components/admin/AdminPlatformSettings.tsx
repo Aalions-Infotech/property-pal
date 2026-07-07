@@ -2,13 +2,22 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Palette, Globe, Save, Sun, Moon, Monitor } from "lucide-react";
+import { Palette, Globe, Save, Sun, Moon, Monitor, BarChart3 } from "lucide-react";
+
+type StatItem = { value: string; label: string };
+const DEFAULT_STATS: StatItem[] = [
+  { value: "10K+", label: "Properties in Lucknow" },
+  { value: "500+", label: "Verified Local Agents" },
+  { value: "50+", label: "Lucknow Localities" },
+  { value: "4.8★", label: "Avg. Rating" },
+];
 
 export default function AdminPlatformSettings() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [theme, setTheme] = useState<{ default: "light" | "dark" | "system"; enforce: boolean }>({ default: "system", enforce: false });
   const [platform, setPlatform] = useState<any>({ maintenance_mode: false, support_email: "", support_phone: "", tagline: "" });
+  const [heroStats, setHeroStats] = useState<StatItem[]>(DEFAULT_STATS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -18,6 +27,11 @@ export default function AdminPlatformSettings() {
       data?.forEach((row: any) => {
         if (row.key === "theme") setTheme({ default: row.value.default || "system", enforce: !!row.value.enforce });
         if (row.key === "platform") setPlatform({ ...platform, ...(row.value || {}) });
+        if (row.key === "hero_stats" && Array.isArray(row.value?.items) && row.value.items.length) {
+          const items = row.value.items.slice(0, 4);
+          while (items.length < 4) items.push({ value: "", label: "" });
+          setHeroStats(items);
+        }
       });
       setLoading(false);
     })();
