@@ -34,6 +34,20 @@ const Index = () => {
   const [priceTrends, setPriceTrends] = useState<any[]>([]);
   const [articles, setArticles] = useState<any[]>([]);
   const [showLeadPopup, setShowLeadPopup] = useState(false);
+  const [stats, setStats] = useState([
+    { value: "10K+", label: "Properties in Lucknow" },
+    { value: "500+", label: "Verified Local Agents" },
+    { value: "50+", label: "Lucknow Localities" },
+    { value: "4.8★", label: "Avg. Rating" },
+  ]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("app_settings").select("value").eq("key", "hero_stats").maybeSingle();
+      const items = (data?.value as any)?.items;
+      if (Array.isArray(items) && items.length) setStats(items.slice(0, 4));
+    })();
+  }, []);
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem("lead_popup_dismissed");
@@ -126,13 +140,6 @@ const Index = () => {
   const sponsoredProps = allProperties.filter(p => p.featured).slice(0, 4);
   const buyProps = sponsoredProps.length > 0 ? sponsoredProps : allProperties.filter(p => p.type === "buy" || p.type === "sell").slice(0, 4);
   const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "rent_lease" || p.type === "pg").slice(0, 4);
-
-  const stats = [
-    { value: "10K+", label: "Properties in Lucknow" },
-    { value: "500+", label: "Verified Local Agents" },
-    { value: "50+", label: "Lucknow Localities" },
-    { value: "4.8★", label: "Avg. Rating" },
-  ];
 
   const quickCategories = [
     { label: "Residentials", icon: "🏠", to: "/buy", color: "from-blue-500/10 to-blue-600/5" },
