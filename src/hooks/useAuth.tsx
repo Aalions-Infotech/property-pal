@@ -6,14 +6,10 @@ import { toast } from "@/hooks/use-toast";
 type AppRole = "admin" | "moderator" | "agent" | "user";
 
 const SESSION_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
-const DASHBOARD_REFRESH_FLAG = "ekananda.dashboard_refresh_logout";
-
-const isDashboardPath = (path: string) => /^\/(dashboard|admin|agent-dashboard|org|shortlists)(\/|$)/.test(path);
 
 const clearStoredAuth = () => {
   localStorage.removeItem("lastActivity");
   localStorage.removeItem("ekananda.current_org_id");
-  sessionStorage.removeItem(DASHBOARD_REFRESH_FLAG);
 
   for (const store of [localStorage, sessionStorage]) {
     Object.keys(store).forEach((key) => {
@@ -110,7 +106,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const target =
         opts?.redirectTo ??
-        (reason === "expired" ? "/auth?reason=expired" : "/auth");
+        (reason === "expired" ? "/auth?reason=expired" : "/");
       window.location.href = target;
     },
     []
@@ -151,36 +147,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // ordinary back-button navigation, causing widespread session loss bugs.)
 
   useEffect(() => {
-    const markProtectedUnload = () => {
-      if (isDashboardPath(window.location.pathname)) {
-        sessionStorage.setItem(DASHBOARD_REFRESH_FLAG, "1");
-      }
-    };
-    window.addEventListener("pagehide", markProtectedUnload);
-    window.addEventListener("beforeunload", markProtectedUnload);
-
-    // Hard refresh on a dashboard URL => sign out (per product requirement).
-    // Uses both navigation timing and an unload marker so browser/preview quirks still work.
-    try {
-      const nav = (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined);
-      const isReload = nav?.type === "reload";
-      const path = window.location.pathname;
-      const hasProtectedUnloadMarker = sessionStorage.getItem(DASHBOARD_REFRESH_FLAG) === "1";
-      if (isDashboardPath(path) && (isReload || hasProtectedUnloadMarker)) {
-        clearStoredAuth();
-        void supabase.auth.signOut().finally(() => {
-          window.location.replace("/auth?reason=refresh");
-        });
-        return () => {
-          window.removeEventListener("pagehide", markProtectedUnload);
-          window.removeEventListener("beforeunload", markProtectedUnload);
-        };
-      }
-      sessionStorage.removeItem(DASHBOARD_REFRESH_FLAG);
-    } catch {
-      sessionStorage.removeItem(DASHBOARD_REFRESH_FLAG);
-    }
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, nextSession) => {
         setLoading(true);
@@ -195,8 +161,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => {
       subscription.unsubscribe();
-      window.removeEventListener("pagehide", markProtectedUnload);
-      window.removeEventListener("beforeunload", markProtectedUnload);
     };
   }, []);
 
