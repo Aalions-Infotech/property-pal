@@ -490,31 +490,32 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className={`flex-1 min-w-0 ${sidebarCollapsed ? "md:ml-16" : "md:ml-64"} min-h-screen flex flex-col transition-all duration-200`}>
         {/* Top Bar */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border px-3 sm:px-4 md:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border px-3 sm:px-4 md:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <button onClick={() => setMobileSidebarOpen(true)} className="p-2 rounded-lg hover:bg-muted text-muted-foreground md:hidden">
               <Menu className="w-5 h-5" />
             </button>
             <div className="min-w-0">
-              <h1 className="font-display font-bold text-base sm:text-lg md:text-xl truncate">{navItems.find(n => n.id === tab)?.label}</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">Super Admin · {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <h1 className="font-display font-bold text-base sm:text-lg md:text-xl truncate leading-tight">{navItems.find(n => n.id === tab)?.label}</h1>
+              <p className="text-[11px] text-muted-foreground hidden lg:block truncate">Super Admin · {new Date().toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button onClick={() => navigate("/org/create")} className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90" title="Create agency">
-              <Building2 className="w-4 h-4" /> <span className="hidden sm:inline">Create Agency</span>
+              <Building2 className="w-4 h-4" /> <span className="hidden md:inline">Create Agency</span>
             </button>
             {realtimeAlerts.length > 0 && (
-              <button onClick={() => setTab("realtime")} className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium border border-destructive/20 hover:bg-destructive/20">
+              <button onClick={() => setTab("realtime")} className="relative flex items-center gap-2 px-2.5 py-2 rounded-lg bg-destructive/10 text-destructive text-xs font-medium border border-destructive/20 hover:bg-destructive/20">
                 <span className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
-                <span className="hidden sm:inline">{realtimeAlerts.length} Alert{realtimeAlerts.length > 1 ? "s" : ""}</span>
+                <span className="hidden lg:inline">{realtimeAlerts.length} Alert{realtimeAlerts.length > 1 ? "s" : ""}</span>
+                <span className="lg:hidden">{realtimeAlerts.length}</span>
               </button>
             )}
             <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted text-muted-foreground" title="Toggle dark mode">
               {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
             <button onClick={fetchAll} className="p-2 rounded-lg hover:bg-muted text-muted-foreground" title="Refresh"><RefreshCw className="w-4 h-4" /></button>
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
               <span className="text-primary-foreground text-xs font-bold">{user?.email?.[0]?.toUpperCase()}</span>
             </div>
           </div>

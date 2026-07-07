@@ -2,13 +2,22 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Palette, Globe, Save, Sun, Moon, Monitor } from "lucide-react";
+import { Palette, Globe, Save, Sun, Moon, Monitor, BarChart3 } from "lucide-react";
+
+type StatItem = { value: string; label: string };
+const DEFAULT_STATS: StatItem[] = [
+  { value: "10K+", label: "Properties in Lucknow" },
+  { value: "500+", label: "Verified Local Agents" },
+  { value: "50+", label: "Lucknow Localities" },
+  { value: "4.8★", label: "Avg. Rating" },
+];
 
 export default function AdminPlatformSettings() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [theme, setTheme] = useState<{ default: "light" | "dark" | "system"; enforce: boolean }>({ default: "system", enforce: false });
   const [platform, setPlatform] = useState<any>({ maintenance_mode: false, support_email: "", support_phone: "", tagline: "" });
+  const [heroStats, setHeroStats] = useState<StatItem[]>(DEFAULT_STATS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -18,6 +27,11 @@ export default function AdminPlatformSettings() {
       data?.forEach((row: any) => {
         if (row.key === "theme") setTheme({ default: row.value.default || "system", enforce: !!row.value.enforce });
         if (row.key === "platform") setPlatform({ ...platform, ...(row.value || {}) });
+        if (row.key === "hero_stats" && Array.isArray(row.value?.items) && row.value.items.length) {
+          const items = row.value.items.slice(0, 4);
+          while (items.length < 4) items.push({ value: "", label: "" });
+          setHeroStats(items);
+        }
       });
       setLoading(false);
     })();
@@ -93,6 +107,36 @@ export default function AdminPlatformSettings() {
           </label>
           <button disabled={saving} onClick={() => saveKey("platform", platform)} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 disabled:opacity-50">
             <Save className="w-4 h-4" /> Save Platform Settings
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-card rounded-2xl border border-border p-5 sm:p-6">
+        <h3 className="font-display font-bold mb-1 flex items-center gap-2"><BarChart3 className="w-5 h-5" /> Homepage Hero Stats</h3>
+        <p className="text-xs text-muted-foreground mb-4">Edit the 4 stat cards shown on the home page hero (e.g. "10K+ Properties in Lucknow"). Value is the number, label is the caption.</p>
+        <div className="space-y-3">
+          {heroStats.map((s, i) => (
+            <div key={i} className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3">
+              <input
+                value={s.value}
+                placeholder="10K+"
+                onChange={e => setHeroStats(prev => prev.map((it, idx) => idx === i ? { ...it, value: e.target.value } : it))}
+                className="px-3 py-2 rounded-lg border border-border bg-background text-sm font-semibold"
+              />
+              <input
+                value={s.label}
+                placeholder="Properties in Lucknow"
+                onChange={e => setHeroStats(prev => prev.map((it, idx) => idx === i ? { ...it, label: e.target.value } : it))}
+                className="px-3 py-2 rounded-lg border border-border bg-background text-sm"
+              />
+            </div>
+          ))}
+          <button
+            disabled={saving}
+            onClick={() => saveKey("hero_stats", { items: heroStats })}
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" /> Save Hero Stats
           </button>
         </div>
       </div>
