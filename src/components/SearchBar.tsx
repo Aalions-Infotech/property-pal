@@ -101,7 +101,7 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-50 bg-card">
-                {["All Residentials", "Apartment", "Villa", "Plot/Land", "Builder Floor", "Studio", "Penthouse"].map(type => (
+                {["All Residentials", "Apartment",  "Plot/Land", "Builder Floor", ].map(type => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
               </SelectContent>

@@ -17,7 +17,7 @@ serve(async (req) => {
       approved: {
         emoji: "🎉", color: "#10b981",
         heading: "Your Property is Now Live!",
-        message: `Great news! Your listing "<strong>${listingTitle}</strong>" has been approved and is now visible to millions of buyers and renters on PropEstate.`,
+        message: `Great news! Your listing "<strong>${listingTitle}</strong>" has been approved and is now visible to millions of buyers and renters on EkanandaEstate.`,
       },
       rejected: {
         emoji: "📋", color: "#ef4444",
@@ -36,7 +36,7 @@ serve(async (req) => {
     const html = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 32px 24px; border-radius: 16px 16px 0 0; text-align: center;">
-          <h1 style="color: #ffffff; font-size: 22px; margin: 0;">${config.emoji} PropEstate</h1>
+          <h1 style="color: #ffffff; font-size: 22px; margin: 0;">${config.emoji} EkanandaEstate</h1>
           <p style="color: rgba(255,255,255,0.6); font-size: 13px; margin: 6px 0 0;">Property Listing Update</p>
         </div>
         <div style="background: #ffffff; padding: 32px 24px; border: 1px solid #e2e8f0; border-top: none;">
@@ -49,12 +49,12 @@ serve(async (req) => {
             <a href="${Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovable.app")}/dashboard" style="display: inline-block; background: #0f172a; color: #fff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600;">View Dashboard</a>
           </div>
         </div>
-        <p style="color: #94a3b8; font-size: 11px; text-align: center; margin-top: 12px;">© 2026 PropEstate · India's Most Trusted Real Estate Platform</p>
+        <p style="color: #94a3b8; font-size: 11px; text-align: center; margin-top: 12px;">© 2026 EkanandaEstate · India's Most Trusted Real Estate Platform</p>
       </div>
     `;
 
     const { error } = await resend.emails.send({
-      from: "PropEstate <onboarding@resend.dev>",
+      from: "EkanandaEstate <onboarding@resend.dev>",
       to: [to],
       subject: `${config.emoji} ${config.heading} - ${listingTitle}`,
       html,

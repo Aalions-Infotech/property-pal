@@ -56,13 +56,13 @@ serve(async (req) => {
     const emailHtml = `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden;">
         <div style="background: linear-gradient(135deg, #0f1d3a, #1a2d5a); padding: 40px 30px; text-align: center;">
-          <h1 style="color: #ffffff; font-size: 24px; margin: 0;">🎉 Welcome to PropEstate!</h1>
+          <h1 style="color: #ffffff; font-size: 24px; margin: 0;">🎉 Welcome to EkanadaEstate!</h1>
           <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 8px;">Your Agent Account Has Been Approved</p>
         </div>
         <div style="padding: 30px;">
           <p style="color: #333; font-size: 16px;">Hi <strong>${agentName}</strong>,</p>
           <p style="color: #555; font-size: 14px; line-height: 1.6;">
-            Congratulations! Your application to become a PropEstate agent has been approved by our admin team.
+            Congratulations! Your application to become a EkanandaEstate agent has been approved by our admin team.
             You now have access to your dedicated Agent Dashboard.
           </p>
           ${credentialsBlock}
@@ -72,7 +72,7 @@ serve(async (req) => {
             </a>
           </div>
           <p style="color: #999; font-size: 12px; text-align: center; margin-top: 24px;">
-            © 2026 PropEstate. India's Most Trusted Real Estate Platform.
+            © 2026 EkanandaEstate . India's Most Trusted Real Estate Platform.
           </p>
         </div>
       </div>
@@ -85,9 +85,9 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "PropEstate <onboarding@resend.dev>",
+        from: "EkanandaEstate <onboarding@resend.dev>",
         to: [to],
-        subject: `🎉 Agent Account Approved - Welcome to PropEstate, ${agentName}!`,
+        subject: `🎉 Agent Account Approved - Welcome to EkanandaEstate, ${agentName}!`,
         html: emailHtml,
       }),
     });
