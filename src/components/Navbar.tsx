@@ -57,9 +57,9 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <nav className={`fixed top-0 left-0 right-15 z-50 transition-all duration-300 ${
       scrolled 
-        ? "bg-card/95 backdrop-blur-md shadow-md border-b border-border" 
+        ? "bg-card/200 backdrop-blur-md shadow-md border-b border-border" 
         : location.pathname === "/" 
           ? "bg-transparent" 
           : "bg-card border-b border-border"
@@ -68,7 +68,7 @@ const Navbar = () => {
         <div className="flex items-center h-16 gap-2 sm:gap-3 lg:gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 min-w-0">
-            <img src={logoImg} alt={BRAND_NAME} className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg object-cover flex-shrink-0" />
+            <img src={logoImg} alt={BRAND_NAME} className="w-10 h-8 sm:w-9 sm:h-9 rounded-lg object-cover flex-shrink-0" />
             <span className={`font-display font-800 text-[13px] sm:text-lg lg:text-xl tracking-tight truncate ${
               !scrolled && location.pathname === "/" ? "text-white" : "text-foreground"
             }`}>

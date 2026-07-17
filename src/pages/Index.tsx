@@ -137,9 +137,20 @@ const Index = () => {
   });
 
   const allProperties = dbProperties.map(mapDbProp);
-  const sponsoredProps = allProperties.filter(p => p.featured).slice(0, 4);
-  const buyProps = sponsoredProps.length > 0 ? sponsoredProps : allProperties.filter(p => p.type === "buy" || p.type === "sell").slice(0, 4);
-  const rentProps = allProperties.filter(p => p.type === "rent" || p.type === "rent_lease" || p.type === "pg").slice(0, 4);
+  // IMPORTANT: Home page must show only real DB listings.
+  // The DB returns already approved listings, but we still filter defensively here.
+  const sponsoredProps = allProperties
+    .filter(p => p.featured)
+    .filter(p => p.id)
+    .slice(0, 8);
+
+  const buyProps = sponsoredProps.length > 0
+    ? sponsoredProps
+    : allProperties.filter(p => (p.type === "buy" || p.type === "sell") && p.id).slice(0, 8);
+
+  const rentProps = allProperties.filter(p => (p.type === "rent" || p.type === "rent_lease" || p.type === "pg") && p.id).slice(0, 8);
+
+
 
   const quickCategories = [
     { label: "Residentials", icon: "🏠", to: "/buy", color: "from-blue-500/10 to-blue-600/5" },

@@ -20,10 +20,11 @@ const SearchBar = ({ variant = "hero" }: SearchBarProps) => {
   const tabs = [
     { key: "buy", label: "Residentials" },
     { key: "rent", label: "Rent/Lease" },
-    { key: "new-launch", label: "New Launch", badge: true },
+    { key: "new-launch", label: "New", badge: true },
     { key: "commercial", label: "Commercials" },
     { key: "plot", label: "Plots/Land" },
     { key: "investment", label: "Investment Property" },
+    { key: "listings", label: "property list" },
   ] as const;
 
   const handleSearch = () => {
